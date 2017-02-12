@@ -21,5 +21,34 @@
  */
 package com.gmail.socraticphoenix.forge.randore.component;
 
+import net.minecraft.item.Item;
+
 public class CraftableComponent {
+    private CraftableType type;
+    private int quantity;
+
+    public CraftableComponent(CraftableType type, int quantity) {
+        this.type = type;
+        this.quantity = quantity;
+    }
+
+    public Item makeItem() {
+        return null; //TODO
+    }
+
+    public int quantity() {
+        return this.quantity;
+    }
+
+    public String template() {
+        return this.type.getTemplate();
+    }
+
+    public String[] recipe() {
+        return this.type.getRecipe();
+    }
+
+    public CraftableType getType() {
+        return this.type;
+    }
 }

@@ -21,5 +21,55 @@
  */
 package com.gmail.socraticphoenix.forge.randore.component;
 
+import net.minecraft.item.Item;
+
 public class MaterialComponent {
+    private MaterialType type;
+    private int harvestLevel;
+    private int maxUses;
+    private float efficiency;
+    private float damage;
+    private int enchantability;
+
+    public MaterialComponent(MaterialType type, int harvestLevel, int maxUses, float efficiency, float damage, int enchantability) {
+        this.type = type;
+        this.harvestLevel = harvestLevel;
+        this.maxUses = maxUses;
+        this.efficiency = efficiency;
+        this.damage = damage;
+        this.enchantability = enchantability;
+    }
+
+    public Item makeItem() {
+        return null; //TODO
+    }
+
+    public int getHarvestLevel() {
+        return this.harvestLevel;
+    }
+
+    public int getMaxUses() {
+        return this.maxUses;
+    }
+
+    public float getEfficiency() {
+        return this.efficiency;
+    }
+
+    public float getDamage() {
+        return this.damage;
+    }
+
+    public int getEnchantability() {
+        return this.enchantability;
+    }
+
+    public MaterialType getType() {
+        return this.type;
+    }
+
+    public String template() {
+        return this.type.getTemplate();
+    }
+
 }

@@ -23,6 +23,7 @@ package com.gmail.socraticphoenix.forge.randore;
 
 import com.gmail.socraticphoenix.forge.randore.resource.ResourceManager;
 import com.gmail.socraticphoenix.forge.randore.template.TextureTemplate;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -51,6 +52,7 @@ public class Randores {
     private File conf;
     private File tex;
     private Map<String, TextureTemplate> templates;
+    private RandoresTab tab;
 
     public static Randores getInstance() {
         return instance;
@@ -60,17 +62,20 @@ public class Randores {
         return proxy;
     }
 
-    @Mod.EventHandler
-    public void onPreInit(FMLPreInitializationEvent ev) throws IOException {
+    public Randores() {
         Randores.instance = this;
-
+        this.tab = new RandoresTab();
         this.confDir = new File("config", "randores");
         this.conf = new File(this.confDir, "config.cfg");
         this.tex = new File(this.confDir, "textures");
-        this.tex.mkdirs();
-
         this.templates = new HashMap<String, TextureTemplate>();
         this.logger = LogManager.getLogger("randores");
+        MinecraftForge.EVENT_BUS.register(new RandoresRegister());
+    }
+
+    @Mod.EventHandler
+    public void onPreInit(FMLPreInitializationEvent ev) throws IOException {
+        this.tex.mkdirs();
         this.logger.info("Loading texture templates...");
         try {
             List<String> dictionary = ResourceManager.getResourceLines("aa_dict.txt");
@@ -92,17 +97,21 @@ public class Randores {
             this.logger.info(NameAlgorithm.name(new Color(random.nextInt(256), random.nextInt(256), random.nextInt(256))));
         }
         this.logger.info("Finished testing names algorithm");
-        this.logger.info("Running proxy initialization...");
-        Randores.proxy.init();;
-        this.logger.info("Proxy initialized.");
     }
 
     @Mod.EventHandler
     public void onInit(FMLInitializationEvent ev) {
-
+        MinecraftForge.EVENT_BUS.register(new WorldEventListener());
+        this.logger.info("Running proxy initialization...");
+        Randores.proxy.init();
+        this.logger.info("Proxy initialized.");
     }
 
     public static String textureName(int num) {
+        return "randores.block." + num;
+    }
+
+    public static String blockName(int num) {
         return "randores.block." + num;
     }
 
@@ -124,5 +133,9 @@ public class Randores {
 
     public Map<String, TextureTemplate> getTemplates() {
         return this.templates;
+    }
+
+    public RandoresTab getTab() {
+        return this.tab;
     }
 }

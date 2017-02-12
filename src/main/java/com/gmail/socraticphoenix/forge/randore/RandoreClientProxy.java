@@ -25,6 +25,7 @@ import com.gmail.socraticphoenix.forge.randore.texture.FlexibleAtlasSprite;
 import com.gmail.socraticphoenix.forge.randore.texture.TextureRegistry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureMap;
+import org.apache.logging.log4j.Logger;
 
 public class RandoreClientProxy extends RandoreProxy {
 
@@ -32,11 +33,15 @@ public class RandoreClientProxy extends RandoreProxy {
     public void init() {
         super.init();
         TextureMap map = Minecraft.getMinecraft().getTextureMapBlocks();
-        for (int i = 0; i < 500; i++) {
+        Logger logger = Randores.getInstance().getLogger();
+        logger.info("Generating FlexibleAtlasSprites...");
+        for (int i = 0; i < 600; i++) {
             FlexibleAtlasSprite sprite = new FlexibleAtlasSprite(Randores.textureName(i), "test");
             TextureRegistry.register(sprite);
             map.setTextureEntry(sprite);
         }
+        logger.info("Finished generating FlexibleAtlasSprites.");
+
     }
 
 }

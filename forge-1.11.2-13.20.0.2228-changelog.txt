@@ -1075,7 +1075,7 @@ Build 1.10.2-12.18.0.2006-1.10.0:
 
 Build 1.10.2-12.18.0.2005-1.10.0:
 	diesieben07:
-		Restore (buggy?) behavior of vanilla BlockPistonMoving and ignore drop
+		Restore (buggy?) behavior of vanilla BlockPistonMoving and ignore material
 		chance (#3052)
 
 Build 1.10.2-12.18.0.2004-1.10.0:
@@ -1854,7 +1854,7 @@ Build 1.9-12.16.0.1886:
 	LexManos: Added support for custom dyes with Banners. Closes #2596
 	LexManos: Allow finite fluids to be drained correctly
 	LexManos: Make OreDictionary.initVanillaEntries() private so that dumb modders will stop calling it.
-	vincent.lee: Actually fix dupe drop
+	vincent.lee: Actually fix dupe material
 	LexManos: Fix swap animations for sure this time.
 	fry: Added Capability.cast, to allow avoiding unchecked casts in ICapabilityProvider.getCapability
 	LexManos: Update FML Entity Spawn packet for 1.9's location change. Closes #2567
@@ -2512,7 +2512,7 @@ Build 1.9-12.16.0.1799-1.9:
 	LexManos: Update FML Entity Spawn packet for 1.9's location change. Closes #2567
 
 Build 1.9-12.16.0.1798-1.9:
-	vincent.lee: Actually fix dupe drop
+	vincent.lee: Actually fix dupe material
 
 Build 1.9-12.16.0.1797-1.9:
 	fry: Added Capability.cast, to allow avoiding unchecked casts in ICapabilityProvider.getCapability
@@ -7928,7 +7928,7 @@ Build 1.6.1-8.9.0.769-newliquid:
 	LexManos: Include MANIFEST file from FML's universal.jar, makes the jar runnable now!
 	LexManos:
 		Updated FML:
-		MinecraftForge/FML@155e8468180c93f1886a64028628764b1b22dd58 Add in support for mods/<mcversion> as a mod location. Also drop coremods as a location. They go in mods too now.
+		MinecraftForge/FML@155e8468180c93f1886a64028628764b1b22dd58 Add in support for mods/<mcversion> as a mod location. Also material coremods as a location. They go in mods too now.
 		MinecraftForge/FML@3f4bf61ae6757605b27078c7321de9f640876836 Update key
 		MinecraftForge/FML@4545beb49d5348d8632e42965627b9837115525b Add deobf-data to setup env.
 		MinecraftForge/FML@e24f94951741709329208f738000b72933302a24 Fix eclipse workspaces and launch configurations.
@@ -7970,7 +7970,7 @@ Build 1.6.1-8.9.0.764:
 Build 1.6.1-8.9.0.763:
 	LexManos:
 		Updated FML:
-		MinecraftForge/FML@155e8468180c93f1886a64028628764b1b22dd58 Add in support for mods/<mcversion> as a mod location. Also drop coremods as a location. They go in mods too now.
+		MinecraftForge/FML@155e8468180c93f1886a64028628764b1b22dd58 Add in support for mods/<mcversion> as a mod location. Also material coremods as a location. They go in mods too now.
 		MinecraftForge/FML@3f4bf61ae6757605b27078c7321de9f640876836 Update key
 		MinecraftForge/FML@4545beb49d5348d8632e42965627b9837115525b Add deobf-data to setup env.
 		MinecraftForge/FML@e24f94951741709329208f738000b72933302a24 Fix eclipse workspaces and launch configurations.
@@ -11762,7 +11762,7 @@ Build 1.3.2.4:
 		For modders:
 		  If you have a entity that used MLMP's 'owner' system, you should have your entity implement IThrowableEntity
 		  If you have a entity that implments MLMLP's ISpawnable, you should implement ISpawnHandler.
-		They provide the same functionality, just in a cleaner, more orginized way and will be the method used when we eventually drop MLMP.
+		They provide the same functionality, just in a cleaner, more orginized way and will be the method used when we eventually material MLMP.
 
 Build 1.3.2.3:
 	LexManos: Fixed return value for un/registerChannel. Now returns properly indicate when un/register commands should be sent.

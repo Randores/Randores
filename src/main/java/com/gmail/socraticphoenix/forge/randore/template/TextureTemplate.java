@@ -43,8 +43,8 @@ public class TextureTemplate {
         }
     }
 
-    public static boolean percentChance(double percent) {
-        double result = new Random().nextDouble() * 100;
+    public static boolean percentChance(double percent, Random random) {
+        double result = random.nextDouble() * 100;
         return result <= percent;
     }
 
@@ -55,11 +55,11 @@ public class TextureTemplate {
         return new BufferedImage(cm, raster, isAlphaPremultiplied, null);
     }
 
-    public int getIntegerColor(Color color, boolean varyHue, int tint, int shade) {
+    public int getIntegerColor(Color color, boolean varyHue, int tint, int shade, Random random) {
         if (varyHue) {
-            if (TextureTemplate.percentChance(33.33)) {
+            if (TextureTemplate.percentChance(33.33, random)) {
                 color = color.brighter();
-            } else if (TextureTemplate.percentChance(33.33)) {
+            } else if (TextureTemplate.percentChance(33.33, random)) {
                 color = color.darker();
             } //else don't change the color
         }
@@ -79,12 +79,12 @@ public class TextureTemplate {
         return color.getRGB();
     }
 
-    public BufferedImage applyWith(Color color) {
+    public BufferedImage applyWith(Color color, Random random) {
         BufferedImage image = deepCopy(this.image);
         for (PixelTemplate template : this.pixelTemplates) {
             int x = template.getX();
             int y = template.getY();
-            int rgb = this.getIntegerColor(color, template.isVaryHue(), template.getTint(), template.getShade());
+            int rgb = this.getIntegerColor(color, template.isVaryHue(), template.getTint(), template.getShade(), random);
             image.setRGB(x, y, rgb);
         }
         return image;
