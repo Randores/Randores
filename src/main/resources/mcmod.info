@@ -1,0 +1,16 @@
+[
+{
+  "modid": "randores",
+  "name": "Socratic_Phoenix's Randores",
+  "description": "The mod to end all mods.",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["Socratic_Phoenix"],
+  "credits": "Socratic_Phoenix, the author",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
