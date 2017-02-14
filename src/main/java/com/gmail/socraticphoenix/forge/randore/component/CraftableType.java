@@ -27,12 +27,12 @@ public enum  CraftableType {
     PICKAXE("Pickaxe", "pickaxe", "XXX", " S ", " S "),
     SHOVEL("Shovel", "shovel", " X ", " S ", " S "),
     SWORD("Sword", "sword", " X ", " X ", " S "),
-    STICK("Stick", "stick", " X ", "X  "),
-    BOOTS("Boots", "boots", "X X", "X X"),
+    STICK("Stick", "stick", " X ", "X  ", "   "),
+    BOOTS("Boots", "boots", "X X", "X X", "   "),
     CHESTPLATE("Chestplate", "chestplate", "X X", "XXX", "XXX"),
-    HELMET("Helmet", "helmet", "XXX", "X X"),
+    HELMET("Helmet", "helmet", "XXX", "X X", "   "),
     LEGGINGS("Leggings", "leggings", "XXX", "X X", "X X"),
-    BRICKS("Bricks", "brick", "XX ", "XX ");
+    BRICKS("Bricks", "brick", "XX ", "XX ", "   ");
 
     private String template;
     private String name;

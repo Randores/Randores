@@ -22,7 +22,7 @@
 package com.gmail.socraticphoenix.forge.randore.texture;
 
 import com.gmail.socraticphoenix.forge.randore.Randores;
-import com.gmail.socraticphoenix.forge.randore.resource.ResourceManager;
+import com.gmail.socraticphoenix.forge.randore.resource.RandoresResourceManager;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureUtil;
 import net.minecraft.client.resources.IResourceManager;
@@ -37,10 +37,12 @@ import java.io.IOException;
 
 public class FlexibleAtlasSprite extends TextureAtlasSprite {
     private String texture;
+    private long seed;
 
     public FlexibleAtlasSprite(String spriteName, String texture) {
         super(spriteName);
         this.texture = texture;
+        this.seed = 0;
     }
 
     private static BufferedImage scale(BufferedImage sbi, int imageType, int dWidth, int dHeight, double fWidth, double fHeight) {
@@ -58,8 +60,13 @@ public class FlexibleAtlasSprite extends TextureAtlasSprite {
         return this.texture;
     }
 
-    public void setTexture(String texture) {
+    public long getSeed() {
+        return this.seed;
+    }
+
+    public void setTexture(String texture, long seed) {
         this.texture = texture;
+        this.seed = seed;
     }
 
     @Override
@@ -74,23 +81,22 @@ public class FlexibleAtlasSprite extends TextureAtlasSprite {
 
     @Override
     public boolean load(IResourceManager manager, ResourceLocation location) {
-        File texture = new File(Randores.getInstance().getTexFile(), this.texture.endsWith(".png") ? this.texture : this.texture + ".png");
+        File texture = new File(Randores.getInstance().getTextureFile(this.seed), this.texture.endsWith(".png") ? this.texture : this.texture + ".png");
         try {
             BufferedImage texImg;
             try {
-                texImg = this.texture.equals("test") ? ResourceManager.getImageResource("test.png") : ImageIO.read(texture);
+                texImg = this.texture.equals("test") ? RandoresResourceManager.getImageResource("test.png") : ImageIO.read(texture);
             } catch (IOException e) {
                 Randores.getInstance().getLogger().error("Fatal Error: Unable to load texture \"" + this.texture + ",\" reverting to test texture.", e);
-                texImg = ResourceManager.getImageResource("test.png");
+                texImg = RandoresResourceManager.getImageResource("test.png");
             }
+            this.setIconHeight(texImg.getHeight());
+            this.setIconWidth(texImg.getWidth());
             int[][] texData = new int[(int) (1 + (Math.log10(texImg.getWidth()) / Math.log10(2)))][];
             int[] buffer = new int[texImg.getHeight() * texImg.getWidth()];
             texImg.getRGB(0, 0, texImg.getWidth(), texImg.getHeight(), buffer, 0, texImg.getWidth());
             for (int i = 0; i < texData.length; i++) {
                 texData[i] = buffer;
-                texImg = scale(texImg, texImg.getType(), texImg.getWidth(), texImg.getHeight(), 0.5, 0.5);
-                buffer = new int[texImg.getHeight() * texImg.getWidth()];
-                texImg.getRGB(0, 0, texImg.getWidth(), texImg.getHeight(), buffer, 0, texImg.getWidth());
             }
             this.framesTextureData.clear();
             this.framesTextureData.add(texData);

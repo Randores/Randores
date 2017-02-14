@@ -21,8 +21,10 @@
  */
 package com.gmail.socraticphoenix.forge.randore;
 
-import com.gmail.socraticphoenix.forge.randore.block.FlexibleBlock;
 import com.gmail.socraticphoenix.forge.randore.block.FlexibleBlockRegistry;
+import com.gmail.socraticphoenix.forge.randore.block.FlexibleBrick;
+import com.gmail.socraticphoenix.forge.randore.block.FlexibleOre;
+import com.gmail.socraticphoenix.forge.randore.item.FlexibleItemRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
@@ -33,22 +35,40 @@ public class RandoresRegister {
 
     @SubscribeEvent
     public void onBlockRegister(RegistryEvent.Register<Block> ev) {
-        Randores.getInstance().getLogger().info("Initializing FlexibleBlocks...");
-        for (int i = 0; i < 600; i++) {
-            FlexibleBlock block = new FlexibleBlock();
-            block.setUnlocalizedName(Randores.blockName(i));
-            block.setRegistryName(Randores.blockName(i));
-            FlexibleBlockRegistry.add(block);
+        Randores.getInstance().getLogger().info("Initializing Blocks...");
+        for (int i = 0; i < 300; i++) {
+            FlexibleOre block = new FlexibleOre(i);
+            block.setUnlocalizedName(Randores.blockName(i)).setRegistryName(Randores.blockName(i)).setCreativeTab(Randores.TAB_BLOCKS);
+            FlexibleBlockRegistry.addOres(block);
+            ev.getRegistry().register(block);
+        }
+
+        for (int i = 0; i < 300; i++) {
+            FlexibleBrick block = new FlexibleBrick(i + 300);
+            block.setUnlocalizedName(Randores.blockName(i + 300)).setRegistryName(Randores.blockName(i + 300)).setCreativeTab(Randores.TAB_BLOCKS);
+            FlexibleBlockRegistry.addBrick(block);
             ev.getRegistry().register(block);
         }
     }
 
     @SubscribeEvent
     public void onItemRegister(RegistryEvent.Register<Item> ev) {
-        Randores.getInstance().getLogger().info("Initializing FlexibleBlock Items...");
-        for(FlexibleBlock block : FlexibleBlockRegistry.getBlocks()) {
-            Item item = new ItemBlock(block).setCreativeTab(Randores.getInstance().getTab()).setUnlocalizedName(block.getUnlocalizedName()).setRegistryName(block.getRegistryName());
+        Randores.getInstance().getLogger().info("Initializing Items...");
+
+        for(FlexibleOre block : FlexibleBlockRegistry.getOres()) {
+            Item item = new ItemBlock(block).setUnlocalizedName(block.getUnlocalizedName()).setRegistryName(block.getRegistryName());
             ev.getRegistry().register(item);
+        }
+
+        for(Block brick : FlexibleBlockRegistry.getBricks()) {
+            Item item = new ItemBlock(brick).setUnlocalizedName(brick.getUnlocalizedName()).setRegistryName(brick.getRegistryName());
+            ev.getRegistry().register(item);
+        }
+
+        for (int i = 0; i < 300; i++) {
+            Item material = new Item().setUnlocalizedName(Randores.itemName(i)).setRegistryName(Randores.itemName(i)).setCreativeTab(Randores.TAB_ITEMS);
+            FlexibleItemRegistry.addMaterial(material);
+            ev.getRegistry().register(material);
         }
     }
 

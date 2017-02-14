@@ -21,13 +21,17 @@
  */
 package com.gmail.socraticphoenix.forge.randore.component;
 
-import com.gmail.socraticphoenix.forge.randore.NameAlgorithm;
+import com.gmail.socraticphoenix.forge.randore.RandoresNameAlgorithm;
 import com.gmail.socraticphoenix.forge.randore.Randores;
-import com.gmail.socraticphoenix.forge.randore.template.TextureTemplate;
+import com.gmail.socraticphoenix.forge.randore.item.FlexibleRecipe;
+import com.gmail.socraticphoenix.forge.randore.texture.TextureTemplate;
 import net.minecraft.init.Items;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.FurnaceRecipes;
+import net.minecraftforge.common.util.EnumHelper;
 import net.minecraftforge.fml.common.registry.GameRegistry;
-import net.minecraftforge.oredict.ShapedOreRecipe;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
@@ -44,37 +48,50 @@ public class MaterialDefinition {
     private MaterialComponent material;
     private List<CraftableComponent> craftables;
 
-    public MaterialDefinition(Color color, OreComponent ore, List<CraftableComponent> craftables) {
+    private Item.ToolMaterial toolMaterial;
+    private ItemArmor.ArmorMaterial armorMaterial;
+
+    private long seed;
+
+    public MaterialDefinition(Color color, OreComponent ore, List<CraftableComponent> craftables, long seed) {
         this.color = color;
         this.ore = ore;
         this.material = ore.getMaterial();
         this.craftables = craftables;
-        this.name = NameAlgorithm.name(this.color);
+        this.name = RandoresNameAlgorithm.name(this.color);
+        this.toolMaterial = EnumHelper.addToolMaterial(this.name, this.material.getHarvestLevel(), this.material.getMaxUses(), this.material.getEfficiency(), this.material.getDamage(), this.material.getEnchantability());
+        this.seed = seed;
+    }
+
+    public long getSeed() {
+        return this.seed;
     }
 
     public void registerRecipes() {
-        if(this.ore.isRequiresSmelting()) {
-            GameRegistry.addSmelting(this.ore.makeItem(), new ItemStack(this.material.makeItem(), this.ore.getMaxDrops()), this.ore.getSmeltingXp());
+        ItemStack material = new ItemStack(this.material.makeItem(), this.ore.getMaxDrops());
+        if(!FurnaceRecipes.instance().getSmeltingList().containsKey(new ItemStack(this.ore.makeItem()))) {
+            GameRegistry.addSmelting(new ItemStack(this.ore.makeItem()), material, 0f);
         }
 
-        for(CraftableComponent component : this.craftables) {
+
+        for (CraftableComponent component : this.craftables) {
             boolean stick = false;
-            for(String s : component.recipe()) {
-                if(s.contains("S")) {
+            for (String s : component.recipe()) {
+                if (s.contains("S")) {
                     stick = true;
                 }
             }
 
-            int compLen = component.recipe().length;
-            Object[] params = new Object[component.recipe().length + (stick ? 4 : 2)];
-            params[compLen] = 'X';
-            params[compLen + 1] = this.material.makeItem();
-            if(stick) {
-                params[compLen + 2] = 'S';
-                params[compLen + 3] = Items.STICK;
+            String[] recipe = component.recipe();
+            Object[] params = new Object[stick ? 4 : 2];
+            params[0] = 'X';
+            params[1] = this.material.makeItem();
+            if (stick) {
+                params[2] = 'S';
+                params[3] = Items.STICK;
             }
-            ShapedOreRecipe oreDictRecipe = new ShapedOreRecipe(new ItemStack(component.makeItem(), component.quantity()), params);
-            GameRegistry.addRecipe(oreDictRecipe);
+            FlexibleRecipe fr = new FlexibleRecipe(this, component, recipe[0], recipe[1], recipe[2], params);
+            GameRegistry.addRecipe(fr);
         }
     }
 
@@ -83,7 +100,11 @@ public class MaterialDefinition {
         Map<String, BufferedImage> textures = new HashMap<String, BufferedImage>();
         textures.put(ore.template(), templates.get(ore.template()).applyWith(this.color, random));
         textures.put(material.template(), templates.get(material.template()).applyWith(this.color, random));
-        for(CraftableComponent component : this.craftables) {
+        for (CraftableComponent component : this.craftables) {
+            if (component.getType() == CraftableType.HELMET) {
+                textures.put("armor_1", templates.get("armor_over_base").applyWith(this.color, random));
+                textures.put("armor_2", templates.get("armor_under_base").applyWith(this.color, random));
+            }
             textures.put(component.template(), templates.get(component.template()).applyWith(this.color, random));
         }
         return textures;

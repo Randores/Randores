@@ -25,13 +25,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FlexibleBlockRegistry {
-    private static List<FlexibleBlock> blocks = new ArrayList<FlexibleBlock>();
+    private static List<FlexibleOre> ores = new ArrayList<FlexibleOre>();
+    private static List<FlexibleBrick> bricks = new ArrayList<FlexibleBrick>();
 
-    public static List<FlexibleBlock> getBlocks() {
-        return blocks;
+    public static List<FlexibleBrick> getBricks() {
+        return bricks;
     }
 
-    public static void add(FlexibleBlock block) {
-        FlexibleBlockRegistry.blocks.add(block);
+    public static void addBrick(FlexibleBrick brick) {
+        FlexibleBlockRegistry.bricks.add(brick);
+    }
+
+    public static List<FlexibleOre> getOres() {
+        return ores;
+    }
+
+    public static void addOres(FlexibleOre block) {
+        FlexibleBlockRegistry.ores.add(block);
     }
 }

@@ -30,18 +30,20 @@ public class MaterialComponent {
     private float efficiency;
     private float damage;
     private int enchantability;
+    private Item item;
 
-    public MaterialComponent(MaterialType type, int harvestLevel, int maxUses, float efficiency, float damage, int enchantability) {
+    public MaterialComponent(MaterialType type, int harvestLevel, int maxUses, float efficiency, float damage, int enchantability, Item item) {
         this.type = type;
         this.harvestLevel = harvestLevel;
         this.maxUses = maxUses;
         this.efficiency = efficiency;
         this.damage = damage;
         this.enchantability = enchantability;
+        this.item = item;
     }
 
     public Item makeItem() {
-        return null; //TODO
+        return this.item;
     }
 
     public int getHarvestLevel() {
