@@ -23,6 +23,8 @@ package com.gmail.socraticphoenix.forge.randore;
 
 import com.gmail.socraticphoenix.forge.randore.block.FlexibleBlockRegistry;
 import com.gmail.socraticphoenix.forge.randore.block.FlexibleOre;
+import com.gmail.socraticphoenix.forge.randore.crafting.CraftingBlocks;
+import com.gmail.socraticphoenix.forge.randore.crafting.CraftingItems;
 import com.gmail.socraticphoenix.forge.randore.item.FlexibleItemRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
@@ -106,6 +108,10 @@ public class RandoresClientProxy extends RandoresProxy {
     @Override
     public void init() {
         Logger logger = Randores.getInstance().getLogger();
+
+        Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(CraftingItems.CRAFTINIUM_INGOT, 0, new ModelResourceLocation("randores:" + CraftingItems.CRAFTINIUM_INGOT.getUnlocalizedName().substring(5), "inventory"));
+        Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(Item.getItemFromBlock(CraftingBlocks.CRAFTINIUM_ORE), 0, new ModelResourceLocation("randores:" + Item.getItemFromBlock(CraftingBlocks.CRAFTINIUM_ORE).getUnlocalizedName().substring(5)));
+
         for (Item item : FlexibleItemRegistry.getMaterials()) {
             Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(item, 0, new ModelResourceLocation("randores:" + item.getUnlocalizedName().substring(5), "inventory"));
         }

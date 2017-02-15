@@ -27,13 +27,16 @@ import com.gmail.socraticphoenix.forge.randore.texture.TextureTemplate;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
+import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.relauncher.Side;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -52,10 +55,11 @@ public class Randores {
 
     private static Map<Long, Long> worldSeeds = new HashMap<Long, Long>();
 
+    public static final RandoresTab TAB_CRAFTING= new RandoresTab("randores_tab_0", Item.getItemFromBlock(Blocks.FURNACE));
     public static final RandoresTab TAB_BLOCKS = new RandoresTab("randores_tab_1", Item.getItemFromBlock(Blocks.STONE));
     public static final RandoresTab TAB_ITEMS = new RandoresTab("randores_tab_2", Items.DIAMOND);
 
-    @SidedProxy(modId = "randores", clientSide = "com.gmail.socraticphoenix.forge.randore.RandoreClientProxy", serverSide = "com.gmail.socraticphoenix.forge.randore.RandoreProxy")
+    @SidedProxy(modId = "randores", clientSide = "com.gmail.socraticphoenix.forge.randore.RandoresClientProxy", serverSide = "com.gmail.socraticphoenix.forge.randore.RandoresProxy")
     private static RandoresProxy proxy;
 
     private Logger logger;
@@ -72,6 +76,16 @@ public class Randores {
             Randores.worldSeeds.put(worldSeed, seed);
         }
         return seed;
+    }
+
+    public static long getRandoresSeed(World world) {
+        if(!world.isRemote) {
+            return Randores.getRandoresSeedFromWorld(world.getSeed());
+        } else if(FMLCommonHandler.instance().getSide() == Side.CLIENT) {
+            return RandoresClientSideRegistry.getCurrentSeed();
+        } else {
+            throw new IllegalArgumentException("World is remote and we're not on the client!");
+        }
     }
 
     public static Randores getInstance() {
@@ -94,6 +108,7 @@ public class Randores {
         MinecraftForge.EVENT_BUS.register(new RandoresClientListener());
         MinecraftForge.EVENT_BUS.register(new RandoresWorldEventListener());
         MinecraftForge.EVENT_BUS.register(new RandoresTextureListener());
+        MinecraftForge.EVENT_BUS.register(new RandoresItemListener());
     }
 
     public Configuration getConfiguration() {

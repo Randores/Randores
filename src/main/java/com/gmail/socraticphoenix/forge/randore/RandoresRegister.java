@@ -24,6 +24,8 @@ package com.gmail.socraticphoenix.forge.randore;
 import com.gmail.socraticphoenix.forge.randore.block.FlexibleBlockRegistry;
 import com.gmail.socraticphoenix.forge.randore.block.FlexibleBrick;
 import com.gmail.socraticphoenix.forge.randore.block.FlexibleOre;
+import com.gmail.socraticphoenix.forge.randore.crafting.CraftingBlocks;
+import com.gmail.socraticphoenix.forge.randore.crafting.CraftingItems;
 import com.gmail.socraticphoenix.forge.randore.item.FlexibleItemRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
@@ -49,11 +51,19 @@ public class RandoresRegister {
             FlexibleBlockRegistry.addBrick(block);
             ev.getRegistry().register(block);
         }
+
+        ev.getRegistry().register(CraftingBlocks.CRAFTINIUM_ORE);
     }
 
     @SubscribeEvent
     public void onItemRegister(RegistryEvent.Register<Item> ev) {
         Randores.getInstance().getLogger().info("Initializing Items...");
+
+        for (int i = 0; i < 300; i++) {
+            Item material = new Item().setUnlocalizedName(Randores.itemName(i)).setRegistryName(Randores.itemName(i)).setCreativeTab(Randores.TAB_ITEMS);
+            FlexibleItemRegistry.addMaterial(material);
+            ev.getRegistry().register(material);
+        }
 
         for(FlexibleOre block : FlexibleBlockRegistry.getOres()) {
             Item item = new ItemBlock(block).setUnlocalizedName(block.getUnlocalizedName()).setRegistryName(block.getRegistryName());
@@ -65,11 +75,9 @@ public class RandoresRegister {
             ev.getRegistry().register(item);
         }
 
-        for (int i = 0; i < 300; i++) {
-            Item material = new Item().setUnlocalizedName(Randores.itemName(i)).setRegistryName(Randores.itemName(i)).setCreativeTab(Randores.TAB_ITEMS);
-            FlexibleItemRegistry.addMaterial(material);
-            ev.getRegistry().register(material);
-        }
+        ev.getRegistry().register(CraftingItems.CRAFTINIUM_INGOT);
+        ev.getRegistry().register(new ItemBlock(CraftingBlocks.CRAFTINIUM_ORE).setUnlocalizedName(CraftingBlocks.CRAFTINIUM_ORE.getUnlocalizedName()).setRegistryName(CraftingBlocks.CRAFTINIUM_ORE.getRegistryName()));
+
     }
 
 }

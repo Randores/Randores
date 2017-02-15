@@ -23,9 +23,11 @@ package com.gmail.socraticphoenix.forge.randore.texture;
 
 import com.gmail.socraticphoenix.forge.randore.Randores;
 import com.gmail.socraticphoenix.forge.randore.resource.RandoresResourceManager;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureUtil;
 import net.minecraft.client.resources.IResourceManager;
+import net.minecraft.crash.CrashReport;
 import net.minecraft.util.ResourceLocation;
 
 import javax.imageio.ImageIO;
@@ -81,11 +83,19 @@ public class FlexibleAtlasSprite extends TextureAtlasSprite {
 
     @Override
     public boolean load(IResourceManager manager, ResourceLocation location) {
-        File texture = new File(Randores.getInstance().getTextureFile(this.seed), this.texture.endsWith(".png") ? this.texture : this.texture + ".png");
+        String name = this.texture.endsWith(".png") ? this.texture : this.texture + ".png";
+        Randores.getInstance().getLogger().info("Loading texture \"" + name + "\" for location \"" + location + "\"");
+        File texture = new File(Randores.getInstance().getTextureFile(this.seed), name);
         try {
             BufferedImage texImg;
             try {
-                texImg = this.texture.equals("test") ? RandoresResourceManager.getImageResource("test.png") : ImageIO.read(texture);
+                if (texture.exists()) {
+                    texImg = ImageIO.read(texture);
+                } else if (RandoresResourceManager.resourceExists(name)) {
+                    texImg = RandoresResourceManager.getImageResource(name);
+                } else {
+                    texImg = RandoresResourceManager.getImageResource("test.png");
+                }
             } catch (IOException e) {
                 Randores.getInstance().getLogger().error("Fatal Error: Unable to load texture \"" + this.texture + ",\" reverting to test texture.", e);
                 texImg = RandoresResourceManager.getImageResource("test.png");
@@ -101,8 +111,7 @@ public class FlexibleAtlasSprite extends TextureAtlasSprite {
             this.framesTextureData.clear();
             this.framesTextureData.add(texData);
         } catch (IOException e) {
-            Randores.getInstance().getLogger().error("Fatal error: Unable to load texture \"" + this.texture + ",\" and unable to revert to test texture.");
-            throw new RuntimeException(e);
+            Minecraft.getMinecraft().crashed(new CrashReport("\"Fatal error: Unable to load texture \\\"\" + this.texture + \",\\\" and unable to revert to test texture.\"", e));
         }
         return false;
     }

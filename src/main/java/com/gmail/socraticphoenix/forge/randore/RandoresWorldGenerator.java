@@ -44,7 +44,7 @@ public class RandoresWorldGenerator implements IWorldGenerator {
     @Override
     public void generate(Random random, int chunkX, int chunkZ, World world, IChunkGenerator chunkGenerator, IChunkProvider chunkProvider) {
         if(!world.isRemote) {
-            for (MaterialDefinition definition : MaterialDefinitionRegistry.get(world.getSeed())) {
+            for (MaterialDefinition definition : MaterialDefinitionRegistry.get(Randores.getRandoresSeed(world))) {
                 OreComponent component = definition.getOre();
                 if (component.getDimension().getId() == world.provider.getDimension()) {
                     this.generateOre(component.makeBlock(), world, random, chunkX * 16, chunkZ * 16, component.getMaxVein(), component.getMinVein(), component.getMaxY(), component.getMinY(), component.getMaxOccurences(), component.getMinOccurences(), component.getDimension().getGenerateIn());

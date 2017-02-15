@@ -27,6 +27,23 @@ import java.util.List;
 public class FlexibleTextureRegistry {
     private static List<FlexibleAtlasSprite> block = new ArrayList<FlexibleAtlasSprite>();
     private static List<FlexibleAtlasSprite> item = new ArrayList<FlexibleAtlasSprite>();
+    private static List<FlexibleAtlasSprite> specific = new ArrayList<FlexibleAtlasSprite>();
+
+    public static void registerSpecific(FlexibleAtlasSprite sprite) {
+        FlexibleTextureRegistry.specific.add(sprite);
+    }
+
+    public static FlexibleAtlasSprite getSpecific(int index) {
+        return FlexibleTextureRegistry.specific.get(index);
+    }
+
+    public static int specificQuantity() {
+        return FlexibleTextureRegistry.specific.size();
+    }
+
+    public static List<FlexibleAtlasSprite> getSpecific() {
+        return FlexibleTextureRegistry.specific;
+    }
 
     public static void registerBlock(FlexibleAtlasSprite sprite) {
         FlexibleTextureRegistry.block.add(sprite);

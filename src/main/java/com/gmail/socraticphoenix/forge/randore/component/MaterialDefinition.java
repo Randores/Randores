@@ -21,17 +21,12 @@
  */
 package com.gmail.socraticphoenix.forge.randore.component;
 
-import com.gmail.socraticphoenix.forge.randore.RandoresNameAlgorithm;
 import com.gmail.socraticphoenix.forge.randore.Randores;
-import com.gmail.socraticphoenix.forge.randore.item.FlexibleRecipe;
+import com.gmail.socraticphoenix.forge.randore.RandoresNameAlgorithm;
 import com.gmail.socraticphoenix.forge.randore.texture.TextureTemplate;
-import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraftforge.common.util.EnumHelper;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
@@ -65,34 +60,6 @@ public class MaterialDefinition {
 
     public long getSeed() {
         return this.seed;
-    }
-
-    public void registerRecipes() {
-        ItemStack material = new ItemStack(this.material.makeItem(), this.ore.getMaxDrops());
-        if(!FurnaceRecipes.instance().getSmeltingList().containsKey(new ItemStack(this.ore.makeItem()))) {
-            GameRegistry.addSmelting(new ItemStack(this.ore.makeItem()), material, 0f);
-        }
-
-
-        for (CraftableComponent component : this.craftables) {
-            boolean stick = false;
-            for (String s : component.recipe()) {
-                if (s.contains("S")) {
-                    stick = true;
-                }
-            }
-
-            String[] recipe = component.recipe();
-            Object[] params = new Object[stick ? 4 : 2];
-            params[0] = 'X';
-            params[1] = this.material.makeItem();
-            if (stick) {
-                params[2] = 'S';
-                params[3] = Items.STICK;
-            }
-            FlexibleRecipe fr = new FlexibleRecipe(this, component, recipe[0], recipe[1], recipe[2], params);
-            GameRegistry.addRecipe(fr);
-        }
     }
 
     public Map<String, BufferedImage> generateTextures(Random random) {
@@ -129,4 +96,5 @@ public class MaterialDefinition {
     public List<CraftableComponent> getCraftables() {
         return this.craftables;
     }
+
 }

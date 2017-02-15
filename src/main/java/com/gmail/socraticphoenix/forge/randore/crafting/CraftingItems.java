@@ -19,28 +19,13 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.gmail.socraticphoenix.forge.randore.packet;
+package com.gmail.socraticphoenix.forge.randore.crafting;
 
 import com.gmail.socraticphoenix.forge.randore.Randores;
-import com.gmail.socraticphoenix.forge.randore.RandoresClientSideRegistry;
-import net.minecraft.client.Minecraft;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import net.minecraft.item.Item;
 
-public class RandoresPacketHandler implements IMessageHandler<RandoresPacket, IMessage> {
+public class CraftingItems {
 
-    @Override
-    public IMessage onMessage(final RandoresPacket message, MessageContext ctx) {
-        Minecraft.getMinecraft().addScheduledTask(new Runnable() {
-            @Override
-            public void run() {
-                Randores.getInstance().getLogger().info("Received seed information: " + message.getSeed());
-                RandoresClientSideRegistry.setCurrentSeed(message.getSeed());
-                Minecraft.getMinecraft().refreshResources();
-            }
-        });
-        return null;
-    }
+    public static final Item CRAFTINIUM_INGOT  = new Item().setUnlocalizedName("craftinium_ingot").setCreativeTab(Randores.TAB_CRAFTING).setRegistryName("craftinium_ingot");
 
 }

@@ -21,6 +21,7 @@
  */
 package com.gmail.socraticphoenix.forge.randore.block;
 
+import com.gmail.socraticphoenix.forge.randore.Randores;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinition;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinitionRegistry;
 import com.gmail.socraticphoenix.forge.randore.component.OreComponent;
@@ -62,7 +63,7 @@ public class FlexibleOre extends Block {
         List<ItemStack> drops = new ArrayList<ItemStack>();
         if (world instanceof World) {
             World worldw = (World) world;
-            long seed = worldw.getSeed();
+            long seed = Randores.getRandoresSeed(worldw);
             Random random = worldw.rand;
 
             if (this.getComponent(seed).isRequiresSmelting()) {
@@ -93,7 +94,7 @@ public class FlexibleOre extends Block {
 
     @Override
     protected boolean canSilkHarvest() {
-        return false;
+        return true;
     }
 
 

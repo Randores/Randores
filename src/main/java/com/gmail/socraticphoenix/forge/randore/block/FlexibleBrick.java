@@ -21,6 +21,8 @@
  */
 package com.gmail.socraticphoenix.forge.randore.block;
 
+import com.gmail.socraticphoenix.forge.randore.Randores;
+import com.gmail.socraticphoenix.forge.randore.component.CraftableType;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinition;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinitionRegistry;
 import com.mojang.realmsclient.gui.ChatFormatting;
@@ -55,7 +57,7 @@ public class FlexibleBrick extends Block {
         List<ItemStack> drops = new ArrayList<ItemStack>();
         if(world instanceof World) {
             ItemStack drop = new ItemStack(this, 1);
-            drop.setStackDisplayName(ChatFormatting.RESET + this.getDefinition(((World) world).getSeed()).getName() + " Bricks");
+            drop.setStackDisplayName(ChatFormatting.RESET + this.getDefinition(Randores.getRandoresSeed((World) world)).getName() + " " + CraftableType.BRICKS.getName());
             drops.add(drop);
         }
         return drops;

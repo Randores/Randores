@@ -32,6 +32,7 @@ public class RandoresTextureListener {
     @SubscribeEvent
     public void onStitch(TextureStitchEvent.Pre ev) {
         Logger logger = Randores.getInstance().getLogger();
+
         if(FlexibleTextureRegistry.itemQuantity() == 0) {
             for (int i = 0; i < 3300; i++) {
                 FlexibleAtlasSprite sprite = new FlexibleAtlasSprite(Randores.itemTextureName(i), "test");
@@ -43,6 +44,7 @@ public class RandoresTextureListener {
                 ev.getMap().setTextureEntry(sprite);
             }
         }
+
         if(FlexibleTextureRegistry.blockQuantity() == 0) {
             for (int i = 0; i < 600; i++) {
                 FlexibleAtlasSprite sprite = new FlexibleAtlasSprite(Randores.textureName(i), "test");
@@ -54,6 +56,20 @@ public class RandoresTextureListener {
                 ev.getMap().setTextureEntry(sprite);
             }
         }
+
+        if(FlexibleTextureRegistry.specificQuantity() == 0) {
+            r(new FlexibleAtlasSprite("randores:blocks/craftinium_ore", "craftinium_ore"), ev);
+            r(new FlexibleAtlasSprite("randores:items/craftinium_ingot", "craftinium_ingot"), ev);
+        } else {
+            for(FlexibleAtlasSprite sprite : FlexibleTextureRegistry.getSpecific()) {
+                ev.getMap().setTextureEntry(sprite);
+            }
+        }
+    }
+
+    private void r(FlexibleAtlasSprite sprite, TextureStitchEvent.Pre ev) {
+        FlexibleTextureRegistry.registerSpecific(sprite);
+        ev.getMap().setTextureEntry(sprite);
     }
 
 }

@@ -21,8 +21,11 @@
  */
 package com.gmail.socraticphoenix.forge.randore.item;
 
+import com.gmail.socraticphoenix.forge.randore.Randores;
 import com.gmail.socraticphoenix.forge.randore.component.CraftableComponent;
+import com.gmail.socraticphoenix.forge.randore.component.CraftableType;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinition;
+import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinitionRegistry;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -34,16 +37,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class FlexibleRecipe implements IRecipe {
-    private MaterialDefinition definition;
-    private CraftableComponent result;
+    private int index;
+    private CraftableType type;
     private char[][] rows;
     private Map<Character, Item> items;
     private int width;
     private int height;
 
-    public FlexibleRecipe(MaterialDefinition definition, CraftableComponent result, String top, String middle, String bottom, Object... mappings) {
-        this.definition = definition;
-        this.result = result;
+    public FlexibleRecipe(int index, CraftableType type, String top, String middle, String bottom, Object... mappings) {
+        this.index = index;
+        this.type = type;
         this.rows = new char[][]{top.toCharArray(), middle.toCharArray(), bottom.toCharArray()};
         this.items = new HashMap<Character, Item>();
         for (int i = 0; i < mappings.length; i += 2) {
@@ -57,17 +60,30 @@ public class FlexibleRecipe implements IRecipe {
         for (int y = 0; y < 3; y++) {
             for (int x = 0; x < 3; x++) {
                 Item input = this.getInput(x, y);
-                if(input != null) {
+                if (input != null) {
                     yMax = Math.max(yMax, y);
                     xMax = Math.max(xMax, x);
                 }
             }
         }
+
+        this.width = xMax;
+        this.height = yMax;
     }
 
     @Override
     public boolean matches(InventoryCrafting inv, World worldIn) {
-        if (this.definition.getSeed() == worldIn.getSeed()) {
+        long seed = Randores.getRandoresSeed(worldIn);
+        MaterialDefinition definition = MaterialDefinitionRegistry.get(seed).get(this.index);
+        boolean hasType = false;
+        for (CraftableComponent craftable : definition.getCraftables()) {
+            if (craftable.getType() == this.type) {
+                hasType = true;
+                break;
+            }
+        }
+
+        if (hasType) {
             for (int i = 0; i <= 3 - this.width; i++) {
                 for (int j = 0; j <= 3 - this.height; j++) {
                     if (this.checkMatch(inv, i, j)) {
@@ -110,9 +126,7 @@ public class FlexibleRecipe implements IRecipe {
 
     @Override
     public ItemStack getRecipeOutput() {
-        ItemStack stack = new ItemStack(this.result.makeItem(), this.result.quantity());
-        stack.setStackDisplayName(this.definition.getName() + " " + this.result.getType().getName());
-        return stack;
+        return null;
     }
 
     @Override

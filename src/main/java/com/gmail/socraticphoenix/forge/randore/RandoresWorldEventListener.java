@@ -143,6 +143,7 @@ public class RandoresWorldEventListener {
     @SubscribeEvent
     public void onWorldLoad(WorldEvent.Load ev) throws IOException {
         World world = ev.getWorld();
+        long seed = Randores.getRandoresSeedFromWorld(world.getSeed());
 
         if (!world.isRemote && this.loads == 0) {
             this.loads++;
@@ -190,48 +191,48 @@ public class RandoresWorldEventListener {
                 logger.info("    " + entry.getKey().name() + ": " + entry.getValue() + " ore(s)");
             }
 
-            MaterialDefinitionRegistry.put(world.getSeed(), definitions);
+            MaterialDefinitionRegistry.put(seed, definitions);
 
             //SERVER SIDE SETUP ONLY
 
             //DO STUFF WITH THOSE DEFS MAN!
-            for (File texture : Randores.getInstance().getTexFile().listFiles()) {
+            Randores.getInstance().getTextureFile(seed).mkdirs();
+            for (File texture : Randores.getInstance().getTextureFile(seed).listFiles()) {
                 texture.delete();
             }
 
             for (int i = 0; i < definitions.size(); i++) {
                 MaterialDefinition def = definitions.get(i);
                 Map<String, BufferedImage> textures = def.generateTextures(random);
-                File target = new File(Randores.getInstance().getTexFile(), "block." + i + ".png");
+                File target = new File(Randores.getInstance().getTextureFile(seed), "block." + i + ".png");
                 ImageIO.write(textures.get(def.getOre().template()), "png", target);
-                FlexibleTextureRegistry.getBlock(i).setTexture("block." + i);
+                FlexibleTextureRegistry.getBlock(i).setTexture("block." + i, seed);
 
-                File itarg = new File(Randores.getInstance().getTexFile(), "item." + i + ".png");
+                File itarg = new File(Randores.getInstance().getTextureFile(seed), "item." + i + ".png");
                 ImageIO.write(textures.get(def.getMaterial().template()), "png", itarg);
-                FlexibleTextureRegistry.getItem(i).setTexture("item." + i + ".png");
+                FlexibleTextureRegistry.getItem(i).setTexture("item." + i + ".png", seed);
 
 
                 for (CraftableComponent component : def.getCraftables()) {
                     if (component.getType() == CraftableType.HELMET) {
-                        File armor1 = new File(Randores.getInstance().getTexFile(), "armor." + i + "_1.png");
-                        File armor2 = new File(Randores.getInstance().getTexFile(), "armor." + i + "_2.png");
+                        File armor1 = new File(Randores.getInstance().getTextureFile(seed), "armor." + i + "_1.png");
+                        File armor2 = new File(Randores.getInstance().getTextureFile(seed), "armor." + i + "_2.png");
                         ImageIO.write(textures.get("armor_1"), "png", armor1);
                         ImageIO.write(textures.get("armor_2"), "png", armor2);
-                        File ttarg = new File(Randores.getInstance().getTexFile(), component.template().replaceAll("_base", "") + "." + i + ".png");
+                        File ttarg = new File(Randores.getInstance().getTextureFile(seed), component.template().replaceAll("_base", "") + "." + i + ".png");
                         ImageIO.write(textures.get(component.template()), "png", ttarg);
-                        FlexibleTextureRegistry.getItem(i + 300 * (component.getType().ordinal() + 1)).setTexture(component.template().replaceAll("_base", "") + "." + i + ".png");
+                        FlexibleTextureRegistry.getItem(i + 300 * (component.getType().ordinal() + 1)).setTexture(component.template().replaceAll("_base", "") + "." + i + ".png", seed);
                     } else if (component.getType() == CraftableType.BRICKS) {
-                        File btarg = new File(Randores.getInstance().getTexFile(), "bricks." + i + ".png");
+                        File btarg = new File(Randores.getInstance().getTextureFile(seed), "bricks." + i + ".png");
                         ImageIO.write(textures.get(component.template()), "png", btarg);
-                        FlexibleTextureRegistry.getBlock(i + 300).setTexture("bricks." + i + ".png");
+                        FlexibleTextureRegistry.getBlock(i + 300).setTexture("bricks." + i + ".png", seed);
                     } else {
-                        File ttarg = new File(Randores.getInstance().getTexFile(), component.template().replaceAll("_base", "") + "." + i + ".png");
+                        File ttarg = new File(Randores.getInstance().getTextureFile(seed), component.template().replaceAll("_base", "") + "." + i + ".png");
                         ImageIO.write(textures.get(component.template()), "png", ttarg);
-                        FlexibleTextureRegistry.getItem(i + 300 * (component.getType().ordinal() + 1)).setTexture(component.template().replaceAll("_base", "") + "." + i + ".png");
+                        FlexibleTextureRegistry.getItem(i + 300 * (component.getType().ordinal() + 1)).setTexture(component.template().replaceAll("_base", "") + "." + i + ".png", seed);
                     }
                 }
 
-                def.registerRecipes();
             }
         } else if (world.isRemote && this.remoteLoads == 0) {
             this.remoteLoads++;
