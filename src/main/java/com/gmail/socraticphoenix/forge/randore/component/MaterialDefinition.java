@@ -21,9 +21,8 @@
  */
 package com.gmail.socraticphoenix.forge.randore.component;
 
-import com.gmail.socraticphoenix.forge.randore.Randores;
+import com.gmail.socraticphoenix.forge.randore.RandoresClientSideRegistry;
 import com.gmail.socraticphoenix.forge.randore.RandoresNameAlgorithm;
-import com.gmail.socraticphoenix.forge.randore.texture.TextureTemplate;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor;
 import net.minecraftforge.common.util.EnumHelper;
@@ -63,16 +62,15 @@ public class MaterialDefinition {
     }
 
     public Map<String, BufferedImage> generateTextures(Random random) {
-        Map<String, TextureTemplate> templates = Randores.getInstance().getTemplates();
         Map<String, BufferedImage> textures = new HashMap<String, BufferedImage>();
-        textures.put(ore.template(), templates.get(ore.template()).applyWith(this.color, random));
-        textures.put(material.template(), templates.get(material.template()).applyWith(this.color, random));
+        textures.put(ore.template(), RandoresClientSideRegistry.getTemplate(ore.template()).applyWith(this.color, random));
+        textures.put(material.template(), RandoresClientSideRegistry.getTemplate(material.template()).applyWith(this.color, random));
         for (CraftableComponent component : this.craftables) {
             if (component.getType() == CraftableType.HELMET) {
-                textures.put("armor_1", templates.get("armor_over_base").applyWith(this.color, random));
-                textures.put("armor_2", templates.get("armor_under_base").applyWith(this.color, random));
+                textures.put("armor_1", RandoresClientSideRegistry.getTemplate("armor_over_base").applyWith(this.color, random));
+                textures.put("armor_2", RandoresClientSideRegistry.getTemplate("armor_under_base").applyWith(this.color, random));
             }
-            textures.put(component.template(), templates.get(component.template()).applyWith(this.color, random));
+            textures.put(component.template(), RandoresClientSideRegistry.getTemplate(component.template()).applyWith(this.color, random));
         }
         return textures;
     }

@@ -1,5 +1,5 @@
 {
     "variants": {
-        "normal": { "model": "randores:randores.block.0" }
+        "normal": { "model": "randores:craftinium_ore" }
     }
 }

@@ -21,21 +21,22 @@
  */
 package com.gmail.socraticphoenix.forge.randore;
 
+import com.google.common.base.Supplier;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
 public class RandoresTab extends CreativeTabs {
-    private ItemStack icon;
+    private Supplier<Item> icon;
 
-    public RandoresTab(String name, Item icon) {
+    public RandoresTab(String name, Supplier<Item> icon) {
         super(name);
-        this.icon = new ItemStack(icon);
+        this.icon = icon;
     }
 
     @Override
     public ItemStack getTabIconItem() {
-        return this.icon;
+        return new ItemStack(this.icon.get());
     }
 
 }

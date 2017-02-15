@@ -26,6 +26,8 @@ import com.gmail.socraticphoenix.forge.randore.block.FlexibleOre;
 import com.gmail.socraticphoenix.forge.randore.crafting.CraftingBlocks;
 import com.gmail.socraticphoenix.forge.randore.crafting.CraftingItems;
 import com.gmail.socraticphoenix.forge.randore.item.FlexibleItemRegistry;
+import com.gmail.socraticphoenix.forge.randore.resource.RandoresResourceManager;
+import com.gmail.socraticphoenix.forge.randore.texture.TextureTemplate;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
@@ -36,16 +38,18 @@ import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
 import org.apache.logging.log4j.Logger;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 public class RandoresClientProxy extends RandoresProxy {
 
     @Override
-    public void preInit() {
+    public void preInitSided() {
         Logger logger = Randores.getInstance().getLogger();
         logger.info("Randores is running client-side.");
         logger.info("Loading configuration and checking caches...");
@@ -60,8 +64,8 @@ public class RandoresClientProxy extends RandoresProxy {
                     logger.info("Cache entry determined invalid, " + entry.getKey() + " does not have a texture directory... removing.");
                     cache.remove(entry.getKey());
                 } else {
-                    long time = entry.getValue().getLong(TimeUnit.DAYS.toMillis(15));
-                    Date date = new Date(time + TimeUnit.DAYS.toMillis(10));
+                    long time = entry.getValue().getLong(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(15));
+                    Date date = new Date(time + TimeUnit.DAYS.toMillis(5));
                     Date now = new Date();
                     if (date.before(now)) {
                         logger.info("Texture cache for seed: " + seed + " expired, deleting textures...");
@@ -74,11 +78,12 @@ public class RandoresClientProxy extends RandoresProxy {
                             for (int i = 0; i < 3 && succesful; i++) {
                                 succesful = tex.delete();
                                 if (!succesful) {
-                                    logger.info("Failed to delete file " + tex.getAbsolutePath() + ", trying" + (3 - (i + 1)) + "more times...");
+                                    logger.info("Failed to delete file " + tex.getAbsolutePath() + ", trying " + (3 - (i + 1)) + " more times...");
                                 }
                             }
                             if (!succesful) {
                                 Minecraft.getMinecraft().crashed(new CrashReport("Failed to remove Randores cache file " + tex.getAbsolutePath(), new IOException("Failed to delete file")));
+                                return;
                             }
                         }
                         boolean succesful = texDir.delete();
@@ -88,11 +93,12 @@ public class RandoresClientProxy extends RandoresProxy {
                         for (int i = 0; i < 3 && succesful; i++) {
                             succesful = texDir.delete();
                             if (!succesful) {
-                                logger.info("Failed to delete file " + texDir.getAbsolutePath() + ", trying" + (3 - (i + 1)) + "more times...");
+                                logger.info("Failed to delete file " + texDir.getAbsolutePath() + ", trying " + (3 - (i + 1)) + " more times...");
                             }
                         }
                         if (!succesful) {
                             Minecraft.getMinecraft().crashed(new CrashReport("Failed to remove Randores cache file " + texDir.getAbsolutePath(), new IOException("Failed to delete file")));
+                            return;
                         }
                     }
                     logger.info("Finished refreshing cache entries.");
@@ -103,13 +109,28 @@ public class RandoresClientProxy extends RandoresProxy {
                 cache.remove(entry.getKey());
             }
         }
+
+        logger.info("Loading texture templates...");
+        try {
+            List<String> dictionary = RandoresResourceManager.getResourceLines("aa_dict.txt");
+            for (String entry : dictionary) {
+                logger.info("Loading texture template \"" + entry + "\"");
+                List<String> config = RandoresResourceManager.getResourceLines(entry + ".txt");
+                BufferedImage texture = RandoresResourceManager.getImageResource(entry + ".png");
+                TextureTemplate template = new TextureTemplate(config, texture);
+                RandoresClientSideRegistry.putTemplate(entry, template);
+                logger.info("Successfully loaded texture template \"" + entry + "\"");
+            }
+        } catch (IOException e) {
+            Minecraft.getMinecraft().crashed(new CrashReport("Unable to load texture templates.", e));
+        }
     }
 
     @Override
-    public void init() {
+    public void initSided() {
         Logger logger = Randores.getInstance().getLogger();
 
-        Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(CraftingItems.CRAFTINIUM_INGOT, 0, new ModelResourceLocation("randores:" + CraftingItems.CRAFTINIUM_INGOT.getUnlocalizedName().substring(5), "inventory"));
+        Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(CraftingItems.CRAFTINIUM_LUMP, 0, new ModelResourceLocation("randores:" + CraftingItems.CRAFTINIUM_LUMP.getUnlocalizedName().substring(5), "inventory"));
         Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(Item.getItemFromBlock(CraftingBlocks.CRAFTINIUM_ORE), 0, new ModelResourceLocation("randores:" + Item.getItemFromBlock(CraftingBlocks.CRAFTINIUM_ORE).getUnlocalizedName().substring(5)));
 
         for (Item item : FlexibleItemRegistry.getMaterials()) {

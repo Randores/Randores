@@ -59,7 +59,7 @@ public class RandoresTextureListener {
 
         if(FlexibleTextureRegistry.specificQuantity() == 0) {
             r(new FlexibleAtlasSprite("randores:blocks/craftinium_ore", "craftinium_ore"), ev);
-            r(new FlexibleAtlasSprite("randores:items/craftinium_ingot", "craftinium_ingot"), ev);
+            r(new FlexibleAtlasSprite("randores:items/craftinium_lump", "craftinium_lump"), ev);
         } else {
             for(FlexibleAtlasSprite sprite : FlexibleTextureRegistry.getSpecific()) {
                 ev.getMap().setTextureEntry(sprite);

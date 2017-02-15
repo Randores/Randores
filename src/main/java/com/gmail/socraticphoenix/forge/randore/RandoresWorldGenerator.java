@@ -21,17 +21,17 @@
  */
 package com.gmail.socraticphoenix.forge.randore;
 
+import com.gmail.socraticphoenix.forge.randore.component.Dimension;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinition;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinitionRegistry;
 import com.gmail.socraticphoenix.forge.randore.component.OreComponent;
+import com.gmail.socraticphoenix.forge.randore.crafting.CraftingBlocks;
 import com.gmail.socraticphoenix.forge.randore.util.IntRange;
 import com.google.common.base.Predicate;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.pattern.BlockMatcher;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
-import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.IChunkGenerator;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.gen.feature.WorldGenMinable;
@@ -43,11 +43,15 @@ public class RandoresWorldGenerator implements IWorldGenerator {
 
     @Override
     public void generate(Random random, int chunkX, int chunkZ, World world, IChunkGenerator chunkGenerator, IChunkProvider chunkProvider) {
-        if(!world.isRemote) {
+        if (!world.isRemote) {
             for (MaterialDefinition definition : MaterialDefinitionRegistry.get(Randores.getRandoresSeed(world))) {
                 OreComponent component = definition.getOre();
                 if (component.getDimension().getId() == world.provider.getDimension()) {
                     this.generateOre(component.makeBlock(), world, random, chunkX * 16, chunkZ * 16, component.getMaxVein(), component.getMinVein(), component.getMaxY(), component.getMinY(), component.getMaxOccurences(), component.getMinOccurences(), component.getDimension().getGenerateIn());
+                }
+
+                if(Dimension.OVERWORLD.getId() == world.provider.getDimension()) {
+                    this.generateOre(CraftingBlocks.CRAFTINIUM_ORE, world, random, chunkX * 16, chunkZ * 16, 3, 1, 100, 0, 30, 5, Dimension.OVERWORLD.getGenerateIn());
                 }
             }
         }
@@ -59,7 +63,7 @@ public class RandoresWorldGenerator implements IWorldGenerator {
         IntRange occurrences = new IntRange(minOccurrences, maxOccurrences);
 
         Predicate predicate;
-        if(generateIn.length == 0) {
+        if (generateIn.length == 0) {
             predicate = new Predicate() {
                 @Override
                 public boolean apply(Object input) {
@@ -67,8 +71,8 @@ public class RandoresWorldGenerator implements IWorldGenerator {
                 }
             };
         } else {
-            predicate =  BlockMatcher.forBlock(generateIn[0]);
-            if(generateIn.length > 1) {
+            predicate = BlockMatcher.forBlock(generateIn[0]);
+            if (generateIn.length > 1) {
                 for (int i = 1; i < generateIn.length; i++) {
                     predicate = this.or(predicate, BlockMatcher.forBlock(generateIn[i]));
                 }
@@ -83,45 +87,8 @@ public class RandoresWorldGenerator implements IWorldGenerator {
             int x = blockX + random.nextInt(16);
             int y = height.randomElement(random);
             int z = blockZ + random.nextInt(16);
-            if(predicate.apply(world.getBlockState(new BlockPos(x, y, z)))) {
-                gen.generate(world, random, new BlockPos(x, y, z));
-                i++;
-            } else { //Generation for the specific block failed, check to make sure there are actually more blocks in the chunk we can generate in, and if so, try again
-                Chunk chunk = world.getChunkFromBlockCoords(new BlockPos(x, y, z));
-                ChunkPos pair = chunk.getPos();
-                int x1 = Math.min(pair.getXStart(), pair.getXEnd());
-                int y1 = minY;
-                int z1 = Math.min(pair.getZStart(), pair.getZEnd());
-                int x2 = Math.max(pair.getXStart(), pair.getXEnd());
-                int y2 = maxY;
-                int z2 = Math.max(pair.getZStart(), pair.getZEnd());
-
-                boolean found = false;
-                while (x1 < x2) {
-                    while (z1 < z2) {
-                        while (y1 < y2) {
-                            BlockPos blockPos = new BlockPos(x1, y1, z1);
-                            if(predicate.apply(world.getBlockState(blockPos))) {
-                                found = true;
-                                break;
-                            }
-                            y1++;
-                        }
-                        if(found) {
-                            break;
-                        }
-                        z1++;
-                    }
-                    if(found) {
-                        break;
-                    }
-                    x1++;
-                }
-
-                if(!found) {
-                    return;
-                }
-            }
+            gen.generate(world, random, new BlockPos(x, y, z));
+            i++;
         }
     }
 

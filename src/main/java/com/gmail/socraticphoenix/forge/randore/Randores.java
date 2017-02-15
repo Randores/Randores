@@ -21,11 +21,11 @@
  */
 package com.gmail.socraticphoenix.forge.randore;
 
+import com.gmail.socraticphoenix.forge.randore.block.FlexibleBlockRegistry;
+import com.gmail.socraticphoenix.forge.randore.crafting.CraftingItems;
+import com.gmail.socraticphoenix.forge.randore.item.FlexibleItemRegistry;
 import com.gmail.socraticphoenix.forge.randore.packet.RandoresNetworking;
-import com.gmail.socraticphoenix.forge.randore.resource.RandoresResourceManager;
-import com.gmail.socraticphoenix.forge.randore.texture.TextureTemplate;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
+import com.google.common.base.Supplier;
 import net.minecraft.item.Item;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
@@ -41,24 +41,35 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.awt.Color;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
 @Mod(modid = "randores", name = "Socratic_Phoenix's Randores")
 public class Randores {
+    public static final String RESET = "§" + 'r';
+    public static final RandoresTab TAB_CRAFTING = new RandoresTab("randores_tab_0", new Supplier<Item>() {
+        @Override
+        public Item get() {
+            return CraftingItems.CRAFTINIUM_LUMP;
+        }
+    });
+    public static final RandoresTab TAB_BLOCKS = new RandoresTab("randores_tab_1", new Supplier<Item>() {
+        @Override
+        public Item get() {
+            return Item.getItemFromBlock(FlexibleBlockRegistry.getOres().get(0));
+        }
+    });
+    public static final RandoresTab TAB_ITEMS = new RandoresTab("randores_tab_2", new Supplier<Item>() {
+        @Override
+        public Item get() {
+            return FlexibleItemRegistry.getMaterials().get(0);
+        }
+    });
     private static Randores instance;
-
     private static Map<Long, Long> worldSeeds = new HashMap<Long, Long>();
-
-    public static final RandoresTab TAB_CRAFTING= new RandoresTab("randores_tab_0", Item.getItemFromBlock(Blocks.FURNACE));
-    public static final RandoresTab TAB_BLOCKS = new RandoresTab("randores_tab_1", Item.getItemFromBlock(Blocks.STONE));
-    public static final RandoresTab TAB_ITEMS = new RandoresTab("randores_tab_2", Items.DIAMOND);
-
     @SidedProxy(modId = "randores", clientSide = "com.gmail.socraticphoenix.forge.randore.RandoresClientProxy", serverSide = "com.gmail.socraticphoenix.forge.randore.RandoresProxy")
     private static RandoresProxy proxy;
 
@@ -66,12 +77,27 @@ public class Randores {
     private File confDir;
     private File conf;
     private File tex;
-    private Map<String, TextureTemplate> templates;
     private Configuration configuration;
+
+    public Randores() {
+        Randores.instance = this;
+        this.confDir = new File("config", "randores");
+        this.conf = new File(this.confDir, "config.cfg");
+        this.configuration = new Configuration(this.conf);
+        this.tex = new File(this.confDir, "textures");
+        this.logger = LogManager.getLogger("Randores");
+        if (FMLCommonHandler.instance().getSide() == Side.CLIENT) {
+            MinecraftForge.EVENT_BUS.register(new RandoresTextureListener());
+        }
+        MinecraftForge.EVENT_BUS.register(new RandoresRegister());
+        MinecraftForge.EVENT_BUS.register(new RandoresClientListener());
+        MinecraftForge.EVENT_BUS.register(new RandoresWorldEventListener());
+        MinecraftForge.EVENT_BUS.register(new RandoresItemListener());
+    }
 
     public static long getRandoresSeedFromWorld(long worldSeed) {
         Long seed = Randores.worldSeeds.get(worldSeed);
-        if(seed == null) {
+        if (seed == null) {
             seed = new Random(worldSeed).nextLong();
             Randores.worldSeeds.put(worldSeed, seed);
         }
@@ -79,9 +105,9 @@ public class Randores {
     }
 
     public static long getRandoresSeed(World world) {
-        if(!world.isRemote) {
+        if (!world.isRemote) {
             return Randores.getRandoresSeedFromWorld(world.getSeed());
-        } else if(FMLCommonHandler.instance().getSide() == Side.CLIENT) {
+        } else if (FMLCommonHandler.instance().getSide() == Side.CLIENT) {
             return RandoresClientSideRegistry.getCurrentSeed();
         } else {
             throw new IllegalArgumentException("World is remote and we're not on the client!");
@@ -94,67 +120,6 @@ public class Randores {
 
     public static RandoresProxy getProxy() {
         return proxy;
-    }
-
-    public Randores() {
-        Randores.instance = this;
-        this.confDir = new File("config", "randores");
-        this.conf = new File(this.confDir, "config.cfg");
-        this.configuration = new Configuration(this.conf);
-        this.tex = new File(this.confDir, "textures");
-        this.templates = new HashMap<String, TextureTemplate>();
-        this.logger = LogManager.getLogger("Randores");
-        MinecraftForge.EVENT_BUS.register(new RandoresRegister());
-        MinecraftForge.EVENT_BUS.register(new RandoresClientListener());
-        MinecraftForge.EVENT_BUS.register(new RandoresWorldEventListener());
-        MinecraftForge.EVENT_BUS.register(new RandoresTextureListener());
-        MinecraftForge.EVENT_BUS.register(new RandoresItemListener());
-    }
-
-    public Configuration getConfiguration() {
-        return this.configuration;
-    }
-
-    @Mod.EventHandler
-    public void onPreInit(FMLPreInitializationEvent ev) throws IOException {
-        this.tex.mkdirs();
-        if(!this.conf.exists()) {
-            this.conf.createNewFile();
-        }
-        this.logger.info("Loading texture templates...");
-        try {
-            List<String> dictionary = RandoresResourceManager.getResourceLines("aa_dict.txt");
-            for (String entry : dictionary) {
-                this.logger.info("Loading texture template \"" + entry + "\"");
-                List<String> config = RandoresResourceManager.getResourceLines(entry + ".txt");
-                BufferedImage texture = RandoresResourceManager.getImageResource(entry + ".png");
-                TextureTemplate template = new TextureTemplate(config, texture);
-                this.templates.put(entry, template);
-                this.logger.info("Successfully loaded texture template \"" + entry + "\"");
-            }
-        } catch (IOException e) {
-            this.logger.error("Fatal error: Unable to load resources");
-            throw e;
-        }
-        this.logger.info("Testing the names algorithm...");
-        Random random = new Random();
-        for (int i = 0; i < 10; i++) {
-            this.logger.info(RandoresNameAlgorithm.name(new Color(random.nextInt(256), random.nextInt(256), random.nextInt(256))));
-        }
-        this.logger.info("Finished testing names algorithm");
-        RandoresNetworking.initNetwork();
-        this.logger.info("Running proxy pre-initialization...");
-        Randores.proxy.preInit();
-        this.logger.info("Proxy pre-initialized.");
-
-    }
-
-    @Mod.EventHandler
-    public void onInit(FMLInitializationEvent ev) {
-        GameRegistry.registerWorldGenerator(new RandoresWorldGenerator(), 0);
-        this.logger.info("Running proxy initialization...");
-        Randores.proxy.init();
-        this.logger.info("Proxy initialized.");
     }
 
     public static String textureName(int num) {
@@ -173,6 +138,38 @@ public class Randores {
         return "randores.item." + num;
     }
 
+    public Configuration getConfiguration() {
+        return this.configuration;
+    }
+
+    @Mod.EventHandler
+    public void onPreInit(FMLPreInitializationEvent ev) throws IOException {
+        this.tex.mkdirs();
+        if (!this.conf.exists()) {
+            this.conf.createNewFile();
+        }
+
+        this.logger.info("Testing the names algorithm...");
+        Random random = new Random();
+        for (int i = 0; i < 10; i++) {
+            this.logger.info(RandoresNameAlgorithm.name(new Color(random.nextInt(256), random.nextInt(256), random.nextInt(256))));
+        }
+        this.logger.info("Finished testing names algorithm");
+        RandoresNetworking.initNetwork();
+        this.logger.info("Running proxy pre-initialization...");
+        Randores.proxy.preInitSided();
+        this.logger.info("Proxy pre-initialized.");
+
+    }
+
+    @Mod.EventHandler
+    public void onInit(FMLInitializationEvent ev) {
+        GameRegistry.registerWorldGenerator(new RandoresWorldGenerator(), 0);
+        this.logger.info("Running proxy initialization...");
+        Randores.proxy.initSided();
+        this.logger.info("Proxy initialized.");
+    }
+
     public Logger getLogger() {
         return this.logger;
     }
@@ -187,10 +184,6 @@ public class Randores {
 
     public File getTextureFile(long seed) {
         return new File(this.tex, String.valueOf(seed).replaceAll("-", "_"));
-    }
-
-    public Map<String, TextureTemplate> getTemplates() {
-        return this.templates;
     }
 
 }

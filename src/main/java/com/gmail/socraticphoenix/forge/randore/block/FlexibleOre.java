@@ -25,7 +25,6 @@ import com.gmail.socraticphoenix.forge.randore.Randores;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinition;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinitionRegistry;
 import com.gmail.socraticphoenix.forge.randore.component.OreComponent;
-import com.mojang.realmsclient.gui.ChatFormatting;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
@@ -68,12 +67,12 @@ public class FlexibleOre extends Block {
 
             if (this.getComponent(seed).isRequiresSmelting()) {
                 ItemStack stack = new ItemStack(Item.getItemFromBlock(this), 1);
-                stack.setStackDisplayName(ChatFormatting.RESET + this.getDefinition(seed).getName() + " Ore");
+                stack.setStackDisplayName(Randores.RESET + this.getDefinition(seed).getName() + " Ore");
                 drops.add(stack);
             } else {
                 int amount = (random.nextInt(this.getComponent(seed).getMaxDrops() - this.getComponent(seed).getMinDrops()) + this.getComponent(seed).getMinDrops()) + (fortune > 0 ? random.nextInt(fortune) * random.nextInt(fortune) : 0);
                 ItemStack stack = new ItemStack(this.getDefinition(seed).getMaterial().makeItem());
-                stack.setStackDisplayName(ChatFormatting.RESET + this.getDefinition(seed).getName() + " " + this.getDefinition(seed).getMaterial().getType().getName());
+                stack.setStackDisplayName(Randores.RESET + this.getDefinition(seed).getName() + " " + this.getDefinition(seed).getMaterial().getType().getName());
                 for (int i = 0; i < amount; i++) {
                     drops.add(stack.copy());
                 }
@@ -84,12 +83,12 @@ public class FlexibleOre extends Block {
 
     @Override
     public float getExplosionResistance(Entity exploder) {
-        return this.getComponent(exploder.getEntityWorld().getSeed()).getResistance();
+        return this.getComponent(Randores.getRandoresSeed(exploder.getEntityWorld())).getResistance();
     }
 
     @Override
     public float getBlockHardness(IBlockState blockState, World worldIn, BlockPos pos) {
-        return this.getComponent(worldIn.getSeed()).getHardness();
+        return this.getComponent(Randores.getRandoresSeed(worldIn)).getHardness();
     }
 
     @Override

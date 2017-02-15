@@ -21,44 +21,51 @@
  */
 package com.gmail.socraticphoenix.forge.randore;
 
-import com.gmail.socraticphoenix.forge.randore.component.CraftableComponent;
+import com.gmail.socraticphoenix.forge.randore.block.FlexibleBrick;
+import com.gmail.socraticphoenix.forge.randore.block.FlexibleOre;
+import com.gmail.socraticphoenix.forge.randore.component.CraftableType;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinition;
-import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinitionRegistry;
-import com.mojang.realmsclient.gui.ChatFormatting;
+import com.gmail.socraticphoenix.forge.randore.item.FlexibleItem;
+import net.minecraft.block.Block;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
+import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 
 public class RandoresItemListener {
 
     @SubscribeEvent
-    public void onPickup(PlayerEvent.ItemPickupEvent ev) {
-        EntityPlayer player = ev.player;
+    public void onPickup(EntityItemPickupEvent ev) {
+        EntityPlayer player = ev.getEntityPlayer();
         World world = player.world;
-        if(!world.isRemote) {
-            EntityItem entityItem = ev.pickedUp;
+        long seed = Randores.getRandoresSeed(world);
+        if (!world.isRemote) {
+            EntityItem entityItem = ev.getItem();
             ItemStack item = entityItem.getEntityItem();
             Item raw = item.getItem();
-            if(item.getItem().getUnlocalizedName().contains("randores.item.") && item.getSubCompound("display") == null) {
-                definitionSearch:
-                for(MaterialDefinition definition : MaterialDefinitionRegistry.get(Randores.getRandoresSeed(world))) {
-                    if(definition.getOre().makeItem().equals(raw)) {
-                        item.setStackDisplayName(ChatFormatting.RESET + definition.getName() + " Ore");
-                        break;
-                    } else if (definition.getMaterial().makeItem().equals(raw)) {
-                        item.setStackDisplayName(ChatFormatting.RESET + definition.getName() + " " + definition.getMaterial().getType().getName());
-                        break;
+            if (item.getSubCompound("display") == null) {
+                if (raw instanceof ItemBlock) {
+                    Block block = ((ItemBlock) raw).getBlock();
+                    if (block instanceof FlexibleOre) {
+                        FlexibleOre target = (FlexibleOre) block;
+                        MaterialDefinition definition = target.getDefinition(seed);
+                        item.setStackDisplayName(Randores.RESET + definition.getName() + " Ore");
+                    } else if (block instanceof FlexibleBrick) {
+                        FlexibleBrick target = (FlexibleBrick) block;
+                        MaterialDefinition definition = target.getDefinition(seed);
+                        item.setStackDisplayName(Randores.RESET + definition.getName() + " " + CraftableType.BRICKS.getName());
+                    }
+                } else if (raw instanceof FlexibleItem) {
+                    FlexibleItem target = (FlexibleItem) raw;
+                    MaterialDefinition definition = target.getDefinition(seed);
+                    if (target.isMaterial()) {
+                        item.setStackDisplayName(Randores.RESET + definition.getName() + " " + definition.getMaterial().getType().getName());
                     } else {
-                        for(CraftableComponent craftable : definition.getCraftables()) {
-                            if(craftable.makeItem().equals(raw)) {
-                                item.setStackDisplayName(ChatFormatting.RESET + definition.getName() + " " + craftable.getType().getName());
-                                break definitionSearch;
-                            }
-                        }
+                        item.setStackDisplayName(Randores.RESET + definition.getName() + " " + target.getType().getName());
                     }
                 }
             }

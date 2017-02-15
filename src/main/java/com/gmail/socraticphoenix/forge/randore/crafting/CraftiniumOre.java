@@ -25,6 +25,10 @@ import com.gmail.socraticphoenix.forge.randore.Randores;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.item.Item;
+
+import java.util.Random;
 
 public class CraftiniumOre extends Block {
 
@@ -33,6 +37,14 @@ public class CraftiniumOre extends Block {
         this.setSoundType(SoundType.STONE).setHardness(3.0F).setResistance(5.0F).setUnlocalizedName("craftinium_ore").setRegistryName("craftinium_ore").setCreativeTab(Randores.TAB_CRAFTING);
     }
 
+    @Override
+    public int quantityDropped(Random random) {
+        return random.nextInt(10) + 1;
+    }
 
+    @Override
+    public Item getItemDropped(IBlockState state, Random rand, int fortune) {
+        return CraftingItems.CRAFTINIUM_LUMP;
+    }
 
 }

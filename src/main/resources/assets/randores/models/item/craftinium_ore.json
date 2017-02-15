@@ -1,5 +1,5 @@
 {
-    "parent": "randores:block/randores.block.0",
+    "parent": "randores:block/craftinium_ore",
     "display": {
         "thirdperson": {
             "rotation": [ 10, -45, 170 ],

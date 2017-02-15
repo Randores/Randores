@@ -26,6 +26,6 @@ import net.minecraft.item.Item;
 
 public class CraftingItems {
 
-    public static final Item CRAFTINIUM_INGOT  = new Item().setUnlocalizedName("craftinium_ingot").setCreativeTab(Randores.TAB_CRAFTING).setRegistryName("craftinium_ingot");
+    public static final Item CRAFTINIUM_LUMP = new Item().setUnlocalizedName("craftinium_lump").setCreativeTab(Randores.TAB_CRAFTING).setRegistryName("craftinium_lump");
 
 }

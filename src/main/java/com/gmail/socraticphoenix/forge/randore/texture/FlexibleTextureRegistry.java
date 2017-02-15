@@ -28,6 +28,24 @@ public class FlexibleTextureRegistry {
     private static List<FlexibleAtlasSprite> block = new ArrayList<FlexibleAtlasSprite>();
     private static List<FlexibleAtlasSprite> item = new ArrayList<FlexibleAtlasSprite>();
     private static List<FlexibleAtlasSprite> specific = new ArrayList<FlexibleAtlasSprite>();
+    private static long textureSeed = 0;
+    private static boolean initialized;
+
+    public static long getTextureSeed() {
+        return FlexibleTextureRegistry.textureSeed;
+    }
+
+    public static void setTextureSeed(long textureSeed) {
+        FlexibleTextureRegistry.textureSeed = textureSeed;
+    }
+
+    public static boolean isInitialized() {
+        return FlexibleTextureRegistry.initialized;
+    }
+
+    public static void setInitialized(boolean initialized) {
+        FlexibleTextureRegistry.initialized = initialized;
+    }
 
     public static void registerSpecific(FlexibleAtlasSprite sprite) {
         FlexibleTextureRegistry.specific.add(sprite);

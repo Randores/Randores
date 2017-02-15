@@ -21,15 +21,36 @@
  */
 package com.gmail.socraticphoenix.forge.randore;
 
+import com.gmail.socraticphoenix.forge.randore.texture.TextureTemplate;
+import net.minecraft.client.Minecraft;
+import net.minecraft.entity.player.EntityPlayer;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
+
 public class RandoresClientSideRegistry {
-    private static long currentSeed;
+    private static AtomicLong currentSeed = new AtomicLong();
+    private static Map<String, TextureTemplate> templates = new HashMap<String, TextureTemplate>();
+
+    public static TextureTemplate getTemplate(String name) {
+        return RandoresClientSideRegistry.templates.get(name);
+    }
+
+    public static void putTemplate(String name, TextureTemplate textureTemplate) {
+        RandoresClientSideRegistry.templates.put(name, textureTemplate);
+    }
 
     public static long getCurrentSeed() {
-        return currentSeed;
+        return currentSeed.get();
     }
 
     public static void setCurrentSeed(long currentSeed) {
-        RandoresClientSideRegistry.currentSeed = currentSeed;
+        RandoresClientSideRegistry.currentSeed.set(currentSeed);
+    }
+
+    public static EntityPlayer getClientPlayer() {
+        return Minecraft.getMinecraft().player;
     }
 
 }

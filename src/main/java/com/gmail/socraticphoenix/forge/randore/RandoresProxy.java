@@ -25,12 +25,12 @@ import org.apache.logging.log4j.Logger;
 
 public class RandoresProxy {
 
-    public void preInit() {
+    public void preInitSided() {
         Logger logger = Randores.getInstance().getLogger();
         logger.info("Randores is running server-side.");
     }
 
-    public void init() {
+    public void initSided() {
 
     }
 

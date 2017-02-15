@@ -31,8 +31,6 @@ import net.minecraft.crash.CrashReport;
 import net.minecraft.util.ResourceLocation;
 
 import javax.imageio.ImageIO;
-import java.awt.Graphics2D;
-import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -45,17 +43,6 @@ public class FlexibleAtlasSprite extends TextureAtlasSprite {
         super(spriteName);
         this.texture = texture;
         this.seed = 0;
-    }
-
-    private static BufferedImage scale(BufferedImage sbi, int imageType, int dWidth, int dHeight, double fWidth, double fHeight) {
-        BufferedImage dbi = null;
-        if (sbi != null) {
-            dbi = new BufferedImage(dWidth, dHeight, imageType);
-            Graphics2D g = dbi.createGraphics();
-            AffineTransform at = AffineTransform.getScaleInstance(fWidth, fHeight);
-            g.drawRenderedImage(sbi, at);
-        }
-        return dbi;
     }
 
     public String getTexture() {
@@ -84,7 +71,6 @@ public class FlexibleAtlasSprite extends TextureAtlasSprite {
     @Override
     public boolean load(IResourceManager manager, ResourceLocation location) {
         String name = this.texture.endsWith(".png") ? this.texture : this.texture + ".png";
-        Randores.getInstance().getLogger().info("Loading texture \"" + name + "\" for location \"" + location + "\"");
         File texture = new File(Randores.getInstance().getTextureFile(this.seed), name);
         try {
             BufferedImage texImg;

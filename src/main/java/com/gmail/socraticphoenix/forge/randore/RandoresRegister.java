@@ -26,6 +26,7 @@ import com.gmail.socraticphoenix.forge.randore.block.FlexibleBrick;
 import com.gmail.socraticphoenix.forge.randore.block.FlexibleOre;
 import com.gmail.socraticphoenix.forge.randore.crafting.CraftingBlocks;
 import com.gmail.socraticphoenix.forge.randore.crafting.CraftingItems;
+import com.gmail.socraticphoenix.forge.randore.item.FlexibleItem;
 import com.gmail.socraticphoenix.forge.randore.item.FlexibleItemRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
@@ -60,7 +61,7 @@ public class RandoresRegister {
         Randores.getInstance().getLogger().info("Initializing Items...");
 
         for (int i = 0; i < 300; i++) {
-            Item material = new Item().setUnlocalizedName(Randores.itemName(i)).setRegistryName(Randores.itemName(i)).setCreativeTab(Randores.TAB_ITEMS);
+            Item material = new FlexibleItem(i).setUnlocalizedName(Randores.itemName(i)).setRegistryName(Randores.itemName(i)).setCreativeTab(Randores.TAB_ITEMS);
             FlexibleItemRegistry.addMaterial(material);
             ev.getRegistry().register(material);
         }
@@ -75,7 +76,7 @@ public class RandoresRegister {
             ev.getRegistry().register(item);
         }
 
-        ev.getRegistry().register(CraftingItems.CRAFTINIUM_INGOT);
+        ev.getRegistry().register(CraftingItems.CRAFTINIUM_LUMP);
         ev.getRegistry().register(new ItemBlock(CraftingBlocks.CRAFTINIUM_ORE).setUnlocalizedName(CraftingBlocks.CRAFTINIUM_ORE.getUnlocalizedName()).setRegistryName(CraftingBlocks.CRAFTINIUM_ORE.getRegistryName()));
 
     }

@@ -19,38 +19,42 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.gmail.socraticphoenix.forge.randore.component;
+package com.gmail.socraticphoenix.forge.randore.item;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.gmail.socraticphoenix.forge.randore.component.CraftableType;
+import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinition;
+import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinitionRegistry;
+import net.minecraft.item.Item;
 
-public class MaterialDefinitionRegistry {
-    private static final Map<Long, List<MaterialDefinition>> definitions = new HashMap<Long, List<MaterialDefinition>>();
+public class FlexibleItem extends Item {
+    private int index;
+    private CraftableType type;
 
-    public static List<MaterialDefinition> get(long seed) {
-        synchronized (MaterialDefinitionRegistry.definitions) {
-            return MaterialDefinitionRegistry.definitions.get(seed);
-        }
+    public FlexibleItem(int index) {
+        this.index = index;
+        this.type = null;
     }
 
-    public static List<MaterialDefinition> remove(long seed) {
-        synchronized (MaterialDefinitionRegistry.definitions) {
-            return MaterialDefinitionRegistry.definitions.remove(seed);
-        }
+    public FlexibleItem(int index, CraftableType type) {
+        this.index = index;
+        this.type = type;
     }
 
-
-    public static void put(long seed, List<MaterialDefinition> definitions) {
-        synchronized (MaterialDefinitionRegistry.definitions) {
-            MaterialDefinitionRegistry.definitions.put(seed, definitions);
-        }
+    public boolean isMaterial() {
+        return this.type == null
+                ;
     }
 
-    public static boolean contains(long seed) {
-        synchronized (MaterialDefinitionRegistry.definitions) {
-            return MaterialDefinitionRegistry.definitions.containsKey(seed);
-        }
+    public CraftableType getType() {
+        return this.type;
+    }
+
+    public int getIndex() {
+        return this.index;
+    }
+
+    public MaterialDefinition getDefinition(long seed) {
+        return MaterialDefinitionRegistry.get(seed).get(this.index);
     }
 
 

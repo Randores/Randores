@@ -29,15 +29,48 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
 public class RandoresClientListener {
+    private Map<UUID, Long> playersSeed = new HashMap<UUID, Long>();
 
     @SubscribeEvent
-    public void onJoin(PlayerEvent.PlayerLoggedInEvent ev) {
+    public void onLeave(PlayerEvent.PlayerLoggedOutEvent ev) {
         EntityPlayer player = ev.player;
-        if(player instanceof EntityPlayerMP) {
+        if (player instanceof EntityPlayerMP) {
+            this.playersSeed.remove(ev.player.getUniqueID());
+        }
+    }
+
+    @SubscribeEvent
+    public void onSwitch(PlayerEvent.PlayerChangedDimensionEvent ev) {
+        EntityPlayer player = ev.player;
+        if (player instanceof EntityPlayerMP) {
+            EntityPlayerMP playerMP = (EntityPlayerMP) player;
+            World world = ((EntityPlayerMP) player).world;
+            UUID id = playerMP.getUniqueID();
+            long seed = Randores.getRandoresSeed(world);
+            if (!this.playersSeed.containsKey(id) || this.playersSeed.get(id) != seed) {
+                RandoresNetworking.INSTANCE.sendTo(new RandoresPacket().setSeed(Randores.getRandoresSeedFromWorld(world.getSeed())), playerMP);
+            }
+            this.playersSeed.put(id, seed);
+        }
+    }
+
+    @SubscribeEvent
+    public void onSpawn(PlayerEvent.PlayerLoggedInEvent ev) {
+        EntityPlayer player = ev.player;
+        if (player instanceof EntityPlayerMP) {
             EntityPlayerMP playerMP = (EntityPlayerMP) player;
             World world = player.world;
-            RandoresNetworking.INSTANCE.sendTo(new RandoresPacket().setSeed(Randores.getRandoresSeedFromWorld(world.getSeed())), playerMP);
+            UUID id = playerMP.getUniqueID();
+            long seed = Randores.getRandoresSeed(world);
+            if (!this.playersSeed.containsKey(id) || this.playersSeed.get(id) != seed) {
+                RandoresNetworking.INSTANCE.sendTo(new RandoresPacket().setSeed(Randores.getRandoresSeedFromWorld(world.getSeed())), playerMP);
+            }
+            this.playersSeed.put(id, seed);
         }
     }
 
