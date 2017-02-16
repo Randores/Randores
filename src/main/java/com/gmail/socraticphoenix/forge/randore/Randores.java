@@ -22,6 +22,7 @@
 package com.gmail.socraticphoenix.forge.randore;
 
 import com.gmail.socraticphoenix.forge.randore.block.FlexibleBlockRegistry;
+import com.gmail.socraticphoenix.forge.randore.crafting.CraftingGuiHandler;
 import com.gmail.socraticphoenix.forge.randore.crafting.CraftingItems;
 import com.gmail.socraticphoenix.forge.randore.item.FlexibleItemRegistry;
 import com.gmail.socraticphoenix.forge.randore.packet.RandoresNetworking;
@@ -35,6 +36,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import org.apache.logging.log4j.LogManager;
@@ -87,9 +89,9 @@ public class Randores {
         this.tex = new File(this.confDir, "textures");
         this.logger = LogManager.getLogger("Randores");
         if (FMLCommonHandler.instance().getSide() == Side.CLIENT) {
-            MinecraftForge.EVENT_BUS.register(new RandoresTextureListener());
+            MinecraftForge.EVENT_BUS.register(new RandoresClientSideListener());
         }
-        MinecraftForge.EVENT_BUS.register(new RandoresRegister());
+        MinecraftForge.EVENT_BUS.register(new RandoresRegistryListener());
         MinecraftForge.EVENT_BUS.register(new RandoresClientListener());
         MinecraftForge.EVENT_BUS.register(new RandoresWorldEventListener());
         MinecraftForge.EVENT_BUS.register(new RandoresItemListener());
@@ -164,6 +166,7 @@ public class Randores {
 
     @Mod.EventHandler
     public void onInit(FMLInitializationEvent ev) {
+        NetworkRegistry.INSTANCE.registerGuiHandler(this, new CraftingGuiHandler());
         GameRegistry.registerWorldGenerator(new RandoresWorldGenerator(), 0);
         this.logger.info("Running proxy initialization...");
         Randores.proxy.initSided();

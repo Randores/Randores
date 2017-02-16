@@ -34,7 +34,7 @@ import net.minecraft.item.ItemBlock;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-public class RandoresRegister {
+public class RandoresRegistryListener {
 
     @SubscribeEvent
     public void onBlockRegister(RegistryEvent.Register<Block> ev) {

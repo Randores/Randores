@@ -21,18 +21,10 @@
  */
 package com.gmail.socraticphoenix.forge.randore;
 
-import com.gmail.socraticphoenix.forge.randore.block.FlexibleBlockRegistry;
-import com.gmail.socraticphoenix.forge.randore.block.FlexibleOre;
-import com.gmail.socraticphoenix.forge.randore.crafting.CraftingBlocks;
-import com.gmail.socraticphoenix.forge.randore.crafting.CraftingItems;
-import com.gmail.socraticphoenix.forge.randore.item.FlexibleItemRegistry;
 import com.gmail.socraticphoenix.forge.randore.resource.RandoresResourceManager;
 import com.gmail.socraticphoenix.forge.randore.texture.TextureTemplate;
-import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.crash.CrashReport;
-import net.minecraft.item.Item;
 import net.minecraftforge.common.config.ConfigCategory;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
@@ -128,24 +120,7 @@ public class RandoresClientProxy extends RandoresProxy {
 
     @Override
     public void initSided() {
-        Logger logger = Randores.getInstance().getLogger();
 
-        Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(CraftingItems.CRAFTINIUM_LUMP, 0, new ModelResourceLocation("randores:" + CraftingItems.CRAFTINIUM_LUMP.getUnlocalizedName().substring(5), "inventory"));
-        Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(Item.getItemFromBlock(CraftingBlocks.CRAFTINIUM_ORE), 0, new ModelResourceLocation("randores:" + Item.getItemFromBlock(CraftingBlocks.CRAFTINIUM_ORE).getUnlocalizedName().substring(5)));
-
-        for (Item item : FlexibleItemRegistry.getMaterials()) {
-            Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(item, 0, new ModelResourceLocation("randores:" + item.getUnlocalizedName().substring(5), "inventory"));
-        }
-
-        for (FlexibleOre block : FlexibleBlockRegistry.getOres()) {
-            Item item = Item.getItemFromBlock(block);
-            Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(item, 0, new ModelResourceLocation("randores:" + item.getUnlocalizedName().substring(5)));
-        }
-
-        for (Block brick : FlexibleBlockRegistry.getBricks()) {
-            Item item = Item.getItemFromBlock(brick);
-            Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(item, 0, new ModelResourceLocation("randores:" + item.getUnlocalizedName().substring(5)));
-        }
     }
 
 }
