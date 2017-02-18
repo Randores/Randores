@@ -60,8 +60,8 @@ public class RandoresClientProxy extends RandoresProxy {
                     logger.info("Cache entry determined invalid, " + entry.getKey() + " does not have a texture directory... removing.");
                     cache.remove(entry.getKey());
                 } else {
-                    long time = entry.getValue().getLong(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(15));
-                    Date date = new Date(time + TimeUnit.DAYS.toMillis(2));
+                    long time = entry.getValue().getLong(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(14));
+                    Date date = new Date(time + TimeUnit.DAYS.toMillis(14));
                     Date now = new Date();
                     if (date.before(now)) {
                         logger.info("Texture cache for seed: " + seed + " expired, deleting textures...");
