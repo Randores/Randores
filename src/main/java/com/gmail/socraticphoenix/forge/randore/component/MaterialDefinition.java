@@ -76,7 +76,7 @@ public class MaterialDefinition {
     }
 
     private void reduce(int[] arr, int slot) {
-        if(arr[slot] > 5) {
+        if(arr[slot] > 2) {
             arr[slot] = arr[slot] - 1;
         }
     }
