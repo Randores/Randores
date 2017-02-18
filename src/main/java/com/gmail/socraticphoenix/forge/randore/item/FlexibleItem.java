@@ -21,41 +21,18 @@
  */
 package com.gmail.socraticphoenix.forge.randore.item;
 
-import com.gmail.socraticphoenix.forge.randore.component.CraftableType;
+import com.gmail.socraticphoenix.forge.randore.component.Components;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinition;
-import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinitionRegistry;
-import net.minecraft.item.Item;
+import net.minecraft.world.World;
 
-public class FlexibleItem extends Item {
-    private int index;
-    private CraftableType type;
+public interface FlexibleItem {
 
-    public FlexibleItem(int index) {
-        this.index = index;
-        this.type = null;
-    }
+    int index();
 
-    public FlexibleItem(int index, CraftableType type) {
-        this.index = index;
-        this.type = type;
-    }
+    MaterialDefinition getDefinition(long seed);
 
-    public boolean isMaterial() {
-        return this.type == null
-                ;
-    }
+    MaterialDefinition getDefinition(World world);
 
-    public CraftableType getType() {
-        return this.type;
-    }
-
-    public int getIndex() {
-        return this.index;
-    }
-
-    public MaterialDefinition getDefinition(long seed) {
-        return MaterialDefinitionRegistry.get(seed).get(this.index);
-    }
-
+    Components getType();
 
 }

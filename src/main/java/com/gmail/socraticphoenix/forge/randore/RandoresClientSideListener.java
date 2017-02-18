@@ -35,16 +35,41 @@ import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import org.apache.logging.log4j.Logger;
 
 public class RandoresClientSideListener {
 
     @SubscribeEvent
     public void onModelLoad(ModelRegistryEvent ev) {
-        ModelLoader.setCustomModelResourceLocation(CraftingItems.CRAFTINIUM_LUMP, 0, new ModelResourceLocation("randores:" + CraftingItems.CRAFTINIUM_LUMP.getUnlocalizedName().substring(5), "inventory"));
-        ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(CraftingBlocks.CRAFTINIUM_ORE), 0, new ModelResourceLocation("randores:" + Item.getItemFromBlock(CraftingBlocks.CRAFTINIUM_ORE).getUnlocalizedName().substring(5)));
+        ModelLoader.setCustomModelResourceLocation(CraftingItems.craftiniumLump, 0, new ModelResourceLocation("randores:" + CraftingItems.craftiniumLump.getUnlocalizedName().substring(5), "inventory"));
+        ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(CraftingBlocks.craftiniumOre), 0, new ModelResourceLocation("randores:" + Item.getItemFromBlock(CraftingBlocks.craftiniumOre).getUnlocalizedName().substring(5), "inventory"));
+        ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(CraftingBlocks.craftiniumTable), 0, new ModelResourceLocation("randores:" + Item.getItemFromBlock(CraftingBlocks.craftiniumTable).getUnlocalizedName().substring(5), "inventory"));
+        ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(CraftingBlocks.craftiniumForge), 0, new ModelResourceLocation("randores:" + Item.getItemFromBlock(CraftingBlocks.craftiniumForge).getUnlocalizedName().substring(5), "inventory"));
 
         for (Item item : FlexibleItemRegistry.getMaterials()) {
+            ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation("randores:" + item.getUnlocalizedName().substring(5), "inventory"));
+        }
+
+        for (Item item : FlexibleItemRegistry.getSticks()) {
+            ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation("randores:" + item.getUnlocalizedName().substring(5), "inventory"));
+        }
+
+        for(Item item : FlexibleItemRegistry.getHoes()) {
+            ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation("randores:" + item.getUnlocalizedName().substring(5), "inventory"));
+        }
+
+        for(Item item : FlexibleItemRegistry.getSwords()) {
+            ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation("randores:" + item.getUnlocalizedName().substring(5), "inventory"));
+        }
+
+        for (Item item : FlexibleItemRegistry.getAxes()) {
+            ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation("randores:" + item.getUnlocalizedName().substring(5), "inventory"));
+        }
+
+        for (Item item : FlexibleItemRegistry.getSpades()) {
+            ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation("randores:" + item.getUnlocalizedName().substring(5), "inventory"));
+        }
+
+        for (Item item : FlexibleItemRegistry.getPickaxes()) {
             ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation("randores:" + item.getUnlocalizedName().substring(5), "inventory"));
         }
 
@@ -61,8 +86,6 @@ public class RandoresClientSideListener {
 
     @SubscribeEvent
     public void onStitch(TextureStitchEvent.Pre ev) {
-        Logger logger = Randores.getInstance().getLogger();
-
         if (FlexibleTextureRegistry.itemQuantity() == 0) {
             for (int i = 0; i < 3300; i++) {
                 FlexibleAtlasSprite sprite = new FlexibleAtlasSprite(Randores.itemTextureName(i), "test");
@@ -87,19 +110,7 @@ public class RandoresClientSideListener {
             }
         }
 
-        if (FlexibleTextureRegistry.specificQuantity() == 0) {
-            r(new FlexibleAtlasSprite("randores:blocks/craftinium_ore", "craftinium_ore"), ev);
-            r(new FlexibleAtlasSprite("randores:items/craftinium_lump", "craftinium_lump"), ev);
-        } else {
-            for (FlexibleAtlasSprite sprite : FlexibleTextureRegistry.getSpecific()) {
-                ev.getMap().setTextureEntry(sprite);
-            }
-        }
     }
 
-    private void r(FlexibleAtlasSprite sprite, TextureStitchEvent.Pre ev) {
-        FlexibleTextureRegistry.registerSpecific(sprite);
-        ev.getMap().setTextureEntry(sprite);
-    }
 
 }

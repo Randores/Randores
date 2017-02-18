@@ -24,6 +24,8 @@ package com.gmail.socraticphoenix.forge.randore;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinition;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinitionGenerator;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinitionRegistry;
+import com.gmail.socraticphoenix.forge.randore.item.FlexibleItemRegistry;
+import net.minecraft.item.Item;
 import net.minecraft.world.World;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -40,11 +42,18 @@ public class RandoresWorldEventListener {
     @SubscribeEvent
     public void onWorldUnload(WorldEvent.Unload ev) {
         World world = ev.getWorld();
-        if(!world.isRemote) {
+        if (!world.isRemote) {
             long seed = Randores.getRandoresSeed(world);
             this.loaded.remove(seed);
-            if(!this.loaded.contains(seed)) {
+            if (!this.loaded.contains(seed)) {
                 MaterialDefinitionRegistry.remove(seed);
+                for (int i = 0; i < 300; i++) {
+                    FlexibleItemRegistry.getHoe(i).removeBacker(seed);
+                    FlexibleItemRegistry.getSword(i).removeBacker(seed);
+                    FlexibleItemRegistry.getAxe(i).removeBacker(seed);
+                    FlexibleItemRegistry.getSpade(i).removeBacker(seed);
+                    FlexibleItemRegistry.getPickaxe(i).removeBacker(seed);
+                }
             }
         }
     }
@@ -53,13 +62,21 @@ public class RandoresWorldEventListener {
     public void onWorldLoad(WorldEvent.Load ev) throws IOException {
         Logger logger = Randores.getInstance().getLogger();
         World world = ev.getWorld();
-        if(!world.isRemote) {
+        if (!world.isRemote) {
             long seed = Randores.getRandoresSeed(world);
-            if(!this.loaded.contains(seed)) {
+            if (!MaterialDefinitionRegistry.contains(seed)) {
                 logger.info("Generating definitions for Randores seed: " + seed);
                 List<MaterialDefinition> definitions = MaterialDefinitionGenerator.makeDefinitions(MaterialDefinitionGenerator.generateColors(new Random(seed)), seed);
                 MaterialDefinitionGenerator.logStatistics(definitions);
                 MaterialDefinitionRegistry.put(seed, definitions);
+                for (int i = 0; i < 300; i++) {
+                    Item.ToolMaterial toolMaterial = definitions.get(i).getToolMaterial();
+                    FlexibleItemRegistry.getHoe(i).registerBacker(seed, toolMaterial);
+                    FlexibleItemRegistry.getSword(i).registerBacker(seed, toolMaterial);
+                    FlexibleItemRegistry.getAxe(i).registerBacker(seed, toolMaterial);
+                    FlexibleItemRegistry.getSpade(i).registerBacker(seed, toolMaterial);
+                    FlexibleItemRegistry.getPickaxe(i).registerBacker(seed, toolMaterial);
+                }
             }
             this.loaded.add(seed);
         }

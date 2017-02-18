@@ -44,7 +44,7 @@ public class CraftiniumOre extends Block {
 
     @Override
     public Item getItemDropped(IBlockState state, Random rand, int fortune) {
-        return CraftingItems.CRAFTINIUM_LUMP;
+        return CraftingItems.craftiniumLump;
     }
 
 }

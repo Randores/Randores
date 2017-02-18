@@ -23,16 +23,17 @@ package com.gmail.socraticphoenix.forge.randore.component;
 
 import net.minecraft.item.Item;
 
-public class MaterialComponent {
+public class MaterialComponent implements Component {
     private MaterialType type;
     private int harvestLevel;
     private int maxUses;
     private float efficiency;
     private float damage;
+    private float toughness;
     private int enchantability;
     private Item item;
 
-    public MaterialComponent(MaterialType type, int harvestLevel, int maxUses, float efficiency, float damage, int enchantability, Item item) {
+    public MaterialComponent(MaterialType type, int harvestLevel, int maxUses, float efficiency, float damage, int enchantability, float toughness, Item item) {
         this.type = type;
         this.harvestLevel = harvestLevel;
         this.maxUses = maxUses;
@@ -40,10 +41,26 @@ public class MaterialComponent {
         this.damage = damage;
         this.enchantability = enchantability;
         this.item = item;
+        this.toughness = toughness;
     }
 
+    @Override
     public Item makeItem() {
         return this.item;
+    }
+
+    @Override
+    public int quantity() {
+        return 1;
+    }
+
+    @Override
+    public String getName() {
+        return this.type.getName();
+    }
+
+    public float getToughness() {
+        return this.toughness;
     }
 
     public int getHarvestLevel() {

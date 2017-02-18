@@ -26,10 +26,12 @@ import com.gmail.socraticphoenix.forge.randore.RandoresClientSideRegistry;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinition;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinitionGenerator;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinitionRegistry;
+import com.gmail.socraticphoenix.forge.randore.item.FlexibleItemRegistry;
 import com.gmail.socraticphoenix.forge.randore.texture.FlexibleTextureRegistry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.common.config.ConfigCategory;
 import net.minecraftforge.common.config.Configuration;
@@ -50,11 +52,11 @@ public class RandoresPacketHandler implements IMessageHandler<RandoresPacket, IM
 
     @Override
     public IMessage onMessage(final RandoresPacket message, final MessageContext ctx) {
-        final EntityPlayer player = RandoresClientSideRegistry.getClientPlayer();
         Minecraft.getMinecraft().addScheduledTask(new Runnable() {
             @Override
             public void run() {
-                player.sendMessage(new TextComponentString("[Randores] Randores is setting up textures (in a separate thread)... Your resuources will be reloaded in a moment."));
+                EntityPlayer player = RandoresClientSideRegistry.getClientPlayer();
+                player.sendMessage(new TextComponentString("[Randores] Randores is setting up textures (in a separate thread)... Your resources will be reloaded in a moment."));
             }
         });
 
@@ -75,6 +77,14 @@ public class RandoresPacketHandler implements IMessageHandler<RandoresPacket, IM
                 } else {
                     logger.info("Definitions already registered, loading...");
                     definitions = MaterialDefinitionRegistry.get(seed);
+                }
+                for (int i = 0; i < 300; i++) {
+                    Item.ToolMaterial toolMaterial = definitions.get(i).getToolMaterial();
+                    FlexibleItemRegistry.getHoe(i).registerBacker(seed, toolMaterial);
+                    FlexibleItemRegistry.getSword(i).registerBacker(seed, toolMaterial);
+                    FlexibleItemRegistry.getAxe(i).registerBacker(seed, toolMaterial);
+                    FlexibleItemRegistry.getSpade(i).registerBacker(seed, toolMaterial);
+                    FlexibleItemRegistry.getPickaxe(i).registerBacker(seed, toolMaterial);
                 }
                 logger.info("Definitions Statistics:");
                 MaterialDefinitionGenerator.logStatistics(definitions);
@@ -100,6 +110,7 @@ public class RandoresPacketHandler implements IMessageHandler<RandoresPacket, IM
                 Minecraft.getMinecraft().addScheduledTask(new Runnable() {
                     @Override
                     public void run() {
+                        EntityPlayer player = RandoresClientSideRegistry.getClientPlayer();
                         if (!FlexibleTextureRegistry.isInitialized() || FlexibleTextureRegistry.getTextureSeed() != seed) {
                             player.sendMessage(new TextComponentString("[Randores] Reloading your resources! Expect a screen freeze for ~30 seconds. (Also, if you move your mouse or attempt to give the game any sort of input, it will probably crash.)"));
                             new Thread(new Runnable() {

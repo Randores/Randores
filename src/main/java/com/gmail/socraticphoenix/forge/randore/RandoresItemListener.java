@@ -23,6 +23,7 @@ package com.gmail.socraticphoenix.forge.randore;
 
 import com.gmail.socraticphoenix.forge.randore.block.FlexibleBrick;
 import com.gmail.socraticphoenix.forge.randore.block.FlexibleOre;
+import com.gmail.socraticphoenix.forge.randore.component.Component;
 import com.gmail.socraticphoenix.forge.randore.component.CraftableType;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinition;
 import com.gmail.socraticphoenix.forge.randore.item.FlexibleItem;
@@ -47,27 +48,30 @@ public class RandoresItemListener {
             EntityItem entityItem = ev.getItem();
             ItemStack item = entityItem.getEntityItem();
             Item raw = item.getItem();
+            String name = null;
             if (item.getSubCompound("display") == null) {
                 if (raw instanceof ItemBlock) {
                     Block block = ((ItemBlock) raw).getBlock();
                     if (block instanceof FlexibleOre) {
                         FlexibleOre target = (FlexibleOre) block;
                         MaterialDefinition definition = target.getDefinition(seed);
-                        item.setStackDisplayName(Randores.RESET + definition.getName() + " Ore");
+                        name = definition.getName() + " Ore";
                     } else if (block instanceof FlexibleBrick) {
                         FlexibleBrick target = (FlexibleBrick) block;
                         MaterialDefinition definition = target.getDefinition(seed);
-                        item.setStackDisplayName(Randores.RESET + definition.getName() + " " + CraftableType.BRICKS.getName());
+                        name = definition.getName() + " " + CraftableType.BRICKS.getName();
                     }
                 } else if (raw instanceof FlexibleItem) {
                     FlexibleItem target = (FlexibleItem) raw;
                     MaterialDefinition definition = target.getDefinition(seed);
-                    if (target.isMaterial()) {
-                        item.setStackDisplayName(Randores.RESET + definition.getName() + " " + definition.getMaterial().getType().getName());
-                    } else {
-                        item.setStackDisplayName(Randores.RESET + definition.getName() + " " + target.getType().getName());
+                    if (definition.hasComponent(target.getType())) {
+                        Component component = definition.getComponent(target.getType());
+                        name = definition.getName() + " " + component.getName();
                     }
                 }
+            }
+            if (name != null) {
+                Randores.applyData(item, name, world);
             }
         }
     }

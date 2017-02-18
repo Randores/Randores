@@ -23,8 +23,10 @@ package com.gmail.socraticphoenix.forge.randore.component;
 
 import com.gmail.socraticphoenix.forge.randore.RandoresClientSideRegistry;
 import com.gmail.socraticphoenix.forge.randore.RandoresNameAlgorithm;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.util.EnumHelper;
 
 import java.awt.Color;
@@ -47,14 +49,58 @@ public class MaterialDefinition {
 
     private long seed;
 
-    public MaterialDefinition(Color color, OreComponent ore, List<CraftableComponent> craftables, long seed) {
+    public MaterialDefinition(Color color, OreComponent ore, List<CraftableComponent> craftables, long seed, int index) {
         this.color = color;
         this.ore = ore;
         this.material = ore.getMaterial();
         this.craftables = craftables;
         this.name = RandoresNameAlgorithm.name(this.color);
         this.toolMaterial = EnumHelper.addToolMaterial(this.name, this.material.getHarvestLevel(), this.material.getMaxUses(), this.material.getEfficiency(), this.material.getDamage(), this.material.getEnchantability());
+        this.toolMaterial.setRepairItem(new ItemStack(this.material.makeItem()));
+        float armor = this.material.getEfficiency() * 5;
+        int[] reduc = new int[]{(int) Math.ceil(armor * 0.15), (int) Math.ceil(armor * 0.3), (int) Math.ceil(armor * 0.4), (int) Math.ceil(armor * 0.15)};
+        while (sum(reduc) > 20) {
+            for (int i = 0; i < reduc.length; i++) {
+                reduc[i] = reduc[i] - 1;
+            }
+        }
+        this.armorMaterial = EnumHelper.addArmorMaterial(this.name, "armor." + index, this.material.getHarvestLevel() * 2, reduc, this.material.getEnchantability(), SoundEvents.ITEM_ARMOR_EQUIP_IRON, this.material.getToughness());
         this.seed = seed;
+    }
+
+    public Item.ToolMaterial getToolMaterial() {
+        return this.toolMaterial;
+    }
+
+    public ItemArmor.ArmorMaterial getArmorMaterial() {
+        return this.armorMaterial;
+    }
+
+    public boolean hasComponent(Components component) {
+        return this.getComponent(component) != null;
+    }
+
+    public Component getComponent(Components component) {
+        if (component.isCraftable()) {
+            for(CraftableComponent craftable : this.getCraftables()) {
+                if(craftable.getType() == component.getType()) {
+                    return craftable;
+                }
+            }
+        } else if (component == Components.ORE) {
+            return this.ore;
+        } else if (component == Components.MATERIAL) {
+            return this.material;
+        }
+        return null;
+    }
+
+    private int sum(int[] arr) {
+        int a = 0;
+        for (int i : arr) {
+            a += i;
+        }
+        return a;
     }
 
     public long getSeed() {

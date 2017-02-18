@@ -23,21 +23,30 @@ package com.gmail.socraticphoenix.forge.randore.component;
 
 import net.minecraft.item.Item;
 
-public class CraftableComponent {
+public class CraftableComponent implements Component {
     private CraftableType type;
     private int quantity;
+    private Item item;
 
-    public CraftableComponent(CraftableType type, int quantity) {
+    public CraftableComponent(CraftableType type, int quantity, Item item) {
         this.type = type;
         this.quantity = quantity;
+        this.item = item;
     }
 
+    @Override
     public Item makeItem() {
-        return null; //TODO
+        return this.item;
     }
 
+    @Override
     public int quantity() {
         return this.quantity;
+    }
+
+    @Override
+    public String getName() {
+        return this.type.getName();
     }
 
     public String template() {

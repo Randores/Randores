@@ -19,7 +19,44 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.gmail.socraticphoenix.forge.randore.crafting;
+package com.gmail.socraticphoenix.forge.randore.component;
 
-public class CraftiniumTable {
+public enum Components {
+    AXE(CraftableType.AXE),
+    HOE(CraftableType.HOE),
+    PICKAXE(CraftableType.PICKAXE),
+    SHOVEL(CraftableType.SHOVEL),
+    SWORD(CraftableType.SWORD),
+    STICK(CraftableType.STICK),
+    BOOTS(CraftableType.BOOTS),
+    CHESTPLATE(CraftableType.CHESTPLATE),
+    HELMET(CraftableType.HELMET),
+    LEGGINGS(CraftableType.LEGGINGS),
+    BRICKS(CraftableType.BRICKS),
+    MATERIAL(null),
+    ORE(null);
+
+    private CraftableType type;
+
+    Components(CraftableType type) {
+        this.type = type;
+    }
+
+    public static Components fromCraftable(CraftableType type) {
+        for (Components components : Components.values()) {
+            if(components.getType() == type) {
+                return components;
+            }
+        }
+        return null;
+    }
+
+    public boolean isCraftable() {
+        return this.type != null;
+    }
+
+    public CraftableType getType() {
+        return this.type;
+    }
+
 }

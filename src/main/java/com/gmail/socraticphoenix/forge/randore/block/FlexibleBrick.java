@@ -56,7 +56,7 @@ public class FlexibleBrick extends Block {
         List<ItemStack> drops = new ArrayList<ItemStack>();
         if(world instanceof World) {
             ItemStack drop = new ItemStack(this, 1);
-            drop.setStackDisplayName(Randores.RESET + this.getDefinition(Randores.getRandoresSeed((World) world)).getName() + " " + CraftableType.BRICKS.getName());
+            Randores.applyData(drop, this.getDefinition(Randores.getRandoresSeed((World) world)).getName() + " " + CraftableType.BRICKS.getName(), (World) world);
             drops.add(drop);
         }
         return drops;

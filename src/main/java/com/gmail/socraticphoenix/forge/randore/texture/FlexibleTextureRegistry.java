@@ -22,45 +22,31 @@
 package com.gmail.socraticphoenix.forge.randore.texture;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class FlexibleTextureRegistry {
-    private static List<FlexibleAtlasSprite> block = new ArrayList<FlexibleAtlasSprite>();
-    private static List<FlexibleAtlasSprite> item = new ArrayList<FlexibleAtlasSprite>();
-    private static List<FlexibleAtlasSprite> specific = new ArrayList<FlexibleAtlasSprite>();
-    private static long textureSeed = 0;
-    private static boolean initialized;
+    private static List<FlexibleAtlasSprite> block = Collections.synchronizedList(new ArrayList<FlexibleAtlasSprite>());
+    private static List<FlexibleAtlasSprite> item = Collections.synchronizedList(new ArrayList<FlexibleAtlasSprite>());
+    private static AtomicLong textureSeed = new AtomicLong(0);
+    private static AtomicBoolean initialized = new AtomicBoolean(false);
 
     public static long getTextureSeed() {
-        return FlexibleTextureRegistry.textureSeed;
+        return FlexibleTextureRegistry.textureSeed.get();
     }
 
     public static void setTextureSeed(long textureSeed) {
-        FlexibleTextureRegistry.textureSeed = textureSeed;
+        FlexibleTextureRegistry.textureSeed.set(textureSeed);
     }
 
     public static boolean isInitialized() {
-        return FlexibleTextureRegistry.initialized;
+        return FlexibleTextureRegistry.initialized.get();
     }
 
     public static void setInitialized(boolean initialized) {
-        FlexibleTextureRegistry.initialized = initialized;
-    }
-
-    public static void registerSpecific(FlexibleAtlasSprite sprite) {
-        FlexibleTextureRegistry.specific.add(sprite);
-    }
-
-    public static FlexibleAtlasSprite getSpecific(int index) {
-        return FlexibleTextureRegistry.specific.get(index);
-    }
-
-    public static int specificQuantity() {
-        return FlexibleTextureRegistry.specific.size();
-    }
-
-    public static List<FlexibleAtlasSprite> getSpecific() {
-        return FlexibleTextureRegistry.specific;
+        FlexibleTextureRegistry.initialized.set(initialized);
     }
 
     public static void registerBlock(FlexibleAtlasSprite sprite) {

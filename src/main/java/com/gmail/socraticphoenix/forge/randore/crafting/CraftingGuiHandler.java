@@ -21,7 +21,14 @@
  */
 package com.gmail.socraticphoenix.forge.randore.crafting;
 
+import com.gmail.socraticphoenix.forge.randore.crafting.forge.CraftiniumForgeContainer;
+import com.gmail.socraticphoenix.forge.randore.crafting.forge.CraftiniumForgeGui;
+import com.gmail.socraticphoenix.forge.randore.crafting.forge.CraftiniumForgeTileEntity;
+import com.gmail.socraticphoenix.forge.randore.crafting.table.CraftiniumTableContainer;
+import com.gmail.socraticphoenix.forge.randore.crafting.table.CraftiniumTableGui;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.IGuiHandler;
 
@@ -32,10 +39,14 @@ public class CraftingGuiHandler implements IGuiHandler {
     @Nullable
     @Override
     public Object getServerGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
+        BlockPos pos = new BlockPos(x, y, z);
         if (ID == CraftingGuiType.FORGE.ordinal()) {
-
+            TileEntity entity = world.getTileEntity(pos);
+            if (entity instanceof CraftiniumForgeTileEntity) {
+                return new CraftiniumForgeContainer((CraftiniumForgeTileEntity) entity, player.inventory);
+            }
         } else if (ID == CraftingGuiType.TABLE.ordinal()) {
-
+            return new CraftiniumTableContainer(player.inventory, world, pos);
         }
         return null;
     }
@@ -43,10 +54,14 @@ public class CraftingGuiHandler implements IGuiHandler {
     @Nullable
     @Override
     public Object getClientGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
+        BlockPos pos = new BlockPos(x, y, z);
         if (ID == CraftingGuiType.FORGE.ordinal()) {
-
+            TileEntity entity = world.getTileEntity(pos);
+            if (entity instanceof CraftiniumForgeTileEntity) {
+                return new CraftiniumForgeGui((CraftiniumForgeTileEntity) entity, player.inventory);
+            }
         } else if (ID == CraftingGuiType.TABLE.ordinal()) {
-
+            return new CraftiniumTableGui(player.inventory, world, new BlockPos(x, y, z));
         }
         return null;
     }

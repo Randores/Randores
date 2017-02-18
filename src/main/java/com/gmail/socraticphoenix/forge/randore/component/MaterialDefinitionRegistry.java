@@ -21,36 +21,29 @@
  */
 package com.gmail.socraticphoenix.forge.randore.component;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class MaterialDefinitionRegistry {
-    private static final Map<Long, List<MaterialDefinition>> definitions = new HashMap<Long, List<MaterialDefinition>>();
+    private static final Map<Long, List<MaterialDefinition>> definitions = Collections.synchronizedMap(new HashMap<Long, List<MaterialDefinition>>());
 
     public static List<MaterialDefinition> get(long seed) {
-        synchronized (MaterialDefinitionRegistry.definitions) {
-            return MaterialDefinitionRegistry.definitions.get(seed);
-        }
+        return MaterialDefinitionRegistry.definitions.get(seed);
     }
 
     public static List<MaterialDefinition> remove(long seed) {
-        synchronized (MaterialDefinitionRegistry.definitions) {
-            return MaterialDefinitionRegistry.definitions.remove(seed);
-        }
+        return MaterialDefinitionRegistry.definitions.remove(seed);
     }
 
 
     public static void put(long seed, List<MaterialDefinition> definitions) {
-        synchronized (MaterialDefinitionRegistry.definitions) {
-            MaterialDefinitionRegistry.definitions.put(seed, definitions);
-        }
+        MaterialDefinitionRegistry.definitions.put(seed, definitions);
     }
 
     public static boolean contains(long seed) {
-        synchronized (MaterialDefinitionRegistry.definitions) {
-            return MaterialDefinitionRegistry.definitions.containsKey(seed);
-        }
+        return MaterialDefinitionRegistry.definitions.containsKey(seed);
     }
 
 

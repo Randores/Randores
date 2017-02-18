@@ -25,8 +25,8 @@ public enum  CraftableType {
     AXE("Axe", "axe", " XX", " SX", " S "),
     HOE("Hoe", "hoe", " XX", " S ", " S "),
     PICKAXE("Pickaxe", "pickaxe", "XXX", " S ", " S "),
-    SHOVEL("Shovel", "shovel", " X ", " S ", " S "),
-    SWORD("Sword", "sword", " X ", " X ", " S "),
+    SHOVEL("Shovel", "shovel", "X  ", "S  ", "S  "),
+    SWORD("Sword", "sword", "X  ", "X  ", "S  "),
     STICK("Stick", "stick", " X ", "X  ", "   "),
     BOOTS("Boots", "boots", "X X", "X X", "   "),
     CHESTPLATE("Chestplate", "chestplate", "X X", "XXX", "XXX"),
@@ -55,5 +55,14 @@ public enum  CraftableType {
     public String[] getRecipe() {
         return this.recipe;
     }
+
+    public int getIndex(int index) {
+        if(this == BRICKS) {
+            return index + 300;
+        } else {
+            return index + (300 * (this.ordinal() + 1));
+        }
+    }
+
 
 }

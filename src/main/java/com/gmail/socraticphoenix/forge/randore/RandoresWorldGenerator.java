@@ -51,7 +51,7 @@ public class RandoresWorldGenerator implements IWorldGenerator {
                 }
 
                 if(Dimension.OVERWORLD.getId() == world.provider.getDimension()) {
-                    this.generateOre(CraftingBlocks.CRAFTINIUM_ORE, world, random, chunkX * 16, chunkZ * 16, 3, 1, 100, 0, 30, 5, Dimension.OVERWORLD.getGenerateIn());
+                    this.generateOre(CraftingBlocks.craftiniumOre, world, random, chunkX * 16, chunkZ * 16, 3, 1, 100, 0, 30, 5, Dimension.OVERWORLD.getGenerateIn());
                 }
             }
         }

@@ -24,7 +24,7 @@ package com.gmail.socraticphoenix.forge.randore.component;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 
-public class OreComponent {
+public class OreComponent implements Component {
     private MaterialComponent material;
     private Dimension dimension;
 
@@ -40,7 +40,7 @@ public class OreComponent {
     private int minOccurences;
     private int maxOccurences;
 
-    private int smeltingXp;
+    private float smeltingXp;
 
     private float hardness;
     private float resistance;
@@ -49,7 +49,7 @@ public class OreComponent {
 
     private Item item;
 
-    public OreComponent(MaterialComponent material, Dimension dimension, int maxDrops, int minDrops, int maxVein, int minVein, int maxY, int minY, int minOccurences, int maxOccurences, boolean requiresSmelting, int smeltingXp, float hardness, float resistance, Item item) {
+    public OreComponent(MaterialComponent material, Dimension dimension, int maxDrops, int minDrops, int maxVein, int minVein, int maxY, int minY, int minOccurences, int maxOccurences, boolean requiresSmelting, float smeltingXp, float hardness, float resistance, Item item) {
         this.material = material;
         this.dimension = dimension;
         this.maxDrops = maxDrops;
@@ -71,8 +71,19 @@ public class OreComponent {
         return Block.getBlockFromItem(this.makeItem());
     }
 
+    @Override
     public Item makeItem() {
         return this.item;
+    }
+
+    @Override
+    public int quantity() {
+        return 1;
+    }
+
+    @Override
+    public String getName() {
+        return "Ore";
     }
 
     public float getHardness() {
@@ -83,7 +94,7 @@ public class OreComponent {
         return this.resistance;
     }
 
-    public int getSmeltingXp() {
+    public float getSmeltingXp() {
         return this.smeltingXp;
     }
 

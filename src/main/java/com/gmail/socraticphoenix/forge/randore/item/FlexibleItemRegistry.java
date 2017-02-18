@@ -21,19 +21,99 @@
  */
 package com.gmail.socraticphoenix.forge.randore.item;
 
-import net.minecraft.item.Item;
-
 import java.util.ArrayList;
 import java.util.List;
 
 public class FlexibleItemRegistry {
-    private static List<Item> materials = new ArrayList<Item>();
+    private static List<FlexibleMaterial> materials = new ArrayList<FlexibleMaterial>();
+    private static List<FlexibleStick> sticks = new ArrayList<FlexibleStick>();
+    private static List<FlexibleHoe> hoes = new ArrayList<FlexibleHoe>();
+    private static List<FlexibleSword> swords = new ArrayList<FlexibleSword>();
+    private static List<FlexibleAxe> axes = new ArrayList<FlexibleAxe>();
+    private static List<FlexiblePickaxe> pickaxes = new ArrayList<FlexiblePickaxe>();
+    private static List<FlexibleSpade> spades = new ArrayList<FlexibleSpade>();
 
-    public static List<Item> getMaterials() {
+    public static FlexibleStick getStick(int index) {
+        return FlexibleItemRegistry.sticks.get(index);
+    }
+
+    public static List<FlexibleStick> getSticks() {
+        return FlexibleItemRegistry.sticks;
+    }
+
+    public static void addStick(FlexibleStick stick) {
+        FlexibleItemRegistry.sticks.add(stick);
+    }
+
+    public static FlexibleSpade getSpade(int index) {
+        return FlexibleItemRegistry.spades.get(index);
+    }
+
+    public static List<FlexibleSpade> getSpades() {
+        return FlexibleItemRegistry.spades;
+    }
+
+    public static void addSpade(FlexibleSpade spade) {
+        FlexibleItemRegistry.spades.add(spade);
+    }
+
+    public static FlexiblePickaxe getPickaxe(int index) {
+        return FlexibleItemRegistry.pickaxes.get(index);
+    }
+
+    public static List<FlexiblePickaxe> getPickaxes() {
+        return FlexibleItemRegistry.pickaxes;
+    }
+
+    public static void addPickaxe(FlexiblePickaxe pickaxe) {
+        FlexibleItemRegistry.pickaxes.add(pickaxe);
+    }
+
+    public static FlexibleAxe getAxe(int index) {
+        return FlexibleItemRegistry.axes.get(index);
+    }
+
+    public static List<FlexibleAxe> getAxes() {
+        return FlexibleItemRegistry.axes;
+    }
+
+    public static void addAxe(FlexibleAxe axe) {
+        FlexibleItemRegistry.axes.add(axe);
+    }
+
+    public static FlexibleSword getSword(int index) {
+        return FlexibleItemRegistry.swords.get(index);
+    }
+
+    public static List<FlexibleSword> getSwords() {
+        return FlexibleItemRegistry.swords;
+    }
+
+    public static void addSword(FlexibleSword sword) {
+        FlexibleItemRegistry.swords.add(sword);
+    }
+
+    public static FlexibleHoe getHoe(int index) {
+        return FlexibleItemRegistry.hoes.get(index);
+    }
+
+    public static List<FlexibleHoe> getHoes() {
+        return FlexibleItemRegistry.hoes;
+    }
+
+    public static void addHoe(FlexibleHoe hoe) {
+        FlexibleItemRegistry.hoes.add(hoe);
+    }
+
+    public static FlexibleMaterial getMaterial(int index) {
+        return FlexibleItemRegistry.materials.get(index);
+    }
+
+    public static List<FlexibleMaterial> getMaterials() {
         return FlexibleItemRegistry.materials;
     }
 
-    public static void addMaterial(Item material) {
+    public static void addMaterial(FlexibleMaterial material) {
         FlexibleItemRegistry.materials.add(material);
     }
 

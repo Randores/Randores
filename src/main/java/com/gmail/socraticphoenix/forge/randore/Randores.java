@@ -22,19 +22,38 @@
 package com.gmail.socraticphoenix.forge.randore;
 
 import com.gmail.socraticphoenix.forge.randore.block.FlexibleBlockRegistry;
+import com.gmail.socraticphoenix.forge.randore.component.CraftableType;
+import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinition;
+import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinitionRegistry;
+import com.gmail.socraticphoenix.forge.randore.crafting.CraftingBlocks;
 import com.gmail.socraticphoenix.forge.randore.crafting.CraftingGuiHandler;
 import com.gmail.socraticphoenix.forge.randore.crafting.CraftingItems;
+import com.gmail.socraticphoenix.forge.randore.crafting.FlexibleRecipe;
+import com.gmail.socraticphoenix.forge.randore.crafting.FlexibleSmelt;
+import com.gmail.socraticphoenix.forge.randore.crafting.forge.CraftiniumDelegateSmelt;
+import com.gmail.socraticphoenix.forge.randore.crafting.forge.CraftiniumForgeTileEntity;
+import com.gmail.socraticphoenix.forge.randore.crafting.forge.CraftiniumSmeltRegistry;
+import com.gmail.socraticphoenix.forge.randore.crafting.table.CraftiniumDelegateRecipe;
+import com.gmail.socraticphoenix.forge.randore.crafting.table.CraftiniumRecipeRegistry;
 import com.gmail.socraticphoenix.forge.randore.item.FlexibleItemRegistry;
 import com.gmail.socraticphoenix.forge.randore.packet.RandoresNetworking;
 import com.google.common.base.Supplier;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.CraftingManager;
+import net.minecraft.item.crafting.FurnaceRecipes;
+import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.common.util.EnumHelper;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
@@ -51,25 +70,70 @@ import java.util.Random;
 
 @Mod(modid = "randores", name = "Socratic_Phoenix's Randores")
 public class Randores {
+    public static final Item.ToolMaterial MATERIAL_DEFAULT = EnumHelper.addToolMaterial("MATERIAL_DEFAULT", 1, 100, 1, 1, 1);
     public static final String RESET = "§" + 'r';
-    public static final RandoresTab TAB_CRAFTING = new RandoresTab("randores_tab_0", new Supplier<Item>() {
+    public static final RandoresTab TAB_CRAFTING = new RandoresTab("randores_crafting", new Supplier<Item>() {
         @Override
         public Item get() {
-            return CraftingItems.CRAFTINIUM_LUMP;
+            return Item.getItemFromBlock(CraftingBlocks.craftiniumTable);
         }
     });
-    public static final RandoresTab TAB_BLOCKS = new RandoresTab("randores_tab_1", new Supplier<Item>() {
+    public static final RandoresTab TAB_ORES = new RandoresTab("randores_ores", new Supplier<Item>() {
         @Override
         public Item get() {
             return Item.getItemFromBlock(FlexibleBlockRegistry.getOres().get(0));
         }
     });
-    public static final RandoresTab TAB_ITEMS = new RandoresTab("randores_tab_2", new Supplier<Item>() {
+    public static final RandoresTab TAB_BRICKS = new RandoresTab("randores_bricks", new Supplier<Item>() {
         @Override
         public Item get() {
-            return FlexibleItemRegistry.getMaterials().get(0);
+            return Item.getItemFromBlock(FlexibleBlockRegistry.getBricks().get(0));
         }
     });
+    public static final RandoresTab TAB_MATERIALS = new RandoresTab("randores_materials", new Supplier<Item>() {
+        @Override
+        public Item get() {
+            return FlexibleItemRegistry.getMaterial(0);
+        }
+    });
+    public static final CreativeTabs TAB_STICKS = new RandoresTab("randores_sticks", new Supplier<Item>() {
+        @Override
+        public Item get() {
+            return FlexibleItemRegistry.getStick(0);
+        }
+    });
+    public static final RandoresTab TAB_HOES = new RandoresTab("randores_hoes", new Supplier<Item>() {
+        @Override
+        public Item get() {
+            return FlexibleItemRegistry.getHoe(0);
+        }
+    });
+    public static final CreativeTabs TAB_SWORDS = new RandoresTab("randores_swords", new Supplier<Item>() {
+        @Override
+        public Item get() {
+            return FlexibleItemRegistry.getSword(0);
+        }
+    });
+    public static final CreativeTabs TAB_AXES = new RandoresTab("randores_axes", new Supplier<Item>() {
+        @Override
+        public Item get() {
+            return FlexibleItemRegistry.getAxe(0);
+        }
+    });
+    public static final CreativeTabs TAB_PICKAXES = new RandoresTab("randores_pickaxes", new Supplier<Item>() {
+        @Override
+        public Item get() {
+            return FlexibleItemRegistry.getPickaxe(0);
+        }
+    });
+    public static final CreativeTabs TAB_SPADES = new RandoresTab("randores_spades", new Supplier<Item>() {
+        @Override
+        public Item get() {
+            return FlexibleItemRegistry.getSpade(0);
+        }
+    });
+
+
     private static Randores instance;
     private static Map<Long, Long> worldSeeds = new HashMap<Long, Long>();
     @SidedProxy(modId = "randores", clientSide = "com.gmail.socraticphoenix.forge.randore.RandoresClientProxy", serverSide = "com.gmail.socraticphoenix.forge.randore.RandoresProxy")
@@ -140,6 +204,30 @@ public class Randores {
         return "randores.item." + num;
     }
 
+    public static ItemStack applyData(ItemStack stack, String name) {
+        stack.setStackDisplayName(Randores.RESET + name);
+        return stack;
+    }
+
+    public static ItemStack applyData(ItemStack stack, String name, long seed) {
+        stack.setStackDisplayName(Randores.RESET + name);
+        NBTTagCompound randores = stack.getOrCreateSubCompound("randores");
+        randores.setLong("seed", seed);
+        return stack;
+    }
+
+    public static ItemStack applyData(ItemStack stack, String name, World world) {
+        return Randores.applyData(stack, name, Randores.getRandoresSeed(world));
+    }
+
+    public static long getRandoresSeed(ItemStack stack) {
+        return stack.getOrCreateSubCompound("randores").getLong("seed");
+    }
+
+    public static MaterialDefinition getDefinition(int index, ItemStack stack) {
+        return MaterialDefinitionRegistry.get(Randores.getRandoresSeed(stack)).get(index);
+    }
+
     public Configuration getConfiguration() {
         return this.configuration;
     }
@@ -149,6 +237,19 @@ public class Randores {
         this.tex.mkdirs();
         if (!this.conf.exists()) {
             this.conf.createNewFile();
+        }
+
+        GameRegistry.registerTileEntityWithAlternatives(CraftiniumForgeTileEntity.class, "craftinium_forge", "craftinium_forge_lit");
+
+        CraftingManager.getInstance().addRecipe(new ItemStack(CraftingBlocks.craftiniumTable), "XX ", "XX ", 'X', CraftingItems.craftiniumLump);
+        CraftingManager.getInstance().addRecipe(new ItemStack(CraftingBlocks.craftiniumForge), "XXX", "X X", "XXX", 'X', CraftingItems.craftiniumLump);
+
+        for (int i = 0; i < 300; i++) {
+            Item material = FlexibleItemRegistry.getMaterial(i);
+            for (CraftableType type : CraftableType.values()) {
+                CraftiniumRecipeRegistry.register(new FlexibleRecipe(i, type, 'X', material, 'S', "stickWood"));
+            }
+            CraftiniumSmeltRegistry.register(new FlexibleSmelt(i));
         }
 
         this.logger.info("Testing the names algorithm...");
@@ -171,6 +272,18 @@ public class Randores {
         this.logger.info("Running proxy initialization...");
         Randores.proxy.initSided();
         this.logger.info("Proxy initialized.");
+    }
+
+    @Mod.EventHandler
+    public void onPostInit(FMLPostInitializationEvent ev) {
+        this.logger.info("Adding crafting table recipes to craftinium table and furnace recipes to craftinium forge...");
+        for (IRecipe recipe : CraftingManager.getInstance().getRecipeList()) {
+            CraftiniumRecipeRegistry.register(new CraftiniumDelegateRecipe(recipe));
+        }
+        for (Map.Entry<ItemStack, ItemStack> smelt : FurnaceRecipes.instance().getSmeltingList().entrySet()) {
+            CraftiniumSmeltRegistry.register(new CraftiniumDelegateSmelt(smelt.getKey(), smelt.getValue(), FurnaceRecipes.instance().getSmeltingExperience(smelt.getKey())));
+        }
+        this.logger.info("Recipes added.");
     }
 
     public Logger getLogger() {

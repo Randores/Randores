@@ -21,10 +21,22 @@
  */
 package com.gmail.socraticphoenix.forge.randore.crafting;
 
+import com.gmail.socraticphoenix.forge.randore.crafting.forge.CraftiniumForge;
+import com.gmail.socraticphoenix.forge.randore.crafting.table.CraftiniumTable;
 import net.minecraft.block.Block;
 
 public class CraftingBlocks {
 
-    public static final Block CRAFTINIUM_ORE = new CraftiniumOre();
+    public static Block craftiniumTable;
+    public static Block craftiniumForge;
+    public static Block craftiniumForgeLit;
+    public static Block craftiniumOre;
+
+    public static void init() {
+        craftiniumTable = new CraftiniumTable();
+        craftiniumOre = new CraftiniumOre();
+        craftiniumForge = new CraftiniumForge(false);
+        craftiniumForgeLit = new CraftiniumForge(true);
+    }
 
 }
