@@ -21,25 +21,29 @@
  */
 package com.gmail.socraticphoenix.forge.randore.component;
 
+import net.minecraft.inventory.EntityEquipmentSlot;
+
 public enum Components {
-    AXE(CraftableType.AXE),
-    HOE(CraftableType.HOE),
-    PICKAXE(CraftableType.PICKAXE),
-    SHOVEL(CraftableType.SHOVEL),
-    SWORD(CraftableType.SWORD),
-    STICK(CraftableType.STICK),
-    BOOTS(CraftableType.BOOTS),
-    CHESTPLATE(CraftableType.CHESTPLATE),
-    HELMET(CraftableType.HELMET),
-    LEGGINGS(CraftableType.LEGGINGS),
-    BRICKS(CraftableType.BRICKS),
-    MATERIAL(null),
-    ORE(null);
+    AXE(CraftableType.AXE, EntityEquipmentSlot.MAINHAND),
+    HOE(CraftableType.HOE, EntityEquipmentSlot.MAINHAND),
+    PICKAXE(CraftableType.PICKAXE, EntityEquipmentSlot.MAINHAND),
+    SHOVEL(CraftableType.SHOVEL, EntityEquipmentSlot.MAINHAND),
+    SWORD(CraftableType.SWORD, EntityEquipmentSlot.MAINHAND),
+    STICK(CraftableType.STICK, EntityEquipmentSlot.MAINHAND),
+    BOOTS(CraftableType.BOOTS, EntityEquipmentSlot.FEET),
+    CHESTPLATE(CraftableType.CHESTPLATE, EntityEquipmentSlot.CHEST),
+    HELMET(CraftableType.HELMET, EntityEquipmentSlot.HEAD),
+    LEGGINGS(CraftableType.LEGGINGS, EntityEquipmentSlot.LEGS),
+    BRICKS(CraftableType.BRICKS, EntityEquipmentSlot.MAINHAND),
+    MATERIAL(null, EntityEquipmentSlot.MAINHAND),
+    ORE(null, EntityEquipmentSlot.MAINHAND);
 
     private CraftableType type;
+    private EntityEquipmentSlot slot;
 
-    Components(CraftableType type) {
+    Components(CraftableType type, EntityEquipmentSlot slot) {
         this.type = type;
+        this.slot = slot;
     }
 
     public static Components fromCraftable(CraftableType type) {
@@ -53,6 +57,10 @@ public enum Components {
 
     public boolean isCraftable() {
         return this.type != null;
+    }
+
+    public EntityEquipmentSlot getSlot() {
+        return this.slot;
     }
 
     public CraftableType getType() {

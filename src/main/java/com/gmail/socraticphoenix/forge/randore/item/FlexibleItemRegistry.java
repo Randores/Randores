@@ -32,6 +32,58 @@ public class FlexibleItemRegistry {
     private static List<FlexibleAxe> axes = new ArrayList<FlexibleAxe>();
     private static List<FlexiblePickaxe> pickaxes = new ArrayList<FlexiblePickaxe>();
     private static List<FlexibleSpade> spades = new ArrayList<FlexibleSpade>();
+    private static List<FlexibleItemArmor> helmets = new ArrayList<FlexibleItemArmor>();
+    private static List<FlexibleItemArmor> chestplates = new ArrayList<FlexibleItemArmor>();
+    private static List<FlexibleItemArmor> leggings = new ArrayList<FlexibleItemArmor>();
+    private static List<FlexibleItemArmor> boots = new ArrayList<FlexibleItemArmor>();
+
+    public static FlexibleItemArmor getBoots(int index) {
+        return FlexibleItemRegistry.boots.get(index);
+    }
+
+    public static List<FlexibleItemArmor> getBoots() {
+        return FlexibleItemRegistry.boots;
+    }
+
+    public static void addBoots(FlexibleItemArmor armor) {
+        FlexibleItemRegistry.boots.add(armor);
+    }
+
+    public static FlexibleItemArmor getLeggings(int index) {
+        return FlexibleItemRegistry.leggings.get(index);
+    }
+
+    public static List<FlexibleItemArmor> getLeggings() {
+        return FlexibleItemRegistry.leggings;
+    }
+
+    public static void addLeggings(FlexibleItemArmor armor) {
+        FlexibleItemRegistry.leggings.add(armor);
+    }
+    
+    public static FlexibleItemArmor getChestplate(int index) {
+        return FlexibleItemRegistry.chestplates.get(index);
+    }
+
+    public static List<FlexibleItemArmor> getChestplates() {
+        return FlexibleItemRegistry.chestplates;
+    }
+
+    public static void addChestplate(FlexibleItemArmor armor) {
+        FlexibleItemRegistry.chestplates.add(armor);
+    }
+    
+    public static FlexibleItemArmor getHelmet(int index) {
+        return FlexibleItemRegistry.helmets.get(index);
+    }
+
+    public static List<FlexibleItemArmor> getHelmets() {
+        return FlexibleItemRegistry.helmets;
+    }
+    
+    public static void addHelmet(FlexibleItemArmor armor) {
+        FlexibleItemRegistry.helmets.add(armor);
+    }
 
     public static FlexibleStick getStick(int index) {
         return FlexibleItemRegistry.sticks.get(index);

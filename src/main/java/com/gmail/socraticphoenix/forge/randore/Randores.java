@@ -39,7 +39,9 @@ import com.gmail.socraticphoenix.forge.randore.item.FlexibleItemRegistry;
 import com.gmail.socraticphoenix.forge.randore.packet.RandoresNetworking;
 import com.google.common.base.Supplier;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.FurnaceRecipes;
@@ -71,26 +73,21 @@ import java.util.Random;
 @Mod(modid = "randores", name = "Socratic_Phoenix's Randores")
 public class Randores {
     public static final Item.ToolMaterial MATERIAL_DEFAULT = EnumHelper.addToolMaterial("MATERIAL_DEFAULT", 1, 100, 1, 1, 1);
+    public static final ItemArmor.ArmorMaterial ARMOR_DEFAULT = EnumHelper.addArmorMaterial("ARMOR_DEFAULT", "no_texture", 100, new int[]{1, 1, 1, 1}, 1, SoundEvents.ITEM_ARMOR_EQUIP_IRON, 1);
     public static final String RESET = "§" + 'r';
-    public static final RandoresTab TAB_CRAFTING = new RandoresTab("randores_crafting", new Supplier<Item>() {
+    public static final CreativeTabs TAB_CRAFTING = new RandoresTab("randores_crafting", new Supplier<Item>() {
         @Override
         public Item get() {
             return Item.getItemFromBlock(CraftingBlocks.craftiniumTable);
         }
     });
-    public static final RandoresTab TAB_ORES = new RandoresTab("randores_ores", new Supplier<Item>() {
+    public static final CreativeTabs TAB_BLOCKS = new RandoresTab("randores_blocks", new Supplier<Item>() {
         @Override
         public Item get() {
             return Item.getItemFromBlock(FlexibleBlockRegistry.getOres().get(0));
         }
     });
-    public static final RandoresTab TAB_BRICKS = new RandoresTab("randores_bricks", new Supplier<Item>() {
-        @Override
-        public Item get() {
-            return Item.getItemFromBlock(FlexibleBlockRegistry.getBricks().get(0));
-        }
-    });
-    public static final RandoresTab TAB_MATERIALS = new RandoresTab("randores_materials", new Supplier<Item>() {
+    public static final CreativeTabs TAB_MATERIALS = new RandoresTab("randores_materials", new Supplier<Item>() {
         @Override
         public Item get() {
             return FlexibleItemRegistry.getMaterial(0);
@@ -102,7 +99,7 @@ public class Randores {
             return FlexibleItemRegistry.getStick(0);
         }
     });
-    public static final RandoresTab TAB_HOES = new RandoresTab("randores_hoes", new Supplier<Item>() {
+    public static final CreativeTabs TAB_HOES = new RandoresTab("randores_hoes", new Supplier<Item>() {
         @Override
         public Item get() {
             return FlexibleItemRegistry.getHoe(0);
@@ -130,6 +127,12 @@ public class Randores {
         @Override
         public Item get() {
             return FlexibleItemRegistry.getSpade(0);
+        }
+    });
+    public static final CreativeTabs TAB_ARMOR = new RandoresTab("randores_armor", new Supplier<Item>() {
+        @Override
+        public Item get() {
+            return FlexibleItemRegistry.getHelmet(0);
         }
     });
 

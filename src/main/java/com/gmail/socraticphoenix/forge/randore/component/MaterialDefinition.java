@@ -57,15 +57,28 @@ public class MaterialDefinition {
         this.name = RandoresNameAlgorithm.name(this.color);
         this.toolMaterial = EnumHelper.addToolMaterial(this.name, this.material.getHarvestLevel(), this.material.getMaxUses(), this.material.getEfficiency(), this.material.getDamage(), this.material.getEnchantability());
         this.toolMaterial.setRepairItem(new ItemStack(this.material.makeItem()));
-        float armor = this.material.getEfficiency() * 5;
-        int[] reduc = new int[]{(int) Math.ceil(armor * 0.15), (int) Math.ceil(armor * 0.3), (int) Math.ceil(armor * 0.4), (int) Math.ceil(armor * 0.15)};
+        float armor = this.material.getEfficiency() * 3;
+        int[] reduc = new int[]{(int) Math.abs(Math.ceil(armor * 0.15)), (int) Math.abs(Math.ceil(armor * 0.3)), (int) Math.abs(Math.ceil(armor * 0.4)), (int) Math.abs(Math.ceil(armor * 0.15))};
         while (sum(reduc) > 20) {
             for (int i = 0; i < reduc.length; i++) {
-                reduc[i] = reduc[i] - 1;
+                reduce(reduc, 0);
+                reduce(reduc, 1);
+                reduce(reduc, 1);
+                reduce(reduc, 2);
+                reduce(reduc, 2);
+                reduce(reduc, 3);
+
             }
         }
-        this.armorMaterial = EnumHelper.addArmorMaterial(this.name, "armor." + index, this.material.getHarvestLevel() * 2, reduc, this.material.getEnchantability(), SoundEvents.ITEM_ARMOR_EQUIP_IRON, this.material.getToughness());
+        this.armorMaterial = EnumHelper.addArmorMaterial(this.name, "randores_armor:armor." + index, this.material.getMaxUses() * 2, reduc, this.material.getEnchantability(), SoundEvents.ITEM_ARMOR_EQUIP_IRON, this.material.getToughness());
+        this.armorMaterial.setRepairItem(new ItemStack(this.material.makeItem()));
         this.seed = seed;
+    }
+
+    private void reduce(int[] arr, int slot) {
+        if(arr[slot] > 5) {
+            arr[slot] = arr[slot] - 1;
+        }
     }
 
     public Item.ToolMaterial getToolMaterial() {
@@ -82,8 +95,8 @@ public class MaterialDefinition {
 
     public Component getComponent(Components component) {
         if (component.isCraftable()) {
-            for(CraftableComponent craftable : this.getCraftables()) {
-                if(craftable.getType() == component.getType()) {
+            for (CraftableComponent craftable : this.getCraftables()) {
+                if (craftable.getType() == component.getType()) {
                     return craftable;
                 }
             }

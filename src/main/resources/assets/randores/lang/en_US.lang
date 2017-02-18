@@ -1,6 +1,5 @@
 itemGroup.randores_crafting=Randores Crafting
-itemGroup.randores_ores=Randores Ores
-itemGroup.randores_bricks=Randores Bricks
+itemGroup.randores_blocks=Randores Blocks
 itemGroup.randores_materials=Randores Materials
 itemGroup.randores_sticks=Randores Sticks
 itemGroup.randores_swords=Randores Swords
@@ -8,6 +7,7 @@ itemGroup.randores_hoes=Randores Hoes
 itemGroup.randores_axes=Randores Axes
 itemGroup.randores_spades=Randores Shovels
 itemGroup.randores_pickaxes=Randores Pickaxes
+itemGroup.randores_armor=Randores Armor
 tile.craftinium_forge.name=Craftinium Forge
 tile.craftinium_table.name=Craftinium Table
 tile.craftinium_ore.name=Craftinium Ore

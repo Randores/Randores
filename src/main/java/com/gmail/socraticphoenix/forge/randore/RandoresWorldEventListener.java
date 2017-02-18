@@ -26,6 +26,7 @@ import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinitionGener
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinitionRegistry;
 import com.gmail.socraticphoenix.forge.randore.item.FlexibleItemRegistry;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemArmor;
 import net.minecraft.world.World;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -53,6 +54,10 @@ public class RandoresWorldEventListener {
                     FlexibleItemRegistry.getAxe(i).removeBacker(seed);
                     FlexibleItemRegistry.getSpade(i).removeBacker(seed);
                     FlexibleItemRegistry.getPickaxe(i).removeBacker(seed);
+                    FlexibleItemRegistry.getHelmet(i).removeBacker(seed);
+                    FlexibleItemRegistry.getChestplate(i).removeBacker(seed);
+                    FlexibleItemRegistry.getLeggings(i).removeBacker(seed);
+                    FlexibleItemRegistry.getBoots(i).removeBacker(seed);
                 }
             }
         }
@@ -71,11 +76,16 @@ public class RandoresWorldEventListener {
                 MaterialDefinitionRegistry.put(seed, definitions);
                 for (int i = 0; i < 300; i++) {
                     Item.ToolMaterial toolMaterial = definitions.get(i).getToolMaterial();
+                    ItemArmor.ArmorMaterial armorMaterial = definitions.get(i).getArmorMaterial();
                     FlexibleItemRegistry.getHoe(i).registerBacker(seed, toolMaterial);
                     FlexibleItemRegistry.getSword(i).registerBacker(seed, toolMaterial);
                     FlexibleItemRegistry.getAxe(i).registerBacker(seed, toolMaterial);
                     FlexibleItemRegistry.getSpade(i).registerBacker(seed, toolMaterial);
                     FlexibleItemRegistry.getPickaxe(i).registerBacker(seed, toolMaterial);
+                    FlexibleItemRegistry.getHelmet(i).registerBacker(seed, armorMaterial);
+                    FlexibleItemRegistry.getChestplate(i).registerBacker(seed, armorMaterial);
+                    FlexibleItemRegistry.getLeggings(i).registerBacker(seed, armorMaterial);
+                    FlexibleItemRegistry.getBoots(i).registerBacker(seed, armorMaterial);
                 }
             }
             this.loaded.add(seed);

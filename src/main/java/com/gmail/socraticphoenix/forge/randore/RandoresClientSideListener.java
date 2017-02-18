@@ -23,14 +23,18 @@ package com.gmail.socraticphoenix.forge.randore;
 
 import com.gmail.socraticphoenix.forge.randore.block.FlexibleBlockRegistry;
 import com.gmail.socraticphoenix.forge.randore.block.FlexibleOre;
+import com.gmail.socraticphoenix.forge.randore.component.Components;
+import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinitionRegistry;
 import com.gmail.socraticphoenix.forge.randore.crafting.CraftingBlocks;
 import com.gmail.socraticphoenix.forge.randore.crafting.CraftingItems;
 import com.gmail.socraticphoenix.forge.randore.item.FlexibleItemRegistry;
 import com.gmail.socraticphoenix.forge.randore.texture.FlexibleAtlasSprite;
 import com.gmail.socraticphoenix.forge.randore.texture.FlexibleTextureRegistry;
 import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.client.model.ModelLoader;
@@ -53,11 +57,11 @@ public class RandoresClientSideListener {
             ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation("randores:" + item.getUnlocalizedName().substring(5), "inventory"));
         }
 
-        for(Item item : FlexibleItemRegistry.getHoes()) {
+        for (Item item : FlexibleItemRegistry.getHoes()) {
             ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation("randores:" + item.getUnlocalizedName().substring(5), "inventory"));
         }
 
-        for(Item item : FlexibleItemRegistry.getSwords()) {
+        for (Item item : FlexibleItemRegistry.getSwords()) {
             ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation("randores:" + item.getUnlocalizedName().substring(5), "inventory"));
         }
 
@@ -70,6 +74,22 @@ public class RandoresClientSideListener {
         }
 
         for (Item item : FlexibleItemRegistry.getPickaxes()) {
+            ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation("randores:" + item.getUnlocalizedName().substring(5), "inventory"));
+        }
+
+        for (Item item : FlexibleItemRegistry.getHelmets()) {
+            ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation("randores:" + item.getUnlocalizedName().substring(5), "inventory"));
+        }
+
+        for (Item item : FlexibleItemRegistry.getChestplates()) {
+            ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation("randores:" + item.getUnlocalizedName().substring(5), "inventory"));
+        }
+
+        for (Item item : FlexibleItemRegistry.getLeggings()) {
+            ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation("randores:" + item.getUnlocalizedName().substring(5), "inventory"));
+        }
+
+        for (Item item : FlexibleItemRegistry.getBoots()) {
             ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation("randores:" + item.getUnlocalizedName().substring(5), "inventory"));
         }
 
@@ -86,6 +106,15 @@ public class RandoresClientSideListener {
 
     @SubscribeEvent
     public void onStitch(TextureStitchEvent.Pre ev) {
+        if (FlexibleTextureRegistry.isInitialized()) {
+            for (int i = 0; i < 300; i++) {
+                if (MaterialDefinitionRegistry.get(RandoresClientSideRegistry.getCurrentSeed()).get(i).hasComponent(Components.HELMET)) {
+                    Minecraft.getMinecraft().getTextureManager().bindTexture(new ResourceLocation("randores_armor", "armor." + i + "_1.png"));
+                    Minecraft.getMinecraft().getTextureManager().bindTexture(new ResourceLocation("randores_armor", "armor." + i + "_2.png"));
+                }
+            }
+        }
+
         if (FlexibleTextureRegistry.itemQuantity() == 0) {
             for (int i = 0; i < 3300; i++) {
                 FlexibleAtlasSprite sprite = new FlexibleAtlasSprite(Randores.itemTextureName(i), "test");

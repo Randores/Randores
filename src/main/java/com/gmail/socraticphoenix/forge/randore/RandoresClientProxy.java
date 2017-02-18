@@ -24,6 +24,7 @@ package com.gmail.socraticphoenix.forge.randore;
 import com.gmail.socraticphoenix.forge.randore.resource.RandoresResourceManager;
 import com.gmail.socraticphoenix.forge.randore.texture.TextureTemplate;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.IResourcePack;
 import net.minecraft.crash.CrashReport;
 import net.minecraftforge.common.config.ConfigCategory;
 import net.minecraftforge.common.config.Configuration;
@@ -33,6 +34,9 @@ import org.apache.logging.log4j.Logger;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -115,12 +119,42 @@ public class RandoresClientProxy extends RandoresProxy {
             }
         } catch (IOException e) {
             Minecraft.getMinecraft().crashed(new CrashReport("Unable to load texture templates.", e));
+            return;
+        }
+
+        logger.info("Hacking default resource packs...");
+        List<Field> candidates = new ArrayList<Field>();
+        for(Field field : Minecraft.class.getDeclaredFields()) {
+            if(field.getType() == List.class && field.getGenericType() instanceof ParameterizedType) {
+                ParameterizedType parameterizedType = (ParameterizedType) field.getGenericType();
+                if(parameterizedType.getActualTypeArguments().length == 1 && parameterizedType.getActualTypeArguments()[0] == IResourcePack.class) {
+                    candidates.add(field);
+                }
+            }
+        }
+        logger.info("Number of candidates: " + candidates.size());
+        if(candidates.size() == 1) {
+            Field field = candidates.get(0);
+            boolean accessible = field.isAccessible();
+            field.setAccessible(true);
+            try {
+                List<IResourcePack> packs = (List<IResourcePack>) field.get(Minecraft.getMinecraft());
+                packs.add(new RandoresArmorResourcePack());
+                logger.info("Succesfully hacked default resource packs.");
+            } catch (IllegalAccessException e) {
+                Minecraft.getMinecraft().crashed(new CrashReport("Fatal error, candidate not accessible", e));
+                return;
+            } finally {
+                field.setAccessible(accessible);
+            }
+        } else {
+            Minecraft.getMinecraft().crashed(new CrashReport("Fatal error, expected 1 candidate, but found " + candidates.size(), new IllegalStateException()));
+            return;
         }
     }
 
     @Override
     public void initSided() {
-
     }
 
 }

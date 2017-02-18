@@ -25,30 +25,51 @@ import com.gmail.socraticphoenix.forge.randore.Randores;
 import com.gmail.socraticphoenix.forge.randore.component.Components;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinition;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinitionRegistry;
-import com.gmail.socraticphoenix.forge.randore.item.constructable.ConstructablePickaxe;
 import com.google.common.collect.Multimap;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
-import net.minecraft.item.ItemPickaxe;
+import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.EnumHand;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
-public class FlexiblePickaxe extends ItemPickaxe implements FlexibleItem {
-    private Map<Long, ItemPickaxe> backers;
+public class FlexibleItemArmor extends ItemArmor implements FlexibleItem {
+    private Map<Long, ItemArmor> backers;
     private int index;
+    private int renderIndex;
+    private EntityEquipmentSlot slot;
+    private Components component;
 
-    public FlexiblePickaxe(int index) {
-        super(Randores.MATERIAL_DEFAULT);
+    public FlexibleItemArmor(int index, Components component) {
+        super(Randores.ARMOR_DEFAULT, getRenderIndex(component.getSlot()), component.getSlot());
+        this.slot = component.getSlot();
+        this.renderIndex = getRenderIndex(this.slot);
         this.index = index;
-        this.backers = new HashMap<Long, ItemPickaxe>();
+        this.component = component;
+        this.backers = new HashMap<Long, ItemArmor>();
+    }
+
+    private static int getRenderIndex(EntityEquipmentSlot slot) {
+        if (slot == EntityEquipmentSlot.LEGS) {
+            return 2;
+        } else {
+            return 1;
+        }
+    }
+
+    @Override
+    public double getDurabilityForDisplay(ItemStack stack) {
+        if (this.hasBacker(Randores.getRandoresSeed(stack))) {
+            return this.getBacker(Randores.getRandoresSeed(stack)).getDurabilityForDisplay(stack);
+        }
+        return super.getDurabilityForDisplay(stack);
     }
 
     @Override
@@ -85,72 +106,87 @@ public class FlexiblePickaxe extends ItemPickaxe implements FlexibleItem {
     }
 
     @Override
-    public boolean canHarvestBlock(IBlockState state, ItemStack stack) {
-        if(this.hasBacker(Randores.getRandoresSeed(stack))) {
-            return this.getBacker(Randores.getRandoresSeed(stack)).canHarvestBlock(state, stack);
+    public boolean hasColor(ItemStack stack) {
+        if (this.hasBacker(Randores.getRandoresSeed(stack))) {
+            return this.getBacker(Randores.getRandoresSeed(stack)).hasColor(stack);
         }
-        return super.canHarvestBlock(state, stack);
+        return super.hasColor(stack);
     }
 
     @Override
-    public float getStrVsBlock(ItemStack stack, IBlockState state) {
-        if(this.hasBacker(Randores.getRandoresSeed(stack))) {
-            return this.getBacker(Randores.getRandoresSeed(stack)).getStrVsBlock(stack, state);
+    public int getColor(ItemStack stack) {
+        if (this.hasBacker(Randores.getRandoresSeed(stack))) {
+            return this.getBacker(Randores.getRandoresSeed(stack)).getColor(stack);
         }
-        return super.getStrVsBlock(stack, state);
+        return super.getColor(stack);
     }
 
     @Override
-    public boolean hitEntity(ItemStack stack, EntityLivingBase target, EntityLivingBase attacker) {
-        if(this.hasBacker(attacker.world)) {
-            return this.getBacker(attacker.world).hitEntity(stack, target, attacker);
+    public void removeColor(ItemStack stack) {
+        if (this.hasBacker(Randores.getRandoresSeed(stack))) {
+            this.getBacker(Randores.getRandoresSeed(stack)).removeColor(stack);
+            return;
         }
-        return super.hitEntity(stack, target, attacker);
+        super.removeColor(stack);
     }
 
     @Override
-    public boolean onBlockDestroyed(ItemStack stack, World worldIn, IBlockState state, BlockPos pos, EntityLivingBase entityLiving) {
-        if(this.hasBacker(worldIn)) {
-            return this.getBacker(worldIn).onBlockDestroyed(stack, worldIn, state, pos, entityLiving);
+    public void setColor(ItemStack stack, int color) {
+        if (this.hasBacker(Randores.getRandoresSeed(stack))) {
+            this.getBacker(Randores.getRandoresSeed(stack)).setColor(stack, color);
+            return;
         }
-        return super.onBlockDestroyed(stack, worldIn, state, pos, entityLiving);
+        super.setColor(stack, color);
     }
 
     @Override
     public boolean getIsRepairable(ItemStack toRepair, ItemStack repair) {
-        if(this.hasBacker(Randores.getRandoresSeed(toRepair))) {
+        if (this.hasBacker(Randores.getRandoresSeed(toRepair))) {
             return this.getBacker(Randores.getRandoresSeed(toRepair)).getIsRepairable(toRepair, repair);
         }
         return super.getIsRepairable(toRepair, repair);
     }
 
     @Override
-    public Multimap<String, AttributeModifier> getAttributeModifiers(EntityEquipmentSlot equipmentSlot, ItemStack stack) {
-        if(this.hasBacker(Randores.getRandoresSeed(stack))) {
-            return this.getBacker(Randores.getRandoresSeed(stack)).getAttributeModifiers(equipmentSlot, stack);
+    public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn) {
+        if (this.hasBacker(worldIn)) {
+            return this.getBacker(worldIn).onItemRightClick(worldIn, playerIn, handIn);
         }
-        return super.getItemAttributeModifiers(equipmentSlot);
+        return super.onItemRightClick(worldIn, playerIn, handIn);
     }
 
     @Override
-    public int getHarvestLevel(ItemStack stack, String toolClass, @Nullable EntityPlayer player, @Nullable IBlockState blockState) {
-        if(this.hasBacker(player.world)) {
-            return this.getBacker(player.world).getHarvestLevel(stack, toolClass, player, blockState);
+    public boolean hasOverlay(ItemStack stack) {
+        if (this.hasBacker(Randores.getRandoresSeed(stack))) {
+            return this.getBacker(Randores.getRandoresSeed(stack)).hasOverlay(stack);
         }
-        return super.getHarvestLevel(stack, toolClass, player, blockState);
+        return super.hasOverlay(stack);
+    }
+
+    @Override
+    public Multimap<String, AttributeModifier> getAttributeModifiers(EntityEquipmentSlot slot, ItemStack stack) {
+        if (this.hasBacker(Randores.getRandoresSeed(stack))) {
+            return this.getBacker(Randores.getRandoresSeed(stack)).getAttributeModifiers(slot, stack);
+        }
+        return super.getAttributeModifiers(slot, stack);
+    }
+
+    @Nullable
+    @Override
+    public String getArmorTexture(ItemStack stack, Entity entity, EntityEquipmentSlot slot, String type) {
+        return "randores_armor:armor." + this.index + "_" + this.renderIndex + ".png";
     }
 
     @Override
     public int getItemEnchantability(ItemStack stack) {
-        if(this.hasBacker(Randores.getRandoresSeed(stack))) {
+        if (this.hasBacker(Randores.getRandoresSeed(stack))) {
             return this.getBacker(Randores.getRandoresSeed(stack)).getItemEnchantability(stack);
         }
         return super.getItemEnchantability(stack);
     }
 
-
-    public void registerBacker(long seed, ToolMaterial material) {
-        this.backers.put(seed, new ConstructablePickaxe(material));
+    public void registerBacker(long seed, ArmorMaterial material) {
+        this.backers.put(seed, new ItemArmor(material, this.renderIndex, this.slot));
     }
 
     public boolean hasBacker(long seed) {
@@ -161,11 +197,11 @@ public class FlexiblePickaxe extends ItemPickaxe implements FlexibleItem {
         this.backers.remove(seed);
     }
 
-    public ItemPickaxe getBacker(long seed) {
+    public ItemArmor getBacker(long seed) {
         return this.backers.get(seed);
     }
 
-    public void registerBacker(World world, ToolMaterial material) {
+    public void registerBacker(World world, ArmorMaterial material) {
         this.registerBacker(Randores.getRandoresSeed(world), material);
     }
 
@@ -177,7 +213,7 @@ public class FlexiblePickaxe extends ItemPickaxe implements FlexibleItem {
         this.removeBacker(Randores.getRandoresSeed(world));
     }
 
-    public ItemPickaxe getBacker(World world) {
+    public ItemArmor getBacker(World world) {
         return this.getBacker(Randores.getRandoresSeed(world));
     }
 
@@ -198,7 +234,7 @@ public class FlexiblePickaxe extends ItemPickaxe implements FlexibleItem {
 
     @Override
     public Components getType() {
-        return Components.PICKAXE;
+        return this.component;
     }
 
 }

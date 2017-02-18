@@ -178,5 +178,37 @@ public class FlexibleSpade extends ItemSpade implements FlexibleItem {
         return Components.SHOVEL;
     }
 
+    @Override
+    public int getRGBDurabilityForDisplay(ItemStack stack) {
+        if (this.hasBacker(Randores.getRandoresSeed(stack))) {
+            return this.getBacker(Randores.getRandoresSeed(stack)).getRGBDurabilityForDisplay(stack);
+        }
+        return super.getRGBDurabilityForDisplay(stack);
+    }
+
+    @Override
+    public int getMaxDamage(ItemStack stack) {
+        if (this.hasBacker(Randores.getRandoresSeed(stack))) {
+            return this.getBacker(Randores.getRandoresSeed(stack)).getMaxDamage(stack);
+        }
+        return super.getMaxDamage(stack);
+    }
+
+    @Override
+    public boolean isDamaged(ItemStack stack) {
+        if (this.hasBacker(Randores.getRandoresSeed(stack))) {
+            return this.getBacker(Randores.getRandoresSeed(stack)).isDamaged(stack);
+        }
+        return super.isDamaged(stack);
+    }
+
+    @Override
+    public void setDamage(ItemStack stack, int damage) {
+        if (this.hasBacker(Randores.getRandoresSeed(stack))) {
+            this.getBacker(Randores.getRandoresSeed(stack)).setDamage(stack, damage);
+            return;
+        }
+        super.setDamage(stack, damage);
+    }
 
 }

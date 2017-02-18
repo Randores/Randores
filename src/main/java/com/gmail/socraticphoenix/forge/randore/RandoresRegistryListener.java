@@ -24,11 +24,13 @@ package com.gmail.socraticphoenix.forge.randore;
 import com.gmail.socraticphoenix.forge.randore.block.FlexibleBlockRegistry;
 import com.gmail.socraticphoenix.forge.randore.block.FlexibleBrick;
 import com.gmail.socraticphoenix.forge.randore.block.FlexibleOre;
+import com.gmail.socraticphoenix.forge.randore.component.Components;
 import com.gmail.socraticphoenix.forge.randore.component.CraftableType;
 import com.gmail.socraticphoenix.forge.randore.crafting.CraftingBlocks;
 import com.gmail.socraticphoenix.forge.randore.crafting.CraftingItems;
 import com.gmail.socraticphoenix.forge.randore.item.FlexibleAxe;
 import com.gmail.socraticphoenix.forge.randore.item.FlexibleHoe;
+import com.gmail.socraticphoenix.forge.randore.item.FlexibleItemArmor;
 import com.gmail.socraticphoenix.forge.randore.item.FlexibleItemRegistry;
 import com.gmail.socraticphoenix.forge.randore.item.FlexibleMaterial;
 import com.gmail.socraticphoenix.forge.randore.item.FlexiblePickaxe;
@@ -49,14 +51,14 @@ public class RandoresRegistryListener {
         Randores.getInstance().getLogger().info("Initializing Blocks...");
         for (int i = 0; i < 300; i++) {
             FlexibleOre block = new FlexibleOre(i);
-            block.setUnlocalizedName(Randores.blockName(i)).setRegistryName(Randores.blockName(i)).setCreativeTab(Randores.TAB_ORES);
+            block.setUnlocalizedName(Randores.blockName(i)).setRegistryName(Randores.blockName(i)).setCreativeTab(Randores.TAB_BLOCKS);
             FlexibleBlockRegistry.addOres(block);
             ev.getRegistry().register(block);
         }
 
         for (int i = 0; i < 300; i++) {
             FlexibleBrick block = new FlexibleBrick(i);
-            block.setUnlocalizedName(Randores.blockName(i + 300)).setRegistryName(Randores.blockName(i + 300)).setCreativeTab(Randores.TAB_BRICKS);
+            block.setUnlocalizedName(Randores.blockName(i + 300)).setRegistryName(Randores.blockName(i + 300)).setCreativeTab(Randores.TAB_BLOCKS);
             FlexibleBlockRegistry.addBrick(block);
             ev.getRegistry().register(block);
         }
@@ -126,6 +128,38 @@ public class RandoresRegistryListener {
             pickaxe.setUnlocalizedName(Randores.itemName(loc)).setRegistryName(Randores.itemName(loc)).setCreativeTab(Randores.TAB_PICKAXES);
             FlexibleItemRegistry.addPickaxe(pickaxe);
             ev.getRegistry().register(pickaxe);
+        }
+
+        for (int i = 0; i < 300; i++) {
+            FlexibleItemArmor helmet = new FlexibleItemArmor(i, Components.HELMET);
+            int loc = CraftableType.HELMET.getIndex(i);
+            helmet.setUnlocalizedName(Randores.itemName(loc)).setRegistryName(Randores.itemName(loc)).setCreativeTab(Randores.TAB_ARMOR);
+            FlexibleItemRegistry.addHelmet(helmet);
+            ev.getRegistry().register(helmet);
+        }
+
+        for (int i = 0; i < 300; i++) {
+            FlexibleItemArmor chestplate = new FlexibleItemArmor(i, Components.CHESTPLATE);
+            int loc = CraftableType.CHESTPLATE.getIndex(i);
+            chestplate.setUnlocalizedName(Randores.itemName(loc)).setRegistryName(Randores.itemName(loc)).setCreativeTab(Randores.TAB_ARMOR);
+            FlexibleItemRegistry.addChestplate(chestplate);
+            ev.getRegistry().register(chestplate);
+        }
+
+        for (int i = 0; i < 300; i++) {
+            FlexibleItemArmor leggings = new FlexibleItemArmor(i, Components.LEGGINGS);
+            int loc = CraftableType.LEGGINGS.getIndex(i);
+            leggings.setUnlocalizedName(Randores.itemName(loc)).setRegistryName(Randores.itemName(loc)).setCreativeTab(Randores.TAB_ARMOR);
+            FlexibleItemRegistry.addLeggings(leggings);
+            ev.getRegistry().register(leggings);
+        }
+
+        for (int i = 0; i < 300; i++) {
+            FlexibleItemArmor boots = new FlexibleItemArmor(i, Components.BOOTS);
+            int loc = CraftableType.BOOTS.getIndex(i);
+            boots.setUnlocalizedName(Randores.itemName(loc)).setRegistryName(Randores.itemName(loc)).setCreativeTab(Randores.TAB_ARMOR);
+            FlexibleItemRegistry.addBoots(boots);
+            ev.getRegistry().register(boots);
         }
 
         for (FlexibleOre block : FlexibleBlockRegistry.getOres()) {
