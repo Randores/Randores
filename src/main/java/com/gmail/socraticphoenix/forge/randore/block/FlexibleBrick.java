@@ -22,7 +22,6 @@
 package com.gmail.socraticphoenix.forge.randore.block;
 
 import com.gmail.socraticphoenix.forge.randore.Randores;
-import com.gmail.socraticphoenix.forge.randore.component.CraftableType;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinition;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinitionRegistry;
 import net.minecraft.block.Block;
@@ -54,9 +53,9 @@ public class FlexibleBrick extends Block {
     @Override
     public List<ItemStack> getDrops(IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
         List<ItemStack> drops = new ArrayList<ItemStack>();
-        if(world instanceof World) {
+        if (world instanceof World) {
             ItemStack drop = new ItemStack(this, 1);
-            Randores.applyData(drop, this.getDefinition(Randores.getRandoresSeed((World) world)).getName() + " " + CraftableType.BRICKS.getName(), (World) world);
+            Randores.applyData(drop, (World) world);
             drops.add(drop);
         }
         return drops;

@@ -91,19 +91,19 @@ public class RandoresRegistryListener {
         }
 
         for (int i = 0; i < 300; i++) {
-            FlexibleHoe hoe = new FlexibleHoe(i);
-            int loc = CraftableType.HOE.getIndex(i);
-            hoe.setUnlocalizedName(Randores.itemName(loc)).setRegistryName(Randores.itemName(loc)).setCreativeTab(Randores.TAB_HOES);
-            FlexibleItemRegistry.addHoe(hoe);
-            ev.getRegistry().register(hoe);
-        }
-
-        for (int i = 0; i < 300; i++) {
             FlexibleSword sword = new FlexibleSword(i);
             int loc = CraftableType.SWORD.getIndex(i);
             sword.setUnlocalizedName(Randores.itemName(loc)).setRegistryName(Randores.itemName(loc)).setCreativeTab(Randores.TAB_SWORDS);
             FlexibleItemRegistry.addSword(sword);
             ev.getRegistry().register(sword);
+        }
+
+        for (int i = 0; i < 300; i++) {
+            FlexibleHoe hoe = new FlexibleHoe(i);
+            int loc = CraftableType.HOE.getIndex(i);
+            hoe.setUnlocalizedName(Randores.itemName(loc)).setRegistryName(Randores.itemName(loc)).setCreativeTab(Randores.TAB_HOES);
+            FlexibleItemRegistry.addHoe(hoe);
+            ev.getRegistry().register(hoe);
         }
 
         for (int i = 0; i < 300; i++) {
@@ -136,27 +136,21 @@ public class RandoresRegistryListener {
             helmet.setUnlocalizedName(Randores.itemName(loc)).setRegistryName(Randores.itemName(loc)).setCreativeTab(Randores.TAB_ARMOR);
             FlexibleItemRegistry.addHelmet(helmet);
             ev.getRegistry().register(helmet);
-        }
 
-        for (int i = 0; i < 300; i++) {
             FlexibleItemArmor chestplate = new FlexibleItemArmor(i, Components.CHESTPLATE);
-            int loc = CraftableType.CHESTPLATE.getIndex(i);
+            loc = CraftableType.CHESTPLATE.getIndex(i);
             chestplate.setUnlocalizedName(Randores.itemName(loc)).setRegistryName(Randores.itemName(loc)).setCreativeTab(Randores.TAB_ARMOR);
             FlexibleItemRegistry.addChestplate(chestplate);
             ev.getRegistry().register(chestplate);
-        }
 
-        for (int i = 0; i < 300; i++) {
             FlexibleItemArmor leggings = new FlexibleItemArmor(i, Components.LEGGINGS);
-            int loc = CraftableType.LEGGINGS.getIndex(i);
+            loc = CraftableType.LEGGINGS.getIndex(i);
             leggings.setUnlocalizedName(Randores.itemName(loc)).setRegistryName(Randores.itemName(loc)).setCreativeTab(Randores.TAB_ARMOR);
             FlexibleItemRegistry.addLeggings(leggings);
             ev.getRegistry().register(leggings);
-        }
 
-        for (int i = 0; i < 300; i++) {
             FlexibleItemArmor boots = new FlexibleItemArmor(i, Components.BOOTS);
-            int loc = CraftableType.BOOTS.getIndex(i);
+            loc = CraftableType.BOOTS.getIndex(i);
             boots.setUnlocalizedName(Randores.itemName(loc)).setRegistryName(Randores.itemName(loc)).setCreativeTab(Randores.TAB_ARMOR);
             FlexibleItemRegistry.addBoots(boots);
             ev.getRegistry().register(boots);

@@ -25,7 +25,9 @@ import com.gmail.socraticphoenix.forge.randore.Randores;
 import com.gmail.socraticphoenix.forge.randore.block.FlexibleBlockRegistry;
 import com.gmail.socraticphoenix.forge.randore.item.FlexibleItemRegistry;
 import com.gmail.socraticphoenix.forge.randore.texture.FlexibleTextureRegistry;
+import net.minecraft.client.Minecraft;
 import net.minecraft.item.Item;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import org.apache.logging.log4j.Logger;
 
@@ -77,7 +79,7 @@ public class MaterialDefinitionGenerator {
             } else {
                 type = MaterialType.values()[random.nextInt(MaterialType.values().length)];
             }
-            int uses = random.nextInt(6000) + 100;
+            int uses = random.nextInt(6000) + 200;
             uses = uses - (uses % 100);
             MaterialComponent material = new MaterialComponent(type, random.nextInt(6) + 1, uses, random.nextFloat() * random.nextInt(5) + random.nextInt(10) + 2, MathHelper.ceil(random.nextFloat() * random.nextInt(20) + 1), random.nextInt(50) + 1, MathHelper.floor(random.nextFloat() * 3), FlexibleItemRegistry.getMaterials().get(c));
             OreComponent ore = new OreComponent(material, c == 0 ? Dimension.OVERWORLD : Dimension.values()[random.nextInt(Dimension.values().length)], random.nextInt(4) + 2, 1, random.nextInt(15) + 2, 2, random.nextInt(200) + 5, 0, 5, random.nextInt(15) + 5, random.nextBoolean() || material.getType() == MaterialType.INGOT, random.nextFloat() * 2, random.nextFloat() * random.nextInt(10) + 0.5f, random.nextFloat() * random.nextInt(50) + 2f, Item.getItemFromBlock(FlexibleBlockRegistry.getOres().get(c)));
@@ -188,12 +190,9 @@ public class MaterialDefinitionGenerator {
             File target = new File(Randores.getInstance().getTextureFile(seed), "block." + i + ".png");
             ImageIO.write(textures.get(def.getOre().template()), "png", target);
             FlexibleTextureRegistry.getBlock(i).setTexture("block." + i, seed);
-
             File itarg = new File(Randores.getInstance().getTextureFile(seed), "item." + i + ".png");
             ImageIO.write(textures.get(def.getMaterial().template()), "png", itarg);
             FlexibleTextureRegistry.getItem(i).setTexture("item." + i + ".png", seed);
-
-
             for (CraftableComponent component : def.getCraftables()) {
                 if (component.getType() == CraftableType.HELMET) {
                     File armor1 = new File(Randores.getInstance().getTextureFile(seed), "armor." + i + "_1.png");
@@ -214,6 +213,19 @@ public class MaterialDefinitionGenerator {
                 }
             }
 
+        }
+    }
+
+    public static void setupArmorTextures(List<MaterialDefinition> definitions) {
+        for (int i = 0; i < definitions.size(); i++) {
+            MaterialDefinition def = definitions.get(i);
+            Minecraft.getMinecraft().getTextureManager().deleteTexture(new ResourceLocation("randores_armor", "armor." + i + "_1.png"));
+            Minecraft.getMinecraft().getTextureManager().deleteTexture(new ResourceLocation("randores_armor", "armor." + i + "_2.png"));
+
+            if (def.hasComponent(Components.HELMET)) {
+                Minecraft.getMinecraft().getTextureManager().bindTexture(new ResourceLocation("randores_armor", "armor." + i + "_1.png"));
+                Minecraft.getMinecraft().getTextureManager().bindTexture(new ResourceLocation("randores_armor", "armor." + i + "_2.png"));
+            }
         }
     }
 

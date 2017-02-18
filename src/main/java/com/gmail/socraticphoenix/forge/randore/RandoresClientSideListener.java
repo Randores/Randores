@@ -109,8 +109,6 @@ public class RandoresClientSideListener {
         if (FlexibleTextureRegistry.isInitialized()) {
             for (int i = 0; i < 300; i++) {
                 if (MaterialDefinitionRegistry.get(RandoresClientSideRegistry.getCurrentSeed()).get(i).hasComponent(Components.HELMET)) {
-                    Minecraft.getMinecraft().getTextureManager().bindTexture(new ResourceLocation("randores_armor", "armor." + i + "_1.png"));
-                    Minecraft.getMinecraft().getTextureManager().bindTexture(new ResourceLocation("randores_armor", "armor." + i + "_2.png"));
                 }
             }
         }

@@ -69,7 +69,7 @@ public class RandoresPacketHandler implements IMessageHandler<RandoresPacket, IM
                 RandoresClientSideRegistry.setCurrentSeed(seed);
                 logger.info("Received seed information: " + seed);
                 logger.info("Obtaining definitions...");
-                List<MaterialDefinition> definitions;
+                final List<MaterialDefinition> definitions;
                 if (!MaterialDefinitionRegistry.contains(seed)) {
                     logger.info("No definitions found, generating...");
                     definitions = MaterialDefinitionGenerator.makeDefinitions(MaterialDefinitionGenerator.generateColors(new Random(seed)), seed);
@@ -118,12 +118,13 @@ public class RandoresPacketHandler implements IMessageHandler<RandoresPacket, IM
                     public void run() {
                         EntityPlayer player = RandoresClientSideRegistry.getClientPlayer();
                         if (!FlexibleTextureRegistry.isInitialized() || FlexibleTextureRegistry.getTextureSeed() != seed) {
+                            MaterialDefinitionGenerator.setupArmorTextures(definitions);
                             player.sendMessage(new TextComponentString("[Randores] Reloading your resources! Expect a screen freeze for ~30 seconds. (Also, if you move your mouse or attempt to give the game any sort of input, it will probably crash.)"));
                             new Thread(new Runnable() {
                                 @Override
                                 public void run() {
                                     try {
-                                        TimeUnit.SECONDS.sleep(1);
+                                        TimeUnit.SECONDS.sleep(5);
                                     } catch (InterruptedException ignore) {
 
                                     }

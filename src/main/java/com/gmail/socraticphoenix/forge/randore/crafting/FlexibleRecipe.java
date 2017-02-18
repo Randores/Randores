@@ -163,7 +163,7 @@ public class FlexibleRecipe implements CraftiniumRecipe {
         if (definition.hasComponent(this.type)) {
             Component component = definition.getComponent(this.type);
             ItemStack stack = new ItemStack(component.makeItem(), component.quantity());
-            Randores.applyData(stack, definition.getName() + " " + component.getName(), worldIn);
+            Randores.applyData(stack, worldIn);
             return stack;
         }
         return ItemStack.EMPTY;

@@ -67,12 +67,12 @@ public class FlexibleOre extends Block {
 
             if (this.getComponent(seed).isRequiresSmelting()) {
                 ItemStack stack = new ItemStack(Item.getItemFromBlock(this), 1);
-                Randores.applyData(stack, this.getDefinition(seed).getName() + " Ore", worldw);
+                Randores.applyData(stack, worldw);
                 drops.add(stack);
             } else {
                 int amount = (random.nextInt(this.getComponent(seed).getMaxDrops() - this.getComponent(seed).getMinDrops()) + this.getComponent(seed).getMinDrops()) + (fortune > 0 ? random.nextInt(fortune) * random.nextInt(fortune) : 0);
                 ItemStack stack = new ItemStack(this.getDefinition(seed).getMaterial().makeItem());
-                Randores.applyData(stack, this.getDefinition(seed).getName() + " " + this.getDefinition(seed).getMaterial().getType().getName(), worldw);
+                Randores.applyData(stack, worldw);
                 for (int i = 0; i < amount; i++) {
                     drops.add(stack.copy());
                 }

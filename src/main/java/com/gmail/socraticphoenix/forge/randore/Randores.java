@@ -22,6 +22,9 @@
 package com.gmail.socraticphoenix.forge.randore;
 
 import com.gmail.socraticphoenix.forge.randore.block.FlexibleBlockRegistry;
+import com.gmail.socraticphoenix.forge.randore.block.FlexibleBrick;
+import com.gmail.socraticphoenix.forge.randore.block.FlexibleOre;
+import com.gmail.socraticphoenix.forge.randore.component.Components;
 import com.gmail.socraticphoenix.forge.randore.component.CraftableType;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinition;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinitionRegistry;
@@ -35,6 +38,7 @@ import com.gmail.socraticphoenix.forge.randore.crafting.forge.CraftiniumForgeTil
 import com.gmail.socraticphoenix.forge.randore.crafting.forge.CraftiniumSmeltRegistry;
 import com.gmail.socraticphoenix.forge.randore.crafting.table.CraftiniumDelegateRecipe;
 import com.gmail.socraticphoenix.forge.randore.crafting.table.CraftiniumRecipeRegistry;
+import com.gmail.socraticphoenix.forge.randore.item.FlexibleItem;
 import com.gmail.socraticphoenix.forge.randore.item.FlexibleItemRegistry;
 import com.gmail.socraticphoenix.forge.randore.packet.RandoresNetworking;
 import com.google.common.base.Supplier;
@@ -42,11 +46,13 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
@@ -207,20 +213,41 @@ public class Randores {
         return "randores.item." + num;
     }
 
-    public static ItemStack applyData(ItemStack stack, String name) {
-        stack.setStackDisplayName(Randores.RESET + name);
+    public static ItemStack applyData(ItemStack stack, long seed) {
+        if (stack.getItem() instanceof FlexibleItem) {
+            FlexibleItem item = (FlexibleItem) stack.getItem();
+            if (item.getDefinition(seed).hasComponent(item.getType())) {
+                stack.setStackDisplayName(makeName(item.getDefinition(seed).getName() + " " + item.getDefinition(seed).getComponent(item.getType()).getName()));
+                NBTTagCompound randores = stack.getOrCreateSubCompound("randores");
+                randores.setLong("seed", seed);
+            }
+        } else if (stack.getItem() instanceof ItemBlock) {
+            ItemBlock block = (ItemBlock) stack.getItem();
+            if (block.getBlock() instanceof FlexibleOre) {
+                FlexibleOre ore = (FlexibleOre) block.getBlock();
+                if (ore.getDefinition(seed).hasComponent(Components.ORE)) {
+                    stack.setStackDisplayName(makeName(ore.getDefinition(seed).getName() + " " + ore.getDefinition(seed).getComponent(Components.ORE).getName()));
+                    NBTTagCompound randores = stack.getOrCreateSubCompound("randores");
+                    randores.setLong("seed", seed);
+                }
+            } else if (block.getBlock() instanceof FlexibleBrick) {
+                FlexibleBrick brick = (FlexibleBrick) block.getBlock();
+                if (brick.getDefinition(seed).hasComponent(Components.BRICKS)) {
+                    stack.setStackDisplayName(makeName(brick.getDefinition(seed).getName() + " " + brick.getDefinition(seed).getComponent(Components.BRICKS).getName()));
+                    NBTTagCompound randores = stack.getOrCreateSubCompound("randores");
+                    randores.setLong("seed", seed);
+                }
+            }
+        }
         return stack;
     }
 
-    public static ItemStack applyData(ItemStack stack, String name, long seed) {
-        stack.setStackDisplayName(Randores.RESET + name);
-        NBTTagCompound randores = stack.getOrCreateSubCompound("randores");
-        randores.setLong("seed", seed);
-        return stack;
+    private static String makeName(String name) {
+        return TextFormatting.RESET + name;
     }
 
-    public static ItemStack applyData(ItemStack stack, String name, World world) {
-        return Randores.applyData(stack, name, Randores.getRandoresSeed(world));
+    public static ItemStack applyData(ItemStack stack, World world) {
+        return Randores.applyData(stack, Randores.getRandoresSeed(world));
     }
 
     public static long getRandoresSeed(ItemStack stack) {

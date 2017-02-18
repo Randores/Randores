@@ -27,20 +27,24 @@ import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinition;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinitionRegistry;
 import com.google.common.collect.Multimap;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumHand;
 import net.minecraft.world.World;
+import net.minecraftforge.common.ISpecialArmor;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
-public class FlexibleItemArmor extends ItemArmor implements FlexibleItem {
+public class FlexibleItemArmor extends ItemArmor implements FlexibleItem, ISpecialArmor {
     private Map<Long, ItemArmor> backers;
     private int index;
     private int renderIndex;
@@ -62,6 +66,11 @@ public class FlexibleItemArmor extends ItemArmor implements FlexibleItem {
         } else {
             return 1;
         }
+    }
+
+    @Override
+    public Multimap<String, AttributeModifier> getItemAttributeModifiers(EntityEquipmentSlot equipmentSlot) {
+        return super.getItemAttributeModifiers(equipmentSlot);
     }
 
     @Override
@@ -235,6 +244,31 @@ public class FlexibleItemArmor extends ItemArmor implements FlexibleItem {
     @Override
     public Components getType() {
         return this.component;
+    }
+
+    @Override
+    public ArmorProperties getProperties(EntityLivingBase player, @Nonnull ItemStack armor, DamageSource source, double damage, int slot) {
+        if(this.hasBacker(player.world)) {
+            ItemArmor backer = this.getBacker(player.world);
+            return new ArmorProperties(0, backer.damageReduceAmount / 25d, Integer.MAX_VALUE);
+        }
+        return new ArmorProperties(0, 1, Integer.MAX_VALUE);
+    }
+
+    @Override
+    public int getArmorDisplay(EntityPlayer player, @Nonnull ItemStack armor, int slot) {
+        if(this.hasBacker(player.world)) {
+            return this.getBacker(player.world).damageReduceAmount;
+        }
+        return 0;
+    }
+
+    @Override
+    public void damageArmor(EntityLivingBase entity, @Nonnull ItemStack stack, DamageSource source, int damage, int slot) {
+        this.setDamage(stack, this.getDamage(stack) + damage);
+        if(this.getDamage(stack) >= this.getMaxDamage(stack)) {
+            stack.shrink(1);
+        }
     }
 
 }

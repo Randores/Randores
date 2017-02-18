@@ -21,16 +21,10 @@
  */
 package com.gmail.socraticphoenix.forge.randore;
 
-import com.gmail.socraticphoenix.forge.randore.block.FlexibleBrick;
 import com.gmail.socraticphoenix.forge.randore.block.FlexibleOre;
-import com.gmail.socraticphoenix.forge.randore.component.Component;
-import com.gmail.socraticphoenix.forge.randore.component.CraftableType;
-import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinition;
 import com.gmail.socraticphoenix.forge.randore.item.FlexibleItem;
-import net.minecraft.block.Block;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
@@ -47,31 +41,10 @@ public class RandoresItemListener {
         if (!world.isRemote) {
             EntityItem entityItem = ev.getItem();
             ItemStack item = entityItem.getEntityItem();
-            Item raw = item.getItem();
-            String name = null;
-            if (item.getSubCompound("display") == null) {
-                if (raw instanceof ItemBlock) {
-                    Block block = ((ItemBlock) raw).getBlock();
-                    if (block instanceof FlexibleOre) {
-                        FlexibleOre target = (FlexibleOre) block;
-                        MaterialDefinition definition = target.getDefinition(seed);
-                        name = definition.getName() + " Ore";
-                    } else if (block instanceof FlexibleBrick) {
-                        FlexibleBrick target = (FlexibleBrick) block;
-                        MaterialDefinition definition = target.getDefinition(seed);
-                        name = definition.getName() + " " + CraftableType.BRICKS.getName();
-                    }
-                } else if (raw instanceof FlexibleItem) {
-                    FlexibleItem target = (FlexibleItem) raw;
-                    MaterialDefinition definition = target.getDefinition(seed);
-                    if (definition.hasComponent(target.getType())) {
-                        Component component = definition.getComponent(target.getType());
-                        name = definition.getName() + " " + component.getName();
-                    }
+            if (item.getItem() instanceof FlexibleItem || (item.getItem() instanceof ItemBlock && (((ItemBlock) item.getItem()).getBlock() instanceof FlexibleOre || ((ItemBlock) item.getItem()).getBlock() instanceof FlexibleOre))) {
+                if (item.getSubCompound("display") == null || item.getSubCompound("randores") == null || Randores.getRandoresSeed(item) != seed) {
+                    Randores.applyData(item, world);
                 }
-            }
-            if (name != null) {
-                Randores.applyData(item, name, world);
             }
         }
     }

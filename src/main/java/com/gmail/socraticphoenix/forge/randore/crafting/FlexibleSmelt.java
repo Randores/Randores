@@ -58,7 +58,7 @@ public class FlexibleSmelt implements CraftiniumSmelt {
         Item material = definition.getMaterial().makeItem();
         int amount = new IntRange(definition.getOre().getMinDrops(), definition.getOre().getMaxDrops()).randomElement();
         ItemStack stack = new ItemStack(material, amount);
-        Randores.applyData(stack, definition.getName() + " " + definition.getMaterial().getName(), worldIn);
+        Randores.applyData(stack, worldIn);
         return stack;
     }
 

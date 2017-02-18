@@ -61,7 +61,7 @@ public class RandoresClientProxy extends RandoresProxy {
                     cache.remove(entry.getKey());
                 } else {
                     long time = entry.getValue().getLong(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(15));
-                    Date date = new Date(time + TimeUnit.DAYS.toMillis(5));
+                    Date date = new Date(time + TimeUnit.DAYS.toMillis(2));
                     Date now = new Date();
                     if (date.before(now)) {
                         logger.info("Texture cache for seed: " + seed + " expired, deleting textures...");
