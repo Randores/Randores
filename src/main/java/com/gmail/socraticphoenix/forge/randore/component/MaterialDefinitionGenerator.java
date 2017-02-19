@@ -27,6 +27,7 @@ import com.gmail.socraticphoenix.forge.randore.item.FlexibleItemRegistry;
 import com.gmail.socraticphoenix.forge.randore.texture.FlexibleTextureRegistry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemArmor;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import org.apache.logging.log4j.Logger;
@@ -179,11 +180,48 @@ public class MaterialDefinitionGenerator {
         }
     }
 
+    public static void unregisterDefinitions(long seed) {
+        MaterialDefinitionRegistry.remove(seed);
+        for (int i = 0; i < 300; i++) {
+            FlexibleItemRegistry.getHoe(i).removeBacker(seed);
+            FlexibleItemRegistry.getSword(i).removeBacker(seed);
+            FlexibleItemRegistry.getAxe(i).removeBacker(seed);
+            FlexibleItemRegistry.getSpade(i).removeBacker(seed);
+            FlexibleItemRegistry.getPickaxe(i).removeBacker(seed);
+            FlexibleItemRegistry.getHelmet(i).removeBacker(seed);
+            FlexibleItemRegistry.getChestplate(i).removeBacker(seed);
+            FlexibleItemRegistry.getLeggings(i).removeBacker(seed);
+            FlexibleItemRegistry.getBoots(i).removeBacker(seed);
+        }
+    }
+
+    public static void registerDefinitionsIfNeeded(long seed) {
+        Logger logger = Randores.getInstance().getLogger();
+        if (!MaterialDefinitionRegistry.contains(seed)) {
+            logger.info("Generating definitions for Randores seed: " + seed);
+            List<MaterialDefinition> definitions = MaterialDefinitionGenerator.makeDefinitions(MaterialDefinitionGenerator.generateColors(new Random(seed)), seed);
+            MaterialDefinitionGenerator.logStatistics(definitions);
+            MaterialDefinitionRegistry.put(seed, definitions);
+            for (int i = 0; i < 300; i++) {
+                Item.ToolMaterial toolMaterial = definitions.get(i).getToolMaterial();
+                ItemArmor.ArmorMaterial armorMaterial = definitions.get(i).getArmorMaterial();
+                FlexibleItemRegistry.getHoe(i).registerBacker(seed, toolMaterial);
+                FlexibleItemRegistry.getSword(i).registerBacker(seed, toolMaterial);
+                FlexibleItemRegistry.getAxe(i).registerBacker(seed, toolMaterial);
+                FlexibleItemRegistry.getSpade(i).registerBacker(seed, toolMaterial);
+                FlexibleItemRegistry.getPickaxe(i).registerBacker(seed, toolMaterial);
+                FlexibleItemRegistry.getHelmet(i).registerBacker(seed, armorMaterial);
+                FlexibleItemRegistry.getChestplate(i).registerBacker(seed, armorMaterial);
+                FlexibleItemRegistry.getLeggings(i).registerBacker(seed, armorMaterial);
+                FlexibleItemRegistry.getBoots(i).registerBacker(seed, armorMaterial);
+            }
+        }
+    }
+
     public static void generateAndSetupTextures(List<MaterialDefinition> definitions, long seed) throws IOException {
-        Random random = new Random(seed);
         for (int i = 0; i < definitions.size(); i++) {
             MaterialDefinition def = definitions.get(i);
-            Map<String, BufferedImage> textures = def.generateTextures(random);
+            Map<String, BufferedImage> textures = def.generateTextures();
             Randores.getInstance().getTextureFile(seed).mkdirs();
             File target = new File(Randores.getInstance().getTextureFile(seed), "block." + i + ".png");
             ImageIO.write(textures.get(def.getOre().template()), "png", target);

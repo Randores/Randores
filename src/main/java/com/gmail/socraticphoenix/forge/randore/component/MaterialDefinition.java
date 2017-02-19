@@ -35,7 +35,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 public class MaterialDefinition {
     private Color color;
@@ -152,16 +151,16 @@ public class MaterialDefinition {
         return this.seed;
     }
 
-    public Map<String, BufferedImage> generateTextures(Random random) {
+    public Map<String, BufferedImage> generateTextures() {
         Map<String, BufferedImage> textures = new HashMap<String, BufferedImage>();
-        textures.put(ore.template(), RandoresClientSideRegistry.getTemplate(ore.template()).applyWith(this.color, random));
-        textures.put(material.template(), RandoresClientSideRegistry.getTemplate(material.template()).applyWith(this.color, random));
+        textures.put(ore.template(), RandoresClientSideRegistry.getTemplate(ore.template()).applyWith(this.color));
+        textures.put(material.template(), RandoresClientSideRegistry.getTemplate(material.template()).applyWith(this.color));
         for (CraftableComponent component : this.craftables) {
             if (component.getType() == CraftableType.HELMET) {
-                textures.put("armor_1", RandoresClientSideRegistry.getTemplate("armor_over_base").applyWith(this.color, random));
-                textures.put("armor_2", RandoresClientSideRegistry.getTemplate("armor_under_base").applyWith(this.color, random));
+                textures.put("armor_1", RandoresClientSideRegistry.getTemplate("armor_over_base").applyWith(this.color));
+                textures.put("armor_2", RandoresClientSideRegistry.getTemplate("armor_under_base").applyWith(this.color));
             }
-            textures.put(component.template(), RandoresClientSideRegistry.getTemplate(component.template()).applyWith(this.color, random));
+            textures.put(component.template(), RandoresClientSideRegistry.getTemplate(component.template()).applyWith(this.color));
         }
         return textures;
     }

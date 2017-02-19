@@ -26,13 +26,10 @@ import com.gmail.socraticphoenix.forge.randore.RandoresClientSideRegistry;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinition;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinitionGenerator;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinitionRegistry;
-import com.gmail.socraticphoenix.forge.randore.item.FlexibleItemRegistry;
 import com.gmail.socraticphoenix.forge.randore.texture.FlexibleTextureRegistry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemArmor;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.common.config.ConfigCategory;
 import net.minecraftforge.common.config.Configuration;
@@ -45,7 +42,6 @@ import org.apache.logging.log4j.Logger;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 public class RandoresPacketHandler implements IMessageHandler<RandoresPacket, IMessage> {
@@ -72,21 +68,8 @@ public class RandoresPacketHandler implements IMessageHandler<RandoresPacket, IM
                 final List<MaterialDefinition> definitions;
                 if (!MaterialDefinitionRegistry.contains(seed)) {
                     logger.info("No definitions found, generating...");
-                    definitions = MaterialDefinitionGenerator.makeDefinitions(MaterialDefinitionGenerator.generateColors(new Random(seed)), seed);
-                    MaterialDefinitionRegistry.put(seed, definitions);
-                    for (int i = 0; i < 300; i++) {
-                        Item.ToolMaterial toolMaterial = definitions.get(i).getToolMaterial();
-                        ItemArmor.ArmorMaterial armorMaterial = definitions.get(i).getArmorMaterial();
-                        FlexibleItemRegistry.getHoe(i).registerBacker(seed, toolMaterial);
-                        FlexibleItemRegistry.getSword(i).registerBacker(seed, toolMaterial);
-                        FlexibleItemRegistry.getAxe(i).registerBacker(seed, toolMaterial);
-                        FlexibleItemRegistry.getSpade(i).registerBacker(seed, toolMaterial);
-                        FlexibleItemRegistry.getPickaxe(i).registerBacker(seed, toolMaterial);
-                        FlexibleItemRegistry.getHelmet(i).registerBacker(seed, armorMaterial);
-                        FlexibleItemRegistry.getChestplate(i).registerBacker(seed, armorMaterial);
-                        FlexibleItemRegistry.getLeggings(i).registerBacker(seed, armorMaterial);
-                        FlexibleItemRegistry.getBoots(i).registerBacker(seed, armorMaterial);
-                    }
+                    MaterialDefinitionGenerator.registerDefinitionsIfNeeded(seed);
+                    definitions = MaterialDefinitionRegistry.get(seed);
                     logger.info("Definitions generated.");
                 } else {
                     logger.info("Definitions already registered, loading...");

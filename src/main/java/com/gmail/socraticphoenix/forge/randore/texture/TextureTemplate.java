@@ -79,7 +79,8 @@ public class TextureTemplate {
         return color.getRGB();
     }
 
-    public BufferedImage applyWith(Color color, Random random) {
+    public BufferedImage applyWith(Color color) {
+        Random random = new Random(color.getRGB());
         BufferedImage image = deepCopy(this.image);
         for (PixelTemplate template : this.pixelTemplates) {
             int x = template.getX();

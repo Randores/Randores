@@ -30,6 +30,7 @@ public class MaterialDefinitionRegistry {
     private static final Map<Long, List<MaterialDefinition>> definitions = Collections.synchronizedMap(new HashMap<Long, List<MaterialDefinition>>());
 
     public static List<MaterialDefinition> get(long seed) {
+        MaterialDefinitionGenerator.registerDefinitionsIfNeeded(seed);
         return MaterialDefinitionRegistry.definitions.get(seed);
     }
 

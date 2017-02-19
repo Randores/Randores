@@ -23,6 +23,7 @@ package com.gmail.socraticphoenix.forge.randore;
 
 import com.gmail.socraticphoenix.forge.randore.component.Dimension;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinition;
+import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinitionGenerator;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinitionRegistry;
 import com.gmail.socraticphoenix.forge.randore.component.OreComponent;
 import com.gmail.socraticphoenix.forge.randore.crafting.CraftingBlocks;
@@ -44,7 +45,8 @@ public class RandoresWorldGenerator implements IWorldGenerator {
     @Override
     public void generate(Random random, int chunkX, int chunkZ, World world, IChunkGenerator chunkGenerator, IChunkProvider chunkProvider) {
         if (!world.isRemote) {
-            for (MaterialDefinition definition : MaterialDefinitionRegistry.get(Randores.getRandoresSeed(world))) {
+            long seed = Randores.getRandoresSeed(world);
+            for (MaterialDefinition definition : MaterialDefinitionRegistry.get(seed)) {
                 OreComponent component = definition.getOre();
                 if (component.getDimension().getId() == world.provider.getDimension()) {
                     this.generateOre(component.makeBlock(), world, random, chunkX * 16, chunkZ * 16, component.getMaxVein(), component.getMinVein(), component.getMaxY(), component.getMinY(), component.getMaxOccurences(), component.getMinOccurences(), component.getDimension().getGenerateIn());
