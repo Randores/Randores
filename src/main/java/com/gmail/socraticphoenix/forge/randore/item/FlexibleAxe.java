@@ -22,6 +22,7 @@
 package com.gmail.socraticphoenix.forge.randore.item;
 
 import com.gmail.socraticphoenix.forge.randore.Randores;
+import com.gmail.socraticphoenix.forge.randore.RandoresClientSideRegistry;
 import com.gmail.socraticphoenix.forge.randore.component.Components;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinition;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinitionRegistry;
@@ -36,9 +37,12 @@ import net.minecraft.item.ItemAxe;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.relauncher.Side;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class FlexibleAxe extends ItemAxe implements FlexibleItem {
@@ -49,6 +53,17 @@ public class FlexibleAxe extends ItemAxe implements FlexibleItem {
         super(Randores.MATERIAL_DEFAULT, 1, 1);
         this.index = index;
         this.backers = new HashMap<Long, ItemAxe>();
+    }
+
+    @Override
+    public void addInformation(ItemStack stack, EntityPlayer playerIn, List<String> tooltip, boolean advanced) {
+        if (FMLCommonHandler.instance().getSide() == Side.CLIENT && this.getDefinition(playerIn.world).hasComponent(this.getType())) {
+            tooltip.remove(0);
+            MaterialDefinition definition = this.getDefinition(playerIn.world);
+            tooltip.add(0, definition.getName() + " " + definition.getComponent(this.getType()).getLocalName(RandoresClientSideRegistry.getCurrentLocale()));
+            tooltip.addAll(definition.generateLore(RandoresClientSideRegistry.getCurrentLocale()));
+        }
+        super.addInformation(stack, playerIn, tooltip, advanced);
     }
 
     @Override

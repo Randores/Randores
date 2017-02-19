@@ -21,18 +21,22 @@
  */
 package com.gmail.socraticphoenix.forge.randore.component;
 
+import com.gmail.socraticphoenix.forge.randore.RandoresTranslations;
+
+import java.util.Locale;
+
 public enum  CraftableType {
-    AXE("Axe", "axe", " XX", " SX", " S "),
-    HOE("Hoe", "hoe", " XX", " S ", " S "),
-    PICKAXE("Pickaxe", "pickaxe", "XXX", " S ", " S "),
-    SHOVEL("Shovel", "shovel", "X  ", "S  ", "S  "),
-    SWORD("Sword", "sword", "X  ", "X  ", "S  "),
-    STICK("Stick", "stick", " X ", "X  ", "   "),
-    BOOTS("Boots", "boots", "X X", "X X", "   "),
-    CHESTPLATE("Chestplate", "chestplate", "X X", "XXX", "XXX"),
-    HELMET("Helmet", "helmet", "XXX", "X X", "   "),
-    LEGGINGS("Leggings", "leggings", "XXX", "X X", "X X"),
-    BRICKS("Bricks", "brick", "XX ", "XX ", "   ");
+    AXE(RandoresTranslations.Keys.AXE, "axe", " XX", " SX", " S "),
+    HOE(RandoresTranslations.Keys.HOE, "hoe", " XX", " S ", " S "),
+    PICKAXE(RandoresTranslations.Keys.PICKAXE, "pickaxe", "XXX", " S ", " S "),
+    SHOVEL(RandoresTranslations.Keys.SHOVEL, "shovel", "X  ", "S  ", "S  "),
+    SWORD(RandoresTranslations.Keys.SWORD, "sword", "X  ", "X  ", "S  "),
+    STICK(RandoresTranslations.Keys.STICK, "stick", " X ", "X  ", "   "),
+    BOOTS(RandoresTranslations.Keys.BOOTS, "boots", "X X", "X X", "   "),
+    CHESTPLATE(RandoresTranslations.Keys.CHESTPLATE, "chestplate", "X X", "XXX", "XXX"),
+    HELMET(RandoresTranslations.Keys.HELMET, "helmet", "XXX", "X X", "   "),
+    LEGGINGS(RandoresTranslations.Keys.LEGGINGS, "leggings", "XXX", "X X", "X X"),
+    BRICKS(RandoresTranslations.Keys.BRICKS, "brick", "XX ", "XX ", "   ");
 
     private String template;
     private String name;
@@ -46,6 +50,10 @@ public enum  CraftableType {
 
     public String getName() {
         return this.name;
+    }
+
+    public String getLocalName(Locale locale) {
+        return RandoresTranslations.get(locale, this.getName());
     }
 
     public String getTemplate() {

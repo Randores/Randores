@@ -66,7 +66,7 @@ public class RandoresResourceManager {
     public static List<String> getResourceLines(String resourceName) throws IOException {
         InputStream stream = RandoresResourceManager.class.getResourceAsStream(resourceName);
         if(stream == null) {
-            throw new IOException("Cannot getBlock resource \"" + resourceName + "\" from Jar file.");
+            throw new IOException("Cannot get resource \"" + resourceName + "\" from Jar file.");
         }
         BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
         List<String> lines = new ArrayList<String>();

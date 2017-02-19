@@ -21,6 +21,8 @@
  */
 package com.gmail.socraticphoenix.forge.randore.crafting.forge;
 
+import com.gmail.socraticphoenix.forge.randore.RandoresClientSideRegistry;
+import com.gmail.socraticphoenix.forge.randore.RandoresTranslations;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -38,7 +40,7 @@ public class CraftiniumForgeGui extends GuiContainer {
     }
 
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
-        String s = "Craftinium Forge";
+        String s = RandoresTranslations.get(RandoresClientSideRegistry.getCurrentLocale(), RandoresTranslations.Keys.CRAFTINIUM_FORGE);
         this.fontRendererObj.drawString(s, this.xSize / 2 - this.fontRendererObj.getStringWidth(s) / 2, 6, 4210752);
         this.fontRendererObj.drawString(this.playerInventory.getDisplayName().getUnformattedText(), 8, this.ySize - 96 + 2, 4210752);
     }

@@ -23,10 +23,12 @@ package com.gmail.socraticphoenix.forge.randore.component;
 
 import com.gmail.socraticphoenix.forge.randore.RandoresClientSideRegistry;
 import com.gmail.socraticphoenix.forge.randore.RandoresNameAlgorithm;
+import com.gmail.socraticphoenix.forge.randore.RandoresTranslations;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.util.EnumHelper;
 
 import java.awt.Color;
@@ -34,6 +36,7 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class MaterialDefinition {
@@ -77,29 +80,33 @@ public class MaterialDefinition {
         this.seed = seed;
     }
 
-    public List<String> generateLore() {
+    private String t(String s, Locale locale) {
+        return RandoresTranslations.get(locale, s);
+    }
+
+    public List<String> generateLore(Locale locale) {
         List<String> list = new ArrayList<String>();
-        list.add("Randores Material Informaion:");
-        list.add("  Efficiency: " + this.material.getEfficiency());
-        list.add("  Full Armor: " + this.totalArmor);
-        list.add("  Base Damage: " + this.toolMaterial.getDamageVsEntity());
-        list.add("  Base Durability: " + this.material.getMaxUses());
-        list.add("  Enchantibility: " + this.material.getEnchantability());
-        String recipes = "  Recipes: ";
+        list.add(TextFormatting.GREEN + t(RandoresTranslations.Keys.INFORMATION, locale) + ":");
+        list.add(TextFormatting.GREEN + "  " + t(RandoresTranslations.Keys.EFFICIENCY, locale) + ": " + this.material.getEfficiency());
+        list.add(TextFormatting.GREEN + "  " + t(RandoresTranslations.Keys.FULL_ARMOR, locale) + ": " + this.totalArmor);
+        list.add(TextFormatting.GREEN + "  " + t(RandoresTranslations.Keys.DAMAGE, locale) + ": " + this.toolMaterial.getDamageVsEntity());
+        list.add(TextFormatting.GREEN + "  " + t(RandoresTranslations.Keys.DURABILITY, locale) + ": " + this.material.getMaxUses());
+        list.add(TextFormatting.GREEN + "  " + t(RandoresTranslations.Keys.ENCHANTABILITY, locale) + ": " + this.material.getEnchantability());
+        String recipes = TextFormatting.GREEN + "  " + t(RandoresTranslations.Keys.RECIPES, locale) + ": ";
         if(this.hasComponent(Components.PICKAXE)) {
-            recipes += "Tools, ";
+            recipes += t(RandoresTranslations.Keys.TOOLS_RECIPE, locale) + ", ";
         }
         if(this.hasComponent(Components.HELMET)) {
-            recipes += "Armor, ";
+            recipes += t(RandoresTranslations.Keys.ARMOR_RECIPE, locale) + ", ";
         }
         if(this.hasComponent(Components.SWORD)) {
-            recipes += "Sword, ";
+            recipes += t(RandoresTranslations.Keys.SWORD_RECIPE, locale) + ", ";
         }
         if(this.hasComponent(Components.BRICKS)) {
-            recipes += "Bricks, ";
+            recipes += t(RandoresTranslations.Keys.BRICKS_RECIPE, locale) + ", ";
         }
         if(this.hasComponent(Components.STICK)) {
-            recipes += "Stick, ";
+            recipes += t(RandoresTranslations.Keys.STICK_RECIPE, locale) + ", ";
         }
         recipes = recipes.substring(0, recipes.length() - 2);
         list.add(recipes);

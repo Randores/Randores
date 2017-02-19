@@ -21,13 +21,17 @@
  */
 package com.gmail.socraticphoenix.forge.randore.component;
 
+import com.gmail.socraticphoenix.forge.randore.RandoresTranslations;
+
+import java.util.Locale;
+
 public enum  MaterialType {
-    INGOT("Ingot", "ingot"),
-    DUST("Dust", "dust"),
-    GEM("Gem", "gem"),
-    EMERALD("Emerald", "emerald"),
-    CIRCLE_GEM("Gem", "circular_gem"),
-    SHARD("Shard", "shard");
+    INGOT(RandoresTranslations.Keys.INGOT, "ingot"),
+    DUST(RandoresTranslations.Keys.DUST, "dust"),
+    GEM(RandoresTranslations.Keys.GEM, "gem"),
+    EMERALD(RandoresTranslations.Keys.EMERALD, "emerald"),
+    CIRCLE_GEM(RandoresTranslations.Keys.CIRCLE_GEM, "circular_gem"),
+    SHARD(RandoresTranslations.Keys.SHARD, "shard");
 
     private String template;
     private String name;
@@ -44,4 +48,9 @@ public enum  MaterialType {
     public String getTemplate() {
         return this.template;
     }
+
+    public String getLocalName(Locale locale) {
+        return RandoresTranslations.get(locale, this.getName());
+    }
+
 }

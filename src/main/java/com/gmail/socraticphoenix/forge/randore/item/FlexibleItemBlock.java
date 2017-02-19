@@ -26,8 +26,9 @@ import com.gmail.socraticphoenix.forge.randore.RandoresClientSideRegistry;
 import com.gmail.socraticphoenix.forge.randore.component.Components;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinition;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinitionRegistry;
+import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.FMLCommonHandler;
@@ -35,11 +36,14 @@ import net.minecraftforge.fml.relauncher.Side;
 
 import java.util.List;
 
-public class FlexibleMaterial extends Item implements FlexibleItem {
+public class FlexibleItemBlock extends ItemBlock implements FlexibleItem {
     private int index;
+    private Components component;
 
-    public FlexibleMaterial(int index) {
+    public FlexibleItemBlock(Block block, int index, Components component) {
+        super(block);
         this.index = index;
+        this.component = component;
     }
 
     @Override

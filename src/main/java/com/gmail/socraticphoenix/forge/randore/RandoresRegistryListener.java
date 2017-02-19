@@ -31,6 +31,7 @@ import com.gmail.socraticphoenix.forge.randore.crafting.CraftingItems;
 import com.gmail.socraticphoenix.forge.randore.item.FlexibleAxe;
 import com.gmail.socraticphoenix.forge.randore.item.FlexibleHoe;
 import com.gmail.socraticphoenix.forge.randore.item.FlexibleItemArmor;
+import com.gmail.socraticphoenix.forge.randore.item.FlexibleItemBlock;
 import com.gmail.socraticphoenix.forge.randore.item.FlexibleItemRegistry;
 import com.gmail.socraticphoenix.forge.randore.item.FlexibleMaterial;
 import com.gmail.socraticphoenix.forge.randore.item.FlexiblePickaxe;
@@ -158,14 +159,18 @@ public class RandoresRegistryListener {
             ev.getRegistry().register(boots);
         }
 
+        int n = 0;
         for (FlexibleOre block : FlexibleBlockRegistry.getOres()) {
-            Item item = new ItemBlock(block).setUnlocalizedName(block.getUnlocalizedName()).setRegistryName(block.getRegistryName());
+            Item item = new FlexibleItemBlock(block, n, Components.ORE).setUnlocalizedName(block.getUnlocalizedName()).setRegistryName(block.getRegistryName());
             ev.getRegistry().register(item);
+            n++;
         }
 
+        n = 0;
         for (Block brick : FlexibleBlockRegistry.getBricks()) {
-            Item item = new ItemBlock(brick).setUnlocalizedName(brick.getUnlocalizedName()).setRegistryName(brick.getRegistryName());
+            Item item = new FlexibleItemBlock(brick, n, Components.BRICKS).setUnlocalizedName(brick.getUnlocalizedName()).setRegistryName(brick.getRegistryName());
             ev.getRegistry().register(item);
+            n++;
         }
 
         ev.getRegistry().register(new ItemBlock(CraftingBlocks.craftiniumTable).setUnlocalizedName(CraftingBlocks.craftiniumTable.getUnlocalizedName()).setRegistryName(CraftingBlocks.craftiniumTable.getRegistryName()));

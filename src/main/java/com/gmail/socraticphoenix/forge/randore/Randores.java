@@ -40,6 +40,7 @@ import com.gmail.socraticphoenix.forge.randore.crafting.table.CraftiniumRecipeRe
 import com.gmail.socraticphoenix.forge.randore.item.FlexibleItem;
 import com.gmail.socraticphoenix.forge.randore.item.FlexibleItemRegistry;
 import com.gmail.socraticphoenix.forge.randore.packet.RandoresNetworking;
+import com.gmail.socraticphoenix.forge.randore.resource.RandoresResourceManager;
 import com.google.common.base.Supplier;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.SoundEvents;
@@ -75,6 +76,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 
@@ -214,13 +216,14 @@ public class Randores {
         return "randores.item." + num;
     }
 
+    public static boolean hasRandoresSeed(ItemStack stack) {
+        return stack.getSubCompound("randores") != null;
+    }
+
     public static ItemStack applyData(ItemStack stack, long seed) {
         if (stack.getItem() instanceof FlexibleItem) {
             FlexibleItem item = (FlexibleItem) stack.getItem();
             if (item.getDefinition(seed).hasComponent(item.getType())) {
-                MaterialDefinition definition = item.getDefinition(seed);
-                stack.setStackDisplayName(makeName(definition.getName() + " " + definition.getComponent(item.getType()).getName()));
-                applyLore(definition.generateLore(), stack);
                 NBTTagCompound randores = stack.getOrCreateSubCompound("randores");
                 randores.setLong("seed", seed);
             }
@@ -229,18 +232,12 @@ public class Randores {
             if (block.getBlock() instanceof FlexibleOre) {
                 FlexibleOre ore = (FlexibleOre) block.getBlock();
                 if (ore.getDefinition(seed).hasComponent(Components.ORE)) {
-                    MaterialDefinition definition = ore.getDefinition(seed);
-                    stack.setStackDisplayName(makeName(definition.getName() + " " + definition.getComponent(Components.ORE).getName()));
-                    applyLore(definition.generateLore(), stack);
                     NBTTagCompound randores = stack.getOrCreateSubCompound("randores");
                     randores.setLong("seed", seed);
                 }
             } else if (block.getBlock() instanceof FlexibleBrick) {
                 FlexibleBrick brick = (FlexibleBrick) block.getBlock();
                 if (brick.getDefinition(seed).hasComponent(Components.BRICKS)) {
-                    MaterialDefinition definition = brick.getDefinition(seed);
-                    stack.setStackDisplayName(makeName(definition.getName() + " " + definition.getComponent(Components.BRICKS).getName()));
-                    applyLore(definition.generateLore(), stack);
                     NBTTagCompound randores = stack.getOrCreateSubCompound("randores");
                     randores.setLong("seed", seed);
                 }
@@ -288,6 +285,21 @@ public class Randores {
         this.tex.mkdirs();
         if (!this.conf.exists()) {
             this.conf.createNewFile();
+        }
+
+        List<String> languages = RandoresResourceManager.getResourceLines("ab_dict.txt");
+        for(String lang : languages) {
+            Locale locale = null;
+            for(Locale test : Locale.getAvailableLocales()) {
+                String langS = test.getLanguage();
+                if((test.getCountry().isEmpty() && langS.equals(lang)) || (langS + "_" + test.getCountry()).equals(lang)) {
+                    locale = test;
+                    break;
+                }
+            }
+            if(locale != null) {
+                RandoresTranslations.registerFromResources(locale, lang + ".lang");
+            }
         }
 
         GameRegistry.registerTileEntityWithAlternatives(CraftiniumForgeTileEntity.class, "craftinium_forge", "craftinium_forge_lit");

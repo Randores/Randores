@@ -23,6 +23,8 @@ package com.gmail.socraticphoenix.forge.randore.component;
 
 import net.minecraft.item.Item;
 
+import java.util.Locale;
+
 public class MaterialComponent implements Component {
     private MaterialType type;
     private int harvestLevel;
@@ -57,6 +59,11 @@ public class MaterialComponent implements Component {
     @Override
     public String getName() {
         return this.type.getName();
+    }
+
+    @Override
+    public String getLocalName(Locale locale) {
+        return this.type.getLocalName(locale);
     }
 
     public float getToughness() {

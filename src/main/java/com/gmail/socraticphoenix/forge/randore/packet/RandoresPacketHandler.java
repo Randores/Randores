@@ -23,6 +23,7 @@ package com.gmail.socraticphoenix.forge.randore.packet;
 
 import com.gmail.socraticphoenix.forge.randore.Randores;
 import com.gmail.socraticphoenix.forge.randore.RandoresClientSideRegistry;
+import com.gmail.socraticphoenix.forge.randore.RandoresTranslations;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinition;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinitionGenerator;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinitionRegistry;
@@ -53,7 +54,7 @@ public class RandoresPacketHandler implements IMessageHandler<RandoresPacket, IM
             @Override
             public void run() {
                 EntityPlayer player = RandoresClientSideRegistry.getClientPlayer();
-                player.sendMessage(new TextComponentString("[Randores] Randores is setting up textures (in a separate thread)... Your resources will be reloaded in a moment."));
+                player.sendMessage(new TextComponentString("[Randores] " + RandoresTranslations.get(RandoresClientSideRegistry.getCurrentLocale(), RandoresTranslations.Keys.TEXTURES_MESSAGE)));
             }
         });
 
@@ -102,7 +103,7 @@ public class RandoresPacketHandler implements IMessageHandler<RandoresPacket, IM
                         EntityPlayer player = RandoresClientSideRegistry.getClientPlayer();
                         if (!FlexibleTextureRegistry.isInitialized() || FlexibleTextureRegistry.getTextureSeed() != seed) {
                             MaterialDefinitionGenerator.setupArmorTextures(definitions);
-                            player.sendMessage(new TextComponentString("[Randores] Reloading your resources! Expect a screen freeze for ~30 seconds. (Also, if you move your mouse or attempt to give the game any sort of input, it will probably crash.)"));
+                            player.sendMessage(new TextComponentString("[Randores] " + RandoresTranslations.get(RandoresClientSideRegistry.getCurrentLocale(), RandoresTranslations.Keys.RESOURCES_RELOADING)));
                             new Thread(new Runnable() {
                                 @Override
                                 public void run() {

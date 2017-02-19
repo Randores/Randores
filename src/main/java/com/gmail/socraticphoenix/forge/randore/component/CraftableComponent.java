@@ -23,6 +23,8 @@ package com.gmail.socraticphoenix.forge.randore.component;
 
 import net.minecraft.item.Item;
 
+import java.util.Locale;
+
 public class CraftableComponent implements Component {
     private CraftableType type;
     private int quantity;
@@ -47,6 +49,11 @@ public class CraftableComponent implements Component {
     @Override
     public String getName() {
         return this.type.getName();
+    }
+
+    @Override
+    public String getLocalName(Locale locale) {
+        return this.type.getLocalName(locale);
     }
 
     public String template() {

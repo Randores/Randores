@@ -24,8 +24,11 @@ package com.gmail.socraticphoenix.forge.randore;
 import com.gmail.socraticphoenix.forge.randore.texture.TextureTemplate;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.relauncher.Side;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -51,6 +54,18 @@ public class RandoresClientSideRegistry {
 
     public static EntityPlayer getClientPlayer() {
         return Minecraft.getMinecraft().player;
+    }
+
+    public static Locale getCurrentLocale() {
+        return FMLCommonHandler.instance().getSide() == Side.CLIENT ? RandoresClientSideRegistry.clientSideLocale() : RandoresClientSideRegistry.serverSideLocale();
+    }
+
+    private static Locale clientSideLocale() {
+        return Minecraft.getMinecraft().getLanguageManager().getCurrentLanguage().getJavaLocale();
+    }
+
+    private static Locale serverSideLocale() {
+        return Locale.getDefault();
     }
 
 }

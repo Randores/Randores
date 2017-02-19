@@ -23,6 +23,8 @@ package com.gmail.socraticphoenix.forge.randore.component;
 
 import net.minecraft.item.Item;
 
+import java.util.Locale;
+
 public interface Component {
 
     Item makeItem();
@@ -30,5 +32,7 @@ public interface Component {
     int quantity();
 
     String getName();
+
+    String getLocalName(Locale locale);
 
 }
