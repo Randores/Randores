@@ -21,6 +21,11 @@
  */
 package com.gmail.socraticphoenix.forge.randore.crafting.forge;
 
+import com.gmail.socraticphoenix.forge.randore.Randores;
+import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinition;
+import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinitionRegistry;
+import com.gmail.socraticphoenix.forge.randore.crafting.FlexibleRecipe;
+import com.gmail.socraticphoenix.forge.randore.crafting.FlexibleSmelt;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import net.minecraft.block.state.IBlockState;
@@ -208,11 +213,20 @@ public class CraftiniumForgeTileEntity extends TileEntity implements ITickable {
         return this.output;
     }
 
-    private boolean canSmelt() {
+    private boolean canSmelt(long seed) {
         if (this.input.getStackInSlot(0).isEmpty()) {
             return false;
         } else {
-            ItemStack output = CraftiniumSmeltRegistry.findMatching(this.input.getStackInSlot(0), this.world, this.pos).result(this.input.getStackInSlot(0), this.world, this.pos);
+            CraftiniumSmelt rec = CraftiniumSmeltRegistry.findMatching(this.input.getStackInSlot(0), this.world, this.pos);
+            ItemStack output;
+            if(rec instanceof FlexibleRecipe) {
+                FlexibleSmelt smelt = (FlexibleSmelt) rec;
+                MaterialDefinition definition = MaterialDefinitionRegistry.get(seed).get(smelt.getIndex());
+                int max = definition.getOre().getMaxDrops();
+                output = new ItemStack(definition.getMaterial().makeItem(), max);
+            } else {
+                output = rec.result(this.input.getStackInSlot(0), this.world, this.pos);
+            }
             if (output.isEmpty()) {
                 return false;
             } else {
@@ -229,8 +243,8 @@ public class CraftiniumForgeTileEntity extends TileEntity implements ITickable {
         }
     }
 
-    public void smelt() {
-        if (this.canSmelt()) {
+    public void smelt(long seed) {
+        if (this.canSmelt(seed)) {
             ItemStack input = this.input.getStackInSlot(0);
             ItemStack output = CraftiniumSmeltRegistry.findMatching(input, this.world, this.pos).result(input, this.world, this.pos);
             ItemStack currentOutput = this.output.getStackInSlot(0);
@@ -256,12 +270,12 @@ public class CraftiniumForgeTileEntity extends TileEntity implements ITickable {
         if (!this.world.isRemote) {
             ItemStack fuel = this.fuel.getStackInSlot(0);
             ItemStack input = this.input.getStackInSlot(0);
-            if(this.totalCookTime == 0 && this.canSmelt()) {
+            if(this.totalCookTime == 0 && this.canSmelt(Randores.getRandoresSeed(this.world))) {
                 this.totalCookTime = this.getCookTime(input);
                 needsSave = true;
             }
             if (this.isBurning() || (!fuel.isEmpty() && !input.isEmpty())) {
-                if (!this.isBurning() && this.canSmelt()) {
+                if (!this.isBurning() && this.canSmelt(Randores.getRandoresSeed(this.world))) {
                     this.furnaceBurnTime = TileEntityFurnace.getItemBurnTime(fuel);
                     this.currentItemBurnTime = this.furnaceBurnTime;
                     if (this.isBurning()) {
@@ -277,12 +291,12 @@ public class CraftiniumForgeTileEntity extends TileEntity implements ITickable {
                     }
                 }
 
-                if (this.isBurning() && this.canSmelt()) {
+                if (this.isBurning() && this.canSmelt(Randores.getRandoresSeed(this.world))) {
                     this.cookTime++;
                     if (this.cookTime >= this.totalCookTime) {
                         this.cookTime = 0;
                         this.totalCookTime = this.getCookTime(input);
-                        this.smelt();
+                        this.smelt(Randores.getRandoresSeed(this.world));
                         needsSave = true;
                     }
                 } else {

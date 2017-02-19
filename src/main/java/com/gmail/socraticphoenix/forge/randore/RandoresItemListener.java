@@ -21,11 +21,8 @@
  */
 package com.gmail.socraticphoenix.forge.randore;
 
-import com.gmail.socraticphoenix.forge.randore.block.FlexibleOre;
-import com.gmail.socraticphoenix.forge.randore.item.FlexibleItem;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
@@ -41,10 +38,8 @@ public class RandoresItemListener {
         if (!world.isRemote) {
             EntityItem entityItem = ev.getItem();
             ItemStack item = entityItem.getEntityItem();
-            if (item.getItem() instanceof FlexibleItem || (item.getItem() instanceof ItemBlock && (((ItemBlock) item.getItem()).getBlock() instanceof FlexibleOre || ((ItemBlock) item.getItem()).getBlock() instanceof FlexibleOre))) {
-                if (item.getSubCompound("display") == null || item.getSubCompound("randores") == null || Randores.getRandoresSeed(item) != seed) {
-                    Randores.applyData(item, world);
-                }
+            if (!item.hasDisplayName() || item.getSubCompound("randores") == null || Randores.getRandoresSeed(item) != seed) {
+                Randores.applyData(item, world);
             }
         }
     }

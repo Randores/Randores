@@ -38,6 +38,10 @@ public class FlexibleSmelt implements CraftiniumSmelt {
         this.index = index;
     }
 
+    public int getIndex() {
+        return this.index;
+    }
+
     private MaterialDefinition getDefinition(World world) {
         return MaterialDefinitionRegistry.get(Randores.getRandoresSeed(world)).get(this.index);
     }

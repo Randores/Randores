@@ -54,7 +54,7 @@ public class MaterialDefinition {
         this.ore = ore;
         this.material = ore.getMaterial();
         this.craftables = craftables;
-        this.name = RandoresNameAlgorithm.name(this.color);
+        this.name = index == 0 ? "Darkore" : RandoresNameAlgorithm.name(this.color);
         this.toolMaterial = EnumHelper.addToolMaterial(this.name, this.material.getHarvestLevel(), this.material.getMaxUses(), this.material.getEfficiency(), this.material.getDamage(), this.material.getEnchantability());
         this.toolMaterial.setRepairItem(new ItemStack(this.material.makeItem()));
         float armor = this.material.getEfficiency() * 3;

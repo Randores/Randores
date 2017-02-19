@@ -46,7 +46,8 @@ public class MaterialDefinitionGenerator {
 
     public static List<Color> generateColors(Random random) {
         List<Color> colors = new ArrayList<Color>();
-        for (int i = 0; i < 300; i++) {
+        colors.add(new Color(0, 0, 0));
+        for (int i = 0; i < 299; i++) {
             Color color = new Color(random.nextInt(256), random.nextInt(256), random.nextInt(256));
             while (colors.contains(color)) {
                 color = new Color(random.nextInt(256), random.nextInt(256), random.nextInt(256));
