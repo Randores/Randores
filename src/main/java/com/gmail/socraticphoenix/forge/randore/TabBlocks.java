@@ -21,36 +21,15 @@
  */
 package com.gmail.socraticphoenix.forge.randore;
 
-import com.gmail.socraticphoenix.forge.randore.texture.TextureTemplate;
-import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.block.Block;
+import net.minecraft.block.material.Material;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicLong;
+public class TabBlocks {
 
-public class RandoresClientSideRegistry {
-    private static AtomicLong currentSeed = new AtomicLong();
-    private static Map<String, TextureTemplate> templates = new HashMap<String, TextureTemplate>();
+    public static Block tabOre;
 
-    public static TextureTemplate getTemplate(String name) {
-        return RandoresClientSideRegistry.templates.get(name);
-    }
-
-    public static void putTemplate(String name, TextureTemplate textureTemplate) {
-        RandoresClientSideRegistry.templates.put(name, textureTemplate);
-    }
-
-    public static long getCurrentSeed() {
-        return RandoresClientSideRegistry.currentSeed.get();
-    }
-
-    public static void setCurrentSeed(long currentSeed) {
-        RandoresClientSideRegistry.currentSeed.set(currentSeed);
-    }
-
-    public static EntityPlayer getClientPlayer() {
-        return Minecraft.getMinecraft().player;
+    public static void init() {
+        tabOre = new Block(Material.ROCK).setUnlocalizedName("tab_ore").setRegistryName("tab_ore");
     }
 
 }

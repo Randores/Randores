@@ -21,7 +21,6 @@
  */
 package com.gmail.socraticphoenix.forge.randore;
 
-import com.gmail.socraticphoenix.forge.randore.block.FlexibleBlockRegistry;
 import com.gmail.socraticphoenix.forge.randore.block.FlexibleBrick;
 import com.gmail.socraticphoenix.forge.randore.block.FlexibleOre;
 import com.gmail.socraticphoenix.forge.randore.component.Components;
@@ -52,6 +51,8 @@ import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.NBTTagString;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
@@ -73,6 +74,7 @@ import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
@@ -89,55 +91,55 @@ public class Randores {
     public static final CreativeTabs TAB_BLOCKS = new RandoresTab("randores_blocks", new Supplier<Item>() {
         @Override
         public Item get() {
-            return Item.getItemFromBlock(FlexibleBlockRegistry.getOres().get(0));
+            return Item.getItemFromBlock(TabBlocks.tabOre);
         }
     });
     public static final CreativeTabs TAB_MATERIALS = new RandoresTab("randores_materials", new Supplier<Item>() {
         @Override
         public Item get() {
-            return FlexibleItemRegistry.getMaterial(0);
+            return TabItems.tabItem;
         }
     });
     public static final CreativeTabs TAB_STICKS = new RandoresTab("randores_sticks", new Supplier<Item>() {
         @Override
         public Item get() {
-            return FlexibleItemRegistry.getStick(0);
+            return TabItems.tabStick;
         }
     });
     public static final CreativeTabs TAB_HOES = new RandoresTab("randores_hoes", new Supplier<Item>() {
         @Override
         public Item get() {
-            return FlexibleItemRegistry.getHoe(0);
+            return TabItems.tabHoe;
         }
     });
     public static final CreativeTabs TAB_SWORDS = new RandoresTab("randores_swords", new Supplier<Item>() {
         @Override
         public Item get() {
-            return FlexibleItemRegistry.getSword(0);
+            return TabItems.tabSword;
         }
     });
     public static final CreativeTabs TAB_AXES = new RandoresTab("randores_axes", new Supplier<Item>() {
         @Override
         public Item get() {
-            return FlexibleItemRegistry.getAxe(0);
+            return TabItems.tabAxe;
         }
     });
     public static final CreativeTabs TAB_PICKAXES = new RandoresTab("randores_pickaxes", new Supplier<Item>() {
         @Override
         public Item get() {
-            return FlexibleItemRegistry.getPickaxe(0);
+            return TabItems.tabPickaxe;
         }
     });
     public static final CreativeTabs TAB_SPADES = new RandoresTab("randores_spades", new Supplier<Item>() {
         @Override
         public Item get() {
-            return FlexibleItemRegistry.getSpade(0);
+            return TabItems.tabShovel;
         }
     });
     public static final CreativeTabs TAB_ARMOR = new RandoresTab("randores_armor", new Supplier<Item>() {
         @Override
         public Item get() {
-            return FlexibleItemRegistry.getHelmet(0);
+            return TabItems.tabHelmet;
         }
     });
 
@@ -169,7 +171,7 @@ public class Randores {
         MinecraftForge.EVENT_BUS.register(new RandoresItemListener());
     }
 
-    public static long getRandoresSeedFromWorld(long worldSeed) {
+    private static long getRandoresSeedFromWorld(long worldSeed) {
         Long seed = Randores.worldSeeds.get(worldSeed);
         if (seed == null) {
             seed = new Random(worldSeed).nextLong();
@@ -216,7 +218,9 @@ public class Randores {
         if (stack.getItem() instanceof FlexibleItem) {
             FlexibleItem item = (FlexibleItem) stack.getItem();
             if (item.getDefinition(seed).hasComponent(item.getType())) {
-                stack.setStackDisplayName(makeName(item.getDefinition(seed).getName() + " " + item.getDefinition(seed).getComponent(item.getType()).getName()));
+                MaterialDefinition definition = item.getDefinition(seed);
+                stack.setStackDisplayName(makeName(definition.getName() + " " + definition.getComponent(item.getType()).getName()));
+                applyLore(definition.generateLore(), stack);
                 NBTTagCompound randores = stack.getOrCreateSubCompound("randores");
                 randores.setLong("seed", seed);
             }
@@ -225,20 +229,38 @@ public class Randores {
             if (block.getBlock() instanceof FlexibleOre) {
                 FlexibleOre ore = (FlexibleOre) block.getBlock();
                 if (ore.getDefinition(seed).hasComponent(Components.ORE)) {
-                    stack.setStackDisplayName(makeName(ore.getDefinition(seed).getName() + " " + ore.getDefinition(seed).getComponent(Components.ORE).getName()));
+                    MaterialDefinition definition = ore.getDefinition(seed);
+                    stack.setStackDisplayName(makeName(definition.getName() + " " + definition.getComponent(Components.ORE).getName()));
+                    applyLore(definition.generateLore(), stack);
                     NBTTagCompound randores = stack.getOrCreateSubCompound("randores");
                     randores.setLong("seed", seed);
                 }
             } else if (block.getBlock() instanceof FlexibleBrick) {
                 FlexibleBrick brick = (FlexibleBrick) block.getBlock();
                 if (brick.getDefinition(seed).hasComponent(Components.BRICKS)) {
-                    stack.setStackDisplayName(makeName(brick.getDefinition(seed).getName() + " " + brick.getDefinition(seed).getComponent(Components.BRICKS).getName()));
+                    MaterialDefinition definition = brick.getDefinition(seed);
+                    stack.setStackDisplayName(makeName(definition.getName() + " " + definition.getComponent(Components.BRICKS).getName()));
+                    applyLore(definition.generateLore(), stack);
                     NBTTagCompound randores = stack.getOrCreateSubCompound("randores");
                     randores.setLong("seed", seed);
                 }
             }
         }
         return stack;
+    }
+
+    private static void applyLore(List<String> lore, ItemStack stack) {
+        NBTTagCompound compound = stack.getOrCreateSubCompound("display");
+        NBTTagList list;
+        if(compound.hasKey("Lore")) {
+            list = compound.getTagList("Lore", 8);
+        } else {
+            list = new NBTTagList();
+        }
+        for(String s : lore) {
+            list.appendTag(new NBTTagString(TextFormatting.RESET + "" + TextFormatting.GREEN + s));
+        }
+        compound.setTag("Lore", list);
     }
 
     private static String makeName(String name) {

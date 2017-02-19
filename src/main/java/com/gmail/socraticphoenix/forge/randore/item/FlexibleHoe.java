@@ -176,7 +176,7 @@ public class FlexibleHoe extends ItemHoe implements FlexibleItem {
 
     @Override
     public Components getType() {
-        return Components.SWORD;
+        return Components.HOE;
     }
 
 }

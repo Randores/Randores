@@ -22,20 +22,21 @@
 package com.gmail.socraticphoenix.forge.randore.item;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class FlexibleItemRegistry {
-    private static List<FlexibleMaterial> materials = new ArrayList<FlexibleMaterial>();
-    private static List<FlexibleStick> sticks = new ArrayList<FlexibleStick>();
-    private static List<FlexibleHoe> hoes = new ArrayList<FlexibleHoe>();
-    private static List<FlexibleSword> swords = new ArrayList<FlexibleSword>();
-    private static List<FlexibleAxe> axes = new ArrayList<FlexibleAxe>();
-    private static List<FlexiblePickaxe> pickaxes = new ArrayList<FlexiblePickaxe>();
-    private static List<FlexibleSpade> spades = new ArrayList<FlexibleSpade>();
-    private static List<FlexibleItemArmor> helmets = new ArrayList<FlexibleItemArmor>();
-    private static List<FlexibleItemArmor> chestplates = new ArrayList<FlexibleItemArmor>();
-    private static List<FlexibleItemArmor> leggings = new ArrayList<FlexibleItemArmor>();
-    private static List<FlexibleItemArmor> boots = new ArrayList<FlexibleItemArmor>();
+    private static List<FlexibleMaterial> materials = Collections.synchronizedList(new ArrayList<FlexibleMaterial>());
+    private static List<FlexibleStick> sticks = Collections.synchronizedList(new ArrayList<FlexibleStick>());
+    private static List<FlexibleHoe> hoes = Collections.synchronizedList(new ArrayList<FlexibleHoe>());
+    private static List<FlexibleSword> swords = Collections.synchronizedList(new ArrayList<FlexibleSword>());
+    private static List<FlexibleAxe> axes = Collections.synchronizedList(new ArrayList<FlexibleAxe>());
+    private static List<FlexiblePickaxe> pickaxes = Collections.synchronizedList(new ArrayList<FlexiblePickaxe>());
+    private static List<FlexibleSpade> spades = Collections.synchronizedList(new ArrayList<FlexibleSpade>());
+    private static List<FlexibleItemArmor> helmets = Collections.synchronizedList(new ArrayList<FlexibleItemArmor>());
+    private static List<FlexibleItemArmor> chestplates = Collections.synchronizedList(new ArrayList<FlexibleItemArmor>());
+    private static List<FlexibleItemArmor> leggings = Collections.synchronizedList(new ArrayList<FlexibleItemArmor>());
+    private static List<FlexibleItemArmor> boots = Collections.synchronizedList(new ArrayList<FlexibleItemArmor>());
 
     public static FlexibleItemArmor getBoots(int index) {
         return FlexibleItemRegistry.boots.get(index);

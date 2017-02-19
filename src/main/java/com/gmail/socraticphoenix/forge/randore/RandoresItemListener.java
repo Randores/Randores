@@ -38,7 +38,7 @@ public class RandoresItemListener {
         if (!world.isRemote) {
             EntityItem entityItem = ev.getItem();
             ItemStack item = entityItem.getEntityItem();
-            if (!item.hasDisplayName() || item.getSubCompound("randores") == null || Randores.getRandoresSeed(item) != seed) {
+            if (item.getSubCompound("display") == null || !item.getSubCompound("display").hasKey("Lore") || item.getSubCompound("randores") == null || Randores.getRandoresSeed(item) != seed) {
                 Randores.applyData(item, world);
             }
         }

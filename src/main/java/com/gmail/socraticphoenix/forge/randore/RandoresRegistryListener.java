@@ -68,6 +68,8 @@ public class RandoresRegistryListener {
         ev.getRegistry().register(CraftingBlocks.craftiniumOre);
         ev.getRegistry().register(CraftingBlocks.craftiniumForge);
         ev.getRegistry().register(CraftingBlocks.craftiniumForgeLit);
+        TabBlocks.init();
+        ev.getRegistry().register(TabBlocks.tabOre);
     }
 
     @SubscribeEvent
@@ -171,6 +173,17 @@ public class RandoresRegistryListener {
         ev.getRegistry().register(new ItemBlock(CraftingBlocks.craftiniumOre).setUnlocalizedName(CraftingBlocks.craftiniumOre.getUnlocalizedName()).setRegistryName(CraftingBlocks.craftiniumOre.getRegistryName()));
         CraftingItems.init();
         ev.getRegistry().register(CraftingItems.craftiniumLump);
+
+        TabItems.init();
+        ev.getRegistry().register(TabItems.tabAxe);
+        ev.getRegistry().register(TabItems.tabHoe);
+        ev.getRegistry().register(TabItems.tabShovel);
+        ev.getRegistry().register(TabItems.tabPickaxe);
+        ev.getRegistry().register(TabItems.tabSword);
+        ev.getRegistry().register(TabItems.tabHelmet);
+        ev.getRegistry().register(TabItems.tabItem);
+        ev.getRegistry().register(TabItems.tabStick);
+        ev.getRegistry().register(new ItemBlock(TabBlocks.tabOre).setUnlocalizedName(TabBlocks.tabOre.getUnlocalizedName()).setRegistryName(TabBlocks.tabOre.getRegistryName()));
     }
 
 }

@@ -74,23 +74,23 @@ public class RandoresPacketHandler implements IMessageHandler<RandoresPacket, IM
                     logger.info("No definitions found, generating...");
                     definitions = MaterialDefinitionGenerator.makeDefinitions(MaterialDefinitionGenerator.generateColors(new Random(seed)), seed);
                     MaterialDefinitionRegistry.put(seed, definitions);
+                    for (int i = 0; i < 300; i++) {
+                        Item.ToolMaterial toolMaterial = definitions.get(i).getToolMaterial();
+                        ItemArmor.ArmorMaterial armorMaterial = definitions.get(i).getArmorMaterial();
+                        FlexibleItemRegistry.getHoe(i).registerBacker(seed, toolMaterial);
+                        FlexibleItemRegistry.getSword(i).registerBacker(seed, toolMaterial);
+                        FlexibleItemRegistry.getAxe(i).registerBacker(seed, toolMaterial);
+                        FlexibleItemRegistry.getSpade(i).registerBacker(seed, toolMaterial);
+                        FlexibleItemRegistry.getPickaxe(i).registerBacker(seed, toolMaterial);
+                        FlexibleItemRegistry.getHelmet(i).registerBacker(seed, armorMaterial);
+                        FlexibleItemRegistry.getChestplate(i).registerBacker(seed, armorMaterial);
+                        FlexibleItemRegistry.getLeggings(i).registerBacker(seed, armorMaterial);
+                        FlexibleItemRegistry.getBoots(i).registerBacker(seed, armorMaterial);
+                    }
                     logger.info("Definitions generated.");
                 } else {
                     logger.info("Definitions already registered, loading...");
                     definitions = MaterialDefinitionRegistry.get(seed);
-                }
-                for (int i = 0; i < 300; i++) {
-                    Item.ToolMaterial toolMaterial = definitions.get(i).getToolMaterial();
-                    ItemArmor.ArmorMaterial armorMaterial = definitions.get(i).getArmorMaterial();
-                    FlexibleItemRegistry.getHoe(i).registerBacker(seed, toolMaterial);
-                    FlexibleItemRegistry.getSword(i).registerBacker(seed, toolMaterial);
-                    FlexibleItemRegistry.getAxe(i).registerBacker(seed, toolMaterial);
-                    FlexibleItemRegistry.getSpade(i).registerBacker(seed, toolMaterial);
-                    FlexibleItemRegistry.getPickaxe(i).registerBacker(seed, toolMaterial);
-                    FlexibleItemRegistry.getHelmet(i).registerBacker(seed, armorMaterial);
-                    FlexibleItemRegistry.getChestplate(i).registerBacker(seed, armorMaterial);
-                    FlexibleItemRegistry.getLeggings(i).registerBacker(seed, armorMaterial);
-                    FlexibleItemRegistry.getBoots(i).registerBacker(seed, armorMaterial);
                 }
                 logger.info("Definitions Statistics:");
                 MaterialDefinitionGenerator.logStatistics(definitions);

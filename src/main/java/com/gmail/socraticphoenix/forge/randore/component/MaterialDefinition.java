@@ -31,6 +31,7 @@ import net.minecraftforge.common.util.EnumHelper;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,13 +49,14 @@ public class MaterialDefinition {
     private ItemArmor.ArmorMaterial armorMaterial;
 
     private long seed;
+    private int totalArmor;
 
     public MaterialDefinition(Color color, OreComponent ore, List<CraftableComponent> craftables, long seed, int index) {
         this.color = color;
         this.ore = ore;
         this.material = ore.getMaterial();
         this.craftables = craftables;
-        this.name = index == 0 ? "Darkore" : RandoresNameAlgorithm.name(this.color);
+        this.name = RandoresNameAlgorithm.name(this.color);
         this.toolMaterial = EnumHelper.addToolMaterial(this.name, this.material.getHarvestLevel(), this.material.getMaxUses(), this.material.getEfficiency(), this.material.getDamage(), this.material.getEnchantability());
         this.toolMaterial.setRepairItem(new ItemStack(this.material.makeItem()));
         float armor = this.material.getEfficiency() * 3;
@@ -70,9 +72,39 @@ public class MaterialDefinition {
 
             }
         }
+        this.totalArmor = sum(reduc);
         this.armorMaterial = EnumHelper.addArmorMaterial(this.name, "randores_armor:armor." + index, this.material.getMaxUses() / 100, reduc, this.material.getEnchantability(), SoundEvents.ITEM_ARMOR_EQUIP_IRON, this.material.getToughness());
         this.armorMaterial.setRepairItem(new ItemStack(this.material.makeItem()));
         this.seed = seed;
+    }
+
+    public List<String> generateLore() {
+        List<String> list = new ArrayList<String>();
+        list.add("Randores Material Informaion:");
+        list.add("  Efficiency: " + this.material.getEfficiency());
+        list.add("  Full Armor: " + this.totalArmor);
+        list.add("  Base Damage: " + this.toolMaterial.getDamageVsEntity());
+        list.add("  Base Durability: " + this.material.getMaxUses());
+        list.add("  Enchantibility: " + this.material.getEnchantability());
+        String recipes = "  Recipes: ";
+        if(this.hasComponent(Components.PICKAXE)) {
+            recipes += "Tools, ";
+        }
+        if(this.hasComponent(Components.HELMET)) {
+            recipes += "Armor, ";
+        }
+        if(this.hasComponent(Components.SWORD)) {
+            recipes += "Sword, ";
+        }
+        if(this.hasComponent(Components.BRICKS)) {
+            recipes += "Bricks, ";
+        }
+        if(this.hasComponent(Components.STICK)) {
+            recipes += "Stick, ";
+        }
+        recipes = recipes.substring(0, recipes.length() - 2);
+        list.add(recipes);
+        return list;
     }
 
     private void reduce(int[] arr, int slot) {

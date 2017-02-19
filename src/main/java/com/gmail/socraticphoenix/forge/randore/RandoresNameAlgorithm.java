@@ -41,7 +41,7 @@ public class RandoresNameAlgorithm {
                 res += VOWEL_DICTIONARY[random.nextInt(VOWEL_DICTIONARY.length)];
                 if(random.nextInt(10) < 4) {
                     res += VOWEL_DICTIONARY[random.nextInt(VOWEL_DICTIONARY.length)];
-                    if(random.nextInt(10) < 2) {
+                    if(random.nextInt(10) == 0) {
                         res += VOWEL_DICTIONARY[random.nextInt(VOWEL_DICTIONARY.length)];
                     }
                 }

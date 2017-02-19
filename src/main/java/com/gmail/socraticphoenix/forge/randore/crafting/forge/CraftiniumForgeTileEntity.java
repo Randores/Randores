@@ -218,27 +218,31 @@ public class CraftiniumForgeTileEntity extends TileEntity implements ITickable {
             return false;
         } else {
             CraftiniumSmelt rec = CraftiniumSmeltRegistry.findMatching(this.input.getStackInSlot(0), this.world, this.pos);
-            ItemStack output;
-            if(rec instanceof FlexibleRecipe) {
-                FlexibleSmelt smelt = (FlexibleSmelt) rec;
-                MaterialDefinition definition = MaterialDefinitionRegistry.get(seed).get(smelt.getIndex());
-                int max = definition.getOre().getMaxDrops();
-                output = new ItemStack(definition.getMaterial().makeItem(), max);
-            } else {
-                output = rec.result(this.input.getStackInSlot(0), this.world, this.pos);
-            }
-            if (output.isEmpty()) {
-                return false;
-            } else {
-                ItemStack currentResult = this.output.getStackInSlot(0);
-                if (currentResult.isEmpty()) {
-                    return true;
-                } else if (!currentResult.isItemEqual(output)) {
+            if (rec != null) {
+                ItemStack output;
+                if (rec instanceof FlexibleRecipe) {
+                    FlexibleSmelt smelt = (FlexibleSmelt) rec;
+                    MaterialDefinition definition = MaterialDefinitionRegistry.get(seed).get(smelt.getIndex());
+                    int max = definition.getOre().getMaxDrops();
+                    output = new ItemStack(definition.getMaterial().makeItem(), max);
+                } else {
+                    output = rec.result(this.input.getStackInSlot(0), this.world, this.pos);
+                }
+                if (output.isEmpty()) {
                     return false;
                 } else {
-                    int result = currentResult.getCount() + output.getCount();
-                    return result <= 64 && result <= currentResult.getMaxStackSize();
+                    ItemStack currentResult = this.output.getStackInSlot(0);
+                    if (currentResult.isEmpty()) {
+                        return true;
+                    } else if (!currentResult.isItemEqual(output)) {
+                        return false;
+                    } else {
+                        int result = currentResult.getCount() + output.getCount();
+                        return result <= 64 && result <= currentResult.getMaxStackSize();
+                    }
                 }
+            } else {
+                return false;
             }
         }
     }

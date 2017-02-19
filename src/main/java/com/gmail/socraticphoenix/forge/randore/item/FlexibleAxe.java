@@ -141,7 +141,7 @@ public class FlexibleAxe extends ItemAxe implements FlexibleItem {
     }
 
     public void registerBacker(long seed, ToolMaterial material) {
-        this.backers.put(seed, new ConstructableAxe(material, material.getDamageVsEntity(), -3.0f));
+        this.backers.put(seed, new ConstructableAxe(material, material.getDamageVsEntity() + 5f, -3.0f));
     }
 
     public boolean hasBacker(long seed) {

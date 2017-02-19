@@ -46,8 +46,7 @@ public class MaterialDefinitionGenerator {
 
     public static List<Color> generateColors(Random random) {
         List<Color> colors = new ArrayList<Color>();
-        colors.add(new Color(0, 0, 0));
-        for (int i = 0; i < 299; i++) {
+        for (int i = 0; i < 300; i++) {
             Color color = new Color(random.nextInt(256), random.nextInt(256), random.nextInt(256));
             while (colors.contains(color)) {
                 color = new Color(random.nextInt(256), random.nextInt(256), random.nextInt(256));
@@ -82,39 +81,37 @@ public class MaterialDefinitionGenerator {
             }
             int uses = random.nextInt(6000) + 200;
             uses = uses - (uses % 100);
-            MaterialComponent material = new MaterialComponent(type, random.nextInt(6) + 1, uses, random.nextFloat() * random.nextInt(5) + random.nextInt(10) + 2, MathHelper.ceil(random.nextFloat() * random.nextInt(20) + 1), random.nextInt(50) + 1, MathHelper.floor(random.nextFloat() * 3), FlexibleItemRegistry.getMaterials().get(c));
-            OreComponent ore = new OreComponent(material, c == 0 ? Dimension.OVERWORLD : Dimension.values()[random.nextInt(Dimension.values().length)], random.nextInt(4) + 2, 1, random.nextInt(15) + 2, 2, random.nextInt(200) + 5, 0, 5, random.nextInt(15) + 5, random.nextBoolean() || material.getType() == MaterialType.INGOT, random.nextFloat() * 2, random.nextFloat() * random.nextInt(10) + 0.5f, random.nextFloat() * random.nextInt(50) + 2f, Item.getItemFromBlock(FlexibleBlockRegistry.getOres().get(c)));
+            MaterialComponent material = new MaterialComponent(type, random.nextInt(6) + 1, uses, MathHelper.ceil(random.nextFloat() * random.nextInt(5) + random.nextInt(10) + 2), MathHelper.ceil(random.nextFloat() * random.nextInt(20) + 1), random.nextInt(50) + 1, MathHelper.floor(random.nextFloat() * 3), FlexibleItemRegistry.getMaterials().get(c));
+            OreComponent ore = new OreComponent(material, Dimension.values()[random.nextInt(Dimension.values().length)], random.nextInt(4) + 2, 1, random.nextInt(15) + 2, 2, random.nextInt(200) + 5, 0, 5, random.nextInt(15) + 5, random.nextBoolean() || material.getType() == MaterialType.INGOT, random.nextFloat() * 2, random.nextFloat() * random.nextInt(10) + 0.5f, random.nextFloat() * random.nextInt(50) + 2f, Item.getItemFromBlock(FlexibleBlockRegistry.getOres().get(c)));
             List<CraftableComponent> components = new ArrayList<CraftableComponent>();
             boolean hasComponents = false;
-            if (c != 0) {
-                if (percentChance(75, random)) {
-                    hasComponents = true;
-                    components.add(new CraftableComponent(CraftableType.HELMET, 1, FlexibleItemRegistry.getHelmet(c)));
-                    components.add(new CraftableComponent(CraftableType.CHESTPLATE, 1, FlexibleItemRegistry.getChestplate(c)));
-                    components.add(new CraftableComponent(CraftableType.LEGGINGS, 1, FlexibleItemRegistry.getLeggings(c)));
-                    components.add(new CraftableComponent(CraftableType.BOOTS, 1, FlexibleItemRegistry.getBoots(c)));
-                }
-                if (percentChance(75, random)) {
-                    hasComponents = true;
-                    components.add(new CraftableComponent(CraftableType.PICKAXE, 1, FlexibleItemRegistry.getPickaxe(c)));
-                    components.add(new CraftableComponent(CraftableType.AXE, 1, FlexibleItemRegistry.getAxe(c)));
-                    components.add(new CraftableComponent(CraftableType.HOE, 1, FlexibleItemRegistry.getHoe(c)));
-                    components.add(new CraftableComponent(CraftableType.SHOVEL, 1, FlexibleItemRegistry.getSpade(c)));
-                }
-                if (percentChance(75, random)) {
-                    hasComponents = true;
-                    components.add(new CraftableComponent(CraftableType.SWORD, 1, FlexibleItemRegistry.getSword(c)));
-                }
-                if (percentChance(50, random)) {
-                    hasComponents = true;
-                    components.add(new CraftableComponent(CraftableType.BRICKS, 4, Item.getItemFromBlock(FlexibleBlockRegistry.getBricks().get(c))));
-                }
-                if (percentChance(25, random)) {
-                    hasComponents = true;
-                    components.add(new CraftableComponent(CraftableType.STICK, 2, FlexibleItemRegistry.getStick(c)));
-                }
+            if (percentChance(75, random)) {
+                hasComponents = true;
+                components.add(new CraftableComponent(CraftableType.HELMET, 1, FlexibleItemRegistry.getHelmet(c)));
+                components.add(new CraftableComponent(CraftableType.CHESTPLATE, 1, FlexibleItemRegistry.getChestplate(c)));
+                components.add(new CraftableComponent(CraftableType.LEGGINGS, 1, FlexibleItemRegistry.getLeggings(c)));
+                components.add(new CraftableComponent(CraftableType.BOOTS, 1, FlexibleItemRegistry.getBoots(c)));
             }
-            if (!hasComponents) { //Basically, very, very rarely, an ore will be able to craft all possible craftable components (and the first def always has all components, mainly for use in tab icons)
+            if (percentChance(75, random)) {
+                hasComponents = true;
+                components.add(new CraftableComponent(CraftableType.PICKAXE, 1, FlexibleItemRegistry.getPickaxe(c)));
+                components.add(new CraftableComponent(CraftableType.AXE, 1, FlexibleItemRegistry.getAxe(c)));
+                components.add(new CraftableComponent(CraftableType.HOE, 1, FlexibleItemRegistry.getHoe(c)));
+                components.add(new CraftableComponent(CraftableType.SHOVEL, 1, FlexibleItemRegistry.getSpade(c)));
+            }
+            if (percentChance(75, random)) {
+                hasComponents = true;
+                components.add(new CraftableComponent(CraftableType.SWORD, 1, FlexibleItemRegistry.getSword(c)));
+            }
+            if (percentChance(50, random)) {
+                hasComponents = true;
+                components.add(new CraftableComponent(CraftableType.BRICKS, 4, Item.getItemFromBlock(FlexibleBlockRegistry.getBricks().get(c))));
+            }
+            if (percentChance(25, random)) {
+                hasComponents = true;
+                components.add(new CraftableComponent(CraftableType.STICK, 2, FlexibleItemRegistry.getStick(c)));
+            }
+            if (!hasComponents) {
                 components.add(new CraftableComponent(CraftableType.HELMET, 1, FlexibleItemRegistry.getHelmet(c)));
                 components.add(new CraftableComponent(CraftableType.CHESTPLATE, 1, FlexibleItemRegistry.getChestplate(c)));
                 components.add(new CraftableComponent(CraftableType.LEGGINGS, 1, FlexibleItemRegistry.getLeggings(c)));

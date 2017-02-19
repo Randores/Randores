@@ -21,36 +21,29 @@
  */
 package com.gmail.socraticphoenix.forge.randore;
 
-import com.gmail.socraticphoenix.forge.randore.texture.TextureTemplate;
-import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicLong;
+public class TabItems {
 
-public class RandoresClientSideRegistry {
-    private static AtomicLong currentSeed = new AtomicLong();
-    private static Map<String, TextureTemplate> templates = new HashMap<String, TextureTemplate>();
+    public static Item tabAxe;
+    public static Item tabHoe;
+    public static Item tabShovel;
+    public static Item tabPickaxe;
+    public static Item tabSword;
+    public static Item tabHelmet;
+    public static Item tabItem;
+    public static Item tabStick;
 
-    public static TextureTemplate getTemplate(String name) {
-        return RandoresClientSideRegistry.templates.get(name);
-    }
+    public static void init() {
+        tabAxe = new Item().setUnlocalizedName("tab_axe").setRegistryName("tab_axe");
+        tabHoe = new Item().setUnlocalizedName("tab_hoe").setRegistryName("tab_hoe");
+        tabShovel = new Item().setUnlocalizedName("tab_shovel").setRegistryName("tab_shovel");
+        tabPickaxe = new Item().setUnlocalizedName("tab_pickaxe").setRegistryName("tab_pickaxe");
+        tabSword = new Item().setUnlocalizedName("tab_sword").setRegistryName("tab_sword");
+        tabHelmet = new Item().setUnlocalizedName("tab_helmet").setRegistryName("tab_helmet");
+        tabItem = new Item().setUnlocalizedName("tab_item").setRegistryName("tab_item");
+        tabStick = new Item().setUnlocalizedName("tab_stick").setRegistryName("tab_stick");
 
-    public static void putTemplate(String name, TextureTemplate textureTemplate) {
-        RandoresClientSideRegistry.templates.put(name, textureTemplate);
-    }
-
-    public static long getCurrentSeed() {
-        return RandoresClientSideRegistry.currentSeed.get();
-    }
-
-    public static void setCurrentSeed(long currentSeed) {
-        RandoresClientSideRegistry.currentSeed.set(currentSeed);
-    }
-
-    public static EntityPlayer getClientPlayer() {
-        return Minecraft.getMinecraft().player;
     }
 
 }

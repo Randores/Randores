@@ -50,7 +50,6 @@ public class FlexibleStick extends Item implements FlexibleItem {
         return Components.STICK;
     }
 
-
     @Override
     public int index() {
         return this.index;
