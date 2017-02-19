@@ -80,7 +80,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 
-@Mod(modid = "randores", name = "Socratic_Phoenix's Randores", version = "1.3")
+@Mod(modid = "randores", name = "Socratic_Phoenix's Randores", version = "1.4")
 public class Randores {
     public static final Item.ToolMaterial MATERIAL_DEFAULT = EnumHelper.addToolMaterial("MATERIAL_DEFAULT", 1, 100, 1, 1, 1);
     public static final ItemArmor.ArmorMaterial ARMOR_DEFAULT = EnumHelper.addArmorMaterial("ARMOR_DEFAULT", "no_texture", 100, new int[]{1, 1, 1, 1}, 1, SoundEvents.ITEM_ARMOR_EQUIP_IRON, 1);
@@ -214,10 +214,6 @@ public class Randores {
 
     public static String itemName(int num) {
         return "randores.item." + num;
-    }
-
-    public static boolean hasRandoresSeed(ItemStack stack) {
-        return stack.getSubCompound("randores") != null;
     }
 
     public static ItemStack applyData(ItemStack stack, long seed) {
