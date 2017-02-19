@@ -69,7 +69,7 @@ public class FlexibleItemBlock extends ItemBlock implements FlexibleItem {
 
     @Override
     public Components getType() {
-        return Components.MATERIAL;
+        return this.component;
     }
 
     @Override

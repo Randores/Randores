@@ -21,9 +21,6 @@
  */
 package com.gmail.socraticphoenix.forge.randore;
 
-import com.gmail.socraticphoenix.forge.randore.block.FlexibleBrick;
-import com.gmail.socraticphoenix.forge.randore.block.FlexibleOre;
-import com.gmail.socraticphoenix.forge.randore.component.Components;
 import com.gmail.socraticphoenix.forge.randore.component.CraftableType;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinition;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinitionRegistry;
@@ -46,7 +43,6 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor;
-import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.FurnaceRecipes;
@@ -222,21 +218,6 @@ public class Randores {
             if (item.getDefinition(seed).hasComponent(item.getType())) {
                 NBTTagCompound randores = stack.getOrCreateSubCompound("randores");
                 randores.setLong("seed", seed);
-            }
-        } else if (stack.getItem() instanceof ItemBlock) {
-            ItemBlock block = (ItemBlock) stack.getItem();
-            if (block.getBlock() instanceof FlexibleOre) {
-                FlexibleOre ore = (FlexibleOre) block.getBlock();
-                if (ore.getDefinition(seed).hasComponent(Components.ORE)) {
-                    NBTTagCompound randores = stack.getOrCreateSubCompound("randores");
-                    randores.setLong("seed", seed);
-                }
-            } else if (block.getBlock() instanceof FlexibleBrick) {
-                FlexibleBrick brick = (FlexibleBrick) block.getBlock();
-                if (brick.getDefinition(seed).hasComponent(Components.BRICKS)) {
-                    NBTTagCompound randores = stack.getOrCreateSubCompound("randores");
-                    randores.setLong("seed", seed);
-                }
             }
         }
         return stack;
