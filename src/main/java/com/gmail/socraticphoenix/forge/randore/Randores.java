@@ -172,7 +172,11 @@ public class Randores {
     private static long getRandoresSeedFromWorld(long worldSeed) {
         Long seed = Randores.worldSeeds.get(worldSeed);
         if (seed == null) {
-            seed = new Random(worldSeed).nextLong();
+            Random random = new Random(worldSeed);
+            seed = random.nextLong();
+            while (seed == 0) {
+                seed = random.nextLong();
+            }
             Randores.worldSeeds.put(worldSeed, seed);
         }
         return seed;
@@ -218,6 +222,7 @@ public class Randores {
             if (item.getDefinition(seed).hasComponent(item.getType())) {
                 NBTTagCompound randores = stack.getOrCreateSubCompound("randores");
                 randores.setLong("seed", seed);
+                stack.setTagInfo("randores", randores);
             }
         }
         return stack;
@@ -226,12 +231,12 @@ public class Randores {
     private static void applyLore(List<String> lore, ItemStack stack) {
         NBTTagCompound compound = stack.getOrCreateSubCompound("display");
         NBTTagList list;
-        if(compound.hasKey("Lore")) {
+        if (compound.hasKey("Lore")) {
             list = compound.getTagList("Lore", 8);
         } else {
             list = new NBTTagList();
         }
-        for(String s : lore) {
+        for (String s : lore) {
             list.appendTag(new NBTTagString(TextFormatting.RESET + "" + TextFormatting.GREEN + s));
         }
         compound.setTag("Lore", list);
@@ -246,11 +251,19 @@ public class Randores {
     }
 
     public static long getRandoresSeed(ItemStack stack) {
-        return stack.getOrCreateSubCompound("randores").getLong("seed");
+        if(Randores.hasRandoresSeed(stack)) {
+            return stack.getSubCompound("randores").getLong("seed");
+        } else {
+            return 0;
+        }
     }
 
     public static MaterialDefinition getDefinition(int index, ItemStack stack) {
         return MaterialDefinitionRegistry.get(Randores.getRandoresSeed(stack)).get(index);
+    }
+
+    public static boolean hasRandoresSeed(ItemStack stack) {
+        return stack.getSubCompound("randores") != null && stack.getSubCompound("randores").hasKey("seed");
     }
 
     public Configuration getConfiguration() {
@@ -265,16 +278,16 @@ public class Randores {
         }
 
         List<String> languages = RandoresResourceManager.getResourceLines("ab_dict.txt");
-        for(String lang : languages) {
+        for (String lang : languages) {
             Locale locale = null;
-            for(Locale test : Locale.getAvailableLocales()) {
+            for (Locale test : Locale.getAvailableLocales()) {
                 String langS = test.getLanguage();
-                if((test.getCountry().isEmpty() && langS.equals(lang)) || (langS + "_" + test.getCountry()).equals(lang)) {
+                if ((test.getCountry().isEmpty() && langS.equals(lang)) || (langS + "_" + test.getCountry()).equals(lang)) {
                     locale = test;
                     break;
                 }
             }
-            if(locale != null) {
+            if (locale != null) {
                 RandoresTranslations.registerFromResources(locale, lang + ".lang");
             }
         }
@@ -341,5 +354,4 @@ public class Randores {
     public File getTextureFile(long seed) {
         return new File(this.tex, String.valueOf(seed).replaceAll("-", "_"));
     }
-
 }

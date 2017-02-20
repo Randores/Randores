@@ -166,17 +166,15 @@ public class MaterialDefinitionGenerator {
 
     public static void setupTextures(List<MaterialDefinition> definitions, long seed) {
         for (int i = 0; i < definitions.size(); i++) {
-            MaterialDefinition def = definitions.get(i);
             FlexibleTextureRegistry.getBlock(i).setTexture("block." + i, seed);
             FlexibleTextureRegistry.getItem(i).setTexture("item." + i + ".png", seed);
-            for (CraftableComponent component : def.getCraftables()) {
-                if (component.getType() == CraftableType.BRICKS) {
-                    FlexibleTextureRegistry.getBlock(component.getType().getIndex(i)).setTexture("bricks." + i + ".png", seed);
+            for(CraftableType type : CraftableType.values()) {
+                if (type == CraftableType.BRICKS) {
+                    FlexibleTextureRegistry.getBlock(type.getIndex(i)).setTexture("bricks." + i + ".png", seed);
                 } else {
-                    FlexibleTextureRegistry.getItem(component.getType().getIndex(i)).setTexture(component.template().replaceAll("_base", "") + "." + i + ".png", seed);
+                    FlexibleTextureRegistry.getItem(type.getIndex(i)).setTexture(type.getTemplate().replaceAll("_base", "") + "." + i + ".png", seed);
                 }
             }
-
         }
     }
 
@@ -225,10 +223,8 @@ public class MaterialDefinitionGenerator {
             Randores.getInstance().getTextureFile(seed).mkdirs();
             File target = new File(Randores.getInstance().getTextureFile(seed), "block." + i + ".png");
             ImageIO.write(textures.get(def.getOre().template()), "png", target);
-            FlexibleTextureRegistry.getBlock(i).setTexture("block." + i, seed);
             File itarg = new File(Randores.getInstance().getTextureFile(seed), "item." + i + ".png");
             ImageIO.write(textures.get(def.getMaterial().template()), "png", itarg);
-            FlexibleTextureRegistry.getItem(i).setTexture("item." + i + ".png", seed);
             for (CraftableComponent component : def.getCraftables()) {
                 if (component.getType() == CraftableType.HELMET) {
                     File armor1 = new File(Randores.getInstance().getTextureFile(seed), "armor." + i + "_1.png");
@@ -237,19 +233,16 @@ public class MaterialDefinitionGenerator {
                     ImageIO.write(textures.get("armor_2"), "png", armor2);
                     File ttarg = new File(Randores.getInstance().getTextureFile(seed), component.template().replaceAll("_base", "") + "." + i + ".png");
                     ImageIO.write(textures.get(component.template()), "png", ttarg);
-                    FlexibleTextureRegistry.getItem(i + 300 * (component.getType().ordinal() + 1)).setTexture(component.template().replaceAll("_base", "") + "." + i + ".png", seed);
                 } else if (component.getType() == CraftableType.BRICKS) {
                     File btarg = new File(Randores.getInstance().getTextureFile(seed), "bricks." + i + ".png");
                     ImageIO.write(textures.get(component.template()), "png", btarg);
-                    FlexibleTextureRegistry.getBlock(i + 300).setTexture("bricks." + i + ".png", seed);
                 } else {
                     File ttarg = new File(Randores.getInstance().getTextureFile(seed), component.template().replaceAll("_base", "") + "." + i + ".png");
                     ImageIO.write(textures.get(component.template()), "png", ttarg);
-                    FlexibleTextureRegistry.getItem(i + 300 * (component.getType().ordinal() + 1)).setTexture(component.template().replaceAll("_base", "") + "." + i + ".png", seed);
                 }
             }
-
         }
+        MaterialDefinitionGenerator.setupTextures(definitions, seed);
     }
 
     public static void setupArmorTextures(List<MaterialDefinition> definitions) {

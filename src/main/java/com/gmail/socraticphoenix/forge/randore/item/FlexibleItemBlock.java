@@ -49,12 +49,23 @@ public class FlexibleItemBlock extends ItemBlock implements FlexibleItem {
     @Override
     public void addInformation(ItemStack stack, EntityPlayer playerIn, List<String> tooltip, boolean advanced) {
         if (FMLCommonHandler.instance().getSide() == Side.CLIENT && this.getDefinition(playerIn.world).hasComponent(this.getType())) {
-            tooltip.remove(0);
             MaterialDefinition definition = this.getDefinition(playerIn.world);
-            tooltip.add(0, definition.getName() + " " + definition.getComponent(this.getType()).getLocalName(RandoresClientSideRegistry.getCurrentLocale()));
+            if (!stack.hasDisplayName()) {
+                tooltip.remove(0);
+                tooltip.add(0, definition.getName() + " " + definition.getComponent(this.getType()).getLocalName(RandoresClientSideRegistry.getCurrentLocale()));
+            }
             tooltip.addAll(definition.generateLore(RandoresClientSideRegistry.getCurrentLocale()));
         }
         super.addInformation(stack, playerIn, tooltip, advanced);
+    }
+
+    @Override
+    public String getItemStackDisplayName(ItemStack stack) {
+        if (Randores.hasRandoresSeed(stack) && this.getDefinition(Randores.getRandoresSeed(stack)).hasComponent(this.getType())) {
+            MaterialDefinition definition = this.getDefinition(Randores.getRandoresSeed(stack));
+            return definition.getName() + " " + definition.getComponent(this.getType()).getLocalName(RandoresClientSideRegistry.getCurrentLocale());
+        }
+        return super.getItemStackDisplayName(stack);
     }
 
     @Override
