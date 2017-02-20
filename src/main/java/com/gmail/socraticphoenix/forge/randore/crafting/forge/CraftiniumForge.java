@@ -25,6 +25,7 @@ import com.gmail.socraticphoenix.forge.randore.Randores;
 import com.gmail.socraticphoenix.forge.randore.crafting.CraftingBlocks;
 import com.gmail.socraticphoenix.forge.randore.crafting.CraftingGuiType;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockFurnace;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
@@ -64,7 +65,7 @@ public class CraftiniumForge extends Block {
     public CraftiniumForge(boolean burning) {
         super(Material.ROCK);
         this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH));
-        this.setSoundType(SoundType.STONE).setUnlocalizedName(burning ? "craftinium_forge_lit" : "craftinium_forge").setRegistryName(burning ? "craftinium_forge_lit" : "craftinium_forge");
+        this.setSoundType(SoundType.STONE).setHardness(3.5f).setUnlocalizedName(burning ? "craftinium_forge_lit" : "craftinium_forge").setRegistryName(burning ? "craftinium_forge_lit" : "craftinium_forge");
         if (burning) {
             this.setLightLevel(0.875f);
         } else {

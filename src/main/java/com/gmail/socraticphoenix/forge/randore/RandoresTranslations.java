@@ -23,7 +23,6 @@ package com.gmail.socraticphoenix.forge.randore;
 
 import com.gmail.socraticphoenix.forge.randore.resource.RandoresResourceManager;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -31,26 +30,27 @@ import java.util.Locale;
 import java.util.Map;
 
 public class RandoresTranslations {
-    private static Map<Locale, Map<String, String>> translations = new HashMap<Locale, Map<String, String>>();
+    private static Map<String, Map<String, String>> translations = new HashMap<String, Map<String, String>>();
+    private static Map<String, String> fallback = new HashMap<String, String>();
 
     public static void register(Locale locale, String key, String value) {
         RandoresTranslations.ensureExistence(locale);
-        RandoresTranslations.translations.get(locale).put(key, value);
+        RandoresTranslations.translations.get(locale.toString().toLowerCase()).put(key, value);
     }
 
     public static String get(Locale locale, String key) {
-        if(RandoresTranslations.translations.containsKey(locale)) {
-            return RandoresTranslations.translations.get(locale).get(key);
+        if (RandoresTranslations.translations.containsKey(locale.toString().toLowerCase())) {
+            return RandoresTranslations.translations.get(locale.toString().toLowerCase()).get(key);
         } else {
-            return RandoresTranslations.get(Locale.US, key);
+            return RandoresTranslations.fallback.get(key);
         }
     }
 
     public static void registerFromResources(Locale locale, String fileName) throws IOException {
-        if(RandoresResourceManager.resourceExists("lang" + File.separator + fileName)) {
-            List<String> lines = RandoresResourceManager.getResourceLines("lang" + File.separator + fileName);
-            for(String line : lines) {
-                if(line.contains("=")) {
+        if (RandoresResourceManager.resourceExists("lang/" + fileName)) {
+            List<String> lines = RandoresResourceManager.getResourceLines("lang/" + fileName);
+            for (String line : lines) {
+                if (line.contains("=")) {
                     String[] pieces = line.split("=", 2);
                     RandoresTranslations.register(locale, pieces[0], pieces[1]);
                 }
@@ -58,9 +58,19 @@ public class RandoresTranslations {
         }
     }
 
+    public static void registerFallback() throws IOException {
+        List<String> lines = RandoresResourceManager.getResourceLines("lang/en_US.lang");
+        for (String line : lines) {
+            if (line.contains("=")) {
+                String[] pieces = line.split("=", 2);
+                RandoresTranslations.fallback.put(pieces[0], pieces[1]);
+            }
+        }
+    }
+
     private static void ensureExistence(Locale locale) {
-        if(!RandoresTranslations.translations.containsKey(locale)) {
-            RandoresTranslations.translations.put(locale, new HashMap<String, String>());
+        if (!RandoresTranslations.translations.containsKey(locale)) {
+            RandoresTranslations.translations.put(locale.toString().toLowerCase(), new HashMap<String, String>());
         }
     }
 

@@ -35,6 +35,7 @@ public class CraftiniumOre extends Block {
     public CraftiniumOre() {
         super(Material.ROCK);
         this.setSoundType(SoundType.STONE).setHardness(3.0F).setResistance(5.0F).setUnlocalizedName("craftinium_ore").setRegistryName("craftinium_ore").setCreativeTab(Randores.TAB_CRAFTING);
+        this.setHarvestLevel("pickaxe", 2);
     }
 
     @Override

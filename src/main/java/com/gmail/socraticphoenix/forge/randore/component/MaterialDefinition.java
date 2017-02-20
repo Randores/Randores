@@ -59,7 +59,7 @@ public class MaterialDefinition {
         this.material = ore.getMaterial();
         this.craftables = craftables;
         this.name = RandoresNameAlgorithm.name(this.color);
-        this.toolMaterial = EnumHelper.addToolMaterial(this.name, this.material.getHarvestLevel(), this.material.getMaxUses(), this.material.getEfficiency(), this.material.getDamage(), this.material.getEnchantability());
+        this.toolMaterial = EnumHelper.addToolMaterial(this.name, this.material.getHarvestLevel() + 1, this.material.getMaxUses(), this.material.getEfficiency(), this.material.getDamage(), this.material.getEnchantability());
         this.toolMaterial.setRepairItem(new ItemStack(this.material.makeItem()));
         float armor = this.material.getEfficiency() * 3;
         int[] reduc = new int[]{(int) Math.abs(Math.ceil(armor * 0.15)), (int) Math.abs(Math.ceil(armor * 0.3)), (int) Math.abs(Math.ceil(armor * 0.4)), (int) Math.abs(Math.ceil(armor * 0.15))};
@@ -87,25 +87,33 @@ public class MaterialDefinition {
     public List<String> generateLore(Locale locale) {
         List<String> list = new ArrayList<String>();
         list.add(TextFormatting.GREEN + t(RandoresTranslations.Keys.INFORMATION, locale) + ":");
-        list.add(TextFormatting.GREEN + "  " + t(RandoresTranslations.Keys.EFFICIENCY, locale) + ": " + this.material.getEfficiency());
-        list.add(TextFormatting.GREEN + "  " + t(RandoresTranslations.Keys.FULL_ARMOR, locale) + ": " + this.totalArmor);
-        list.add(TextFormatting.GREEN + "  " + t(RandoresTranslations.Keys.DAMAGE, locale) + ": " + this.toolMaterial.getDamageVsEntity());
-        list.add(TextFormatting.GREEN + "  " + t(RandoresTranslations.Keys.DURABILITY, locale) + ": " + this.material.getMaxUses());
-        list.add(TextFormatting.GREEN + "  " + t(RandoresTranslations.Keys.ENCHANTABILITY, locale) + ": " + this.material.getEnchantability());
-        String recipes = TextFormatting.GREEN + "  " + t(RandoresTranslations.Keys.RECIPES, locale) + ": ";
-        if(this.hasComponent(Components.PICKAXE)) {
-            recipes += t(RandoresTranslations.Keys.TOOLS_RECIPE, locale) + ", ";
+        if (this.hasComponent(Components.PICKAXE)) {
+            list.add(TextFormatting.GREEN + "  " + t(RandoresTranslations.Keys.EFFICIENCY, locale) + ": " + this.material.getEfficiency());
         }
         if(this.hasComponent(Components.HELMET)) {
+            list.add(TextFormatting.GREEN + "  " + t(RandoresTranslations.Keys.FULL_ARMOR, locale) + ": " + this.totalArmor);
+        }
+        if(this.hasComponent(Components.PICKAXE) || this.hasComponent(Components.SWORD)) {
+            list.add(TextFormatting.GREEN + "  " + t(RandoresTranslations.Keys.DAMAGE, locale) + ": " + this.toolMaterial.getDamageVsEntity());
+        }
+        if(this.hasComponent(Components.PICKAXE) || this.hasComponent(Components.SWORD) || this.hasComponent(Components.HELMET)) {
+            list.add(TextFormatting.GREEN + "  " + t(RandoresTranslations.Keys.DURABILITY, locale) + ": " + this.material.getMaxUses());
+            list.add(TextFormatting.GREEN + "  " + t(RandoresTranslations.Keys.ENCHANTABILITY, locale) + ": " + this.material.getEnchantability());
+        }
+        String recipes = TextFormatting.GREEN + "  " + t(RandoresTranslations.Keys.RECIPES, locale) + ": ";
+        if (this.hasComponent(Components.PICKAXE)) {
+            recipes += t(RandoresTranslations.Keys.TOOLS_RECIPE, locale) + ", ";
+        }
+        if (this.hasComponent(Components.HELMET)) {
             recipes += t(RandoresTranslations.Keys.ARMOR_RECIPE, locale) + ", ";
         }
-        if(this.hasComponent(Components.SWORD)) {
+        if (this.hasComponent(Components.SWORD)) {
             recipes += t(RandoresTranslations.Keys.SWORD_RECIPE, locale) + ", ";
         }
-        if(this.hasComponent(Components.BRICKS)) {
+        if (this.hasComponent(Components.BRICKS)) {
             recipes += t(RandoresTranslations.Keys.BRICKS_RECIPE, locale) + ", ";
         }
-        if(this.hasComponent(Components.STICK)) {
+        if (this.hasComponent(Components.STICK)) {
             recipes += t(RandoresTranslations.Keys.STICK_RECIPE, locale) + ", ";
         }
         recipes = recipes.substring(0, recipes.length() - 2);
@@ -114,7 +122,7 @@ public class MaterialDefinition {
     }
 
     private void reduce(int[] arr, int slot) {
-        if(arr[slot] > 2) {
+        if (arr[slot] > 2) {
             arr[slot] = arr[slot] - 1;
         }
     }

@@ -23,6 +23,7 @@ package com.gmail.socraticphoenix.forge.randore;
 
 import com.gmail.socraticphoenix.forge.randore.texture.TextureTemplate;
 import net.minecraft.client.Minecraft;
+import net.minecraft.crash.CrashReport;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.relauncher.Side;
@@ -68,4 +69,7 @@ public class RandoresClientSideRegistry {
         return Locale.getDefault();
     }
 
+    public static void crash(String s, Throwable e) {
+        Minecraft.getMinecraft().crashed(new CrashReport(s, e));
+    }
 }

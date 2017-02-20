@@ -251,7 +251,7 @@ public class Randores {
     }
 
     public static long getRandoresSeed(ItemStack stack) {
-        if(Randores.hasRandoresSeed(stack)) {
+        if (Randores.hasRandoresSeed(stack)) {
             return stack.getSubCompound("randores").getLong("seed");
         } else {
             return 0;
@@ -271,51 +271,61 @@ public class Randores {
     }
 
     @Mod.EventHandler
-    public void onPreInit(FMLPreInitializationEvent ev) throws IOException {
-        this.tex.mkdirs();
-        if (!this.conf.exists()) {
-            this.conf.createNewFile();
-        }
+    public void onPreInit(FMLPreInitializationEvent ev) {
+        try {
+            this.tex.mkdirs();
+            if (!this.conf.exists()) {
+                this.conf.createNewFile();
+            }
 
-        List<String> languages = RandoresResourceManager.getResourceLines("ab_dict.txt");
-        for (String lang : languages) {
-            Locale locale = null;
-            for (Locale test : Locale.getAvailableLocales()) {
-                String langS = test.getLanguage();
-                if ((test.getCountry().isEmpty() && langS.equals(lang)) || (langS + "_" + test.getCountry()).equals(lang)) {
-                    locale = test;
-                    break;
+            RandoresTranslations.registerFallback();
+
+            List<String> languages = RandoresResourceManager.getResourceLines("ab_dict.txt");
+            for (String lang : languages) {
+                Locale locale = null;
+                for (Locale test : Locale.getAvailableLocales()) {
+                    String langS = test.getLanguage();
+                    if ((test.getCountry().isEmpty() && langS.equals(lang)) || (langS + "_" + test.getCountry()).equals(lang)) {
+                        locale = test;
+                        break;
+                    }
+                }
+                if (locale != null) {
+                    this.logger.info("Loading randores translations from file: " + lang + " for locale: " + locale);
+                    RandoresTranslations.registerFromResources(locale, lang + ".lang");
                 }
             }
-            if (locale != null) {
-                RandoresTranslations.registerFromResources(locale, lang + ".lang");
+
+            GameRegistry.registerTileEntityWithAlternatives(CraftiniumForgeTileEntity.class, "craftinium_forge", "craftinium_forge_lit");
+
+            CraftingManager.getInstance().addRecipe(new ItemStack(CraftingBlocks.craftiniumTable), "XX ", "XX ", 'X', CraftingItems.craftiniumLump);
+            CraftingManager.getInstance().addRecipe(new ItemStack(CraftingBlocks.craftiniumForge), "XXX", "X X", "XXX", 'X', CraftingItems.craftiniumLump);
+
+            for (int i = 0; i < 300; i++) {
+                Item material = FlexibleItemRegistry.getMaterial(i);
+                for (CraftableType type : CraftableType.values()) {
+                    CraftiniumRecipeRegistry.register(new FlexibleRecipe(i, type, 'X', material, 'S', "stickWood"));
+                }
+                CraftiniumSmeltRegistry.register(new FlexibleSmelt(i));
+            }
+
+            this.logger.info("Testing the names algorithm...");
+            Random random = new Random();
+            for (int i = 0; i < 10; i++) {
+                this.logger.info(RandoresNameAlgorithm.name(new Color(random.nextInt(256), random.nextInt(256), random.nextInt(256))));
+            }
+            this.logger.info("Finished testing names algorithm");
+            RandoresNetworking.initNetwork();
+            this.logger.info("Running proxy pre-initialization...");
+            Randores.proxy.preInitSided();
+            this.logger.info("Proxy pre-initialized.");
+        } catch (IOException e) {
+            if (FMLCommonHandler.instance().getSide() == Side.CLIENT) {
+                RandoresClientSideRegistry.crash("Encountered IOException while randores was loading", e);
+            } else {
+                e.printStackTrace();
             }
         }
-
-        GameRegistry.registerTileEntityWithAlternatives(CraftiniumForgeTileEntity.class, "craftinium_forge", "craftinium_forge_lit");
-
-        CraftingManager.getInstance().addRecipe(new ItemStack(CraftingBlocks.craftiniumTable), "XX ", "XX ", 'X', CraftingItems.craftiniumLump);
-        CraftingManager.getInstance().addRecipe(new ItemStack(CraftingBlocks.craftiniumForge), "XXX", "X X", "XXX", 'X', CraftingItems.craftiniumLump);
-
-        for (int i = 0; i < 300; i++) {
-            Item material = FlexibleItemRegistry.getMaterial(i);
-            for (CraftableType type : CraftableType.values()) {
-                CraftiniumRecipeRegistry.register(new FlexibleRecipe(i, type, 'X', material, 'S', "stickWood"));
-            }
-            CraftiniumSmeltRegistry.register(new FlexibleSmelt(i));
-        }
-
-        this.logger.info("Testing the names algorithm...");
-        Random random = new Random();
-        for (int i = 0; i < 10; i++) {
-            this.logger.info(RandoresNameAlgorithm.name(new Color(random.nextInt(256), random.nextInt(256), random.nextInt(256))));
-        }
-        this.logger.info("Finished testing names algorithm");
-        RandoresNetworking.initNetwork();
-        this.logger.info("Running proxy pre-initialization...");
-        Randores.proxy.preInitSided();
-        this.logger.info("Proxy pre-initialized.");
-
     }
 
     @Mod.EventHandler

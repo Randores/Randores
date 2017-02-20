@@ -1,5 +1,5 @@
 randores.texture.setup=Randores is setting up your textures in a separate thread. Your resources will reload in a moment.
-randores.texture.reloading=Reloading your resources! Expect a screen save for ~30 seconds.
+randores.texture.reloading=Reloading your resources! Expect a screen freeze for ~30 seconds.
 randores.material.information=Randores Material Information
 randores.material.name=Name
 randores.material.efficiency=Efficiency
