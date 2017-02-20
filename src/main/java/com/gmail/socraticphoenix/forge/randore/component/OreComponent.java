@@ -25,8 +25,6 @@ import com.gmail.socraticphoenix.forge.randore.RandoresTranslations;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 
-import java.util.Locale;
-
 public class OreComponent implements Component {
     private MaterialComponent material;
     private Dimension dimension;
@@ -90,7 +88,7 @@ public class OreComponent implements Component {
     }
 
     @Override
-    public String getLocalName(Locale locale) {
+    public String getLocalName(String locale) {
         return RandoresTranslations.get(locale, this.getName());
     }
 

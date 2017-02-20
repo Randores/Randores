@@ -23,8 +23,6 @@ package com.gmail.socraticphoenix.forge.randore.component;
 
 import com.gmail.socraticphoenix.forge.randore.RandoresTranslations;
 
-import java.util.Locale;
-
 public enum  MaterialType {
     INGOT(RandoresTranslations.Keys.INGOT, "ingot"),
     DUST(RandoresTranslations.Keys.DUST, "dust"),
@@ -49,7 +47,7 @@ public enum  MaterialType {
         return this.template;
     }
 
-    public String getLocalName(Locale locale) {
+    public String getLocalName(String locale) {
         return RandoresTranslations.get(locale, this.getName());
     }
 

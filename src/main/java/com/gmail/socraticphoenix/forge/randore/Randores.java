@@ -72,11 +72,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 
-@Mod(modid = "randores", name = "Socratic_Phoenix's Randores", version = "1.4")
+@Mod(modid = "randores", name = "Socratic_Phoenix's Randores", version = "1.5")
 public class Randores {
     public static final Item.ToolMaterial MATERIAL_DEFAULT = EnumHelper.addToolMaterial("MATERIAL_DEFAULT", 1, 100, 1, 1, 1);
     public static final ItemArmor.ArmorMaterial ARMOR_DEFAULT = EnumHelper.addArmorMaterial("ARMOR_DEFAULT", "no_texture", 100, new int[]{1, 1, 1, 1}, 1, SoundEvents.ITEM_ARMOR_EQUIP_IRON, 1);
@@ -282,18 +281,9 @@ public class Randores {
 
             List<String> languages = RandoresResourceManager.getResourceLines("ab_dict.txt");
             for (String lang : languages) {
-                Locale locale = null;
-                for (Locale test : Locale.getAvailableLocales()) {
-                    String langS = test.getLanguage();
-                    if ((test.getCountry().isEmpty() && langS.equals(lang)) || (langS + "_" + test.getCountry()).equals(lang)) {
-                        locale = test;
-                        break;
-                    }
-                }
-                if (locale != null) {
-                    this.logger.info("Loading randores translations from file: " + lang + " for locale: " + locale);
-                    RandoresTranslations.registerFromResources(locale, lang + ".lang");
-                }
+                this.logger.info("Loading randores translations from file: " + lang);
+                RandoresTranslations.registerFromResources(lang, lang + ".lang");
+
             }
 
             GameRegistry.registerTileEntityWithAlternatives(CraftiniumForgeTileEntity.class, "craftinium_forge", "craftinium_forge_lit");

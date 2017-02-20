@@ -23,8 +23,6 @@ package com.gmail.socraticphoenix.forge.randore.component;
 
 import com.gmail.socraticphoenix.forge.randore.RandoresTranslations;
 
-import java.util.Locale;
-
 public enum  CraftableType {
     AXE(RandoresTranslations.Keys.AXE, "axe", " XX", " SX", " S "),
     HOE(RandoresTranslations.Keys.HOE, "hoe", " XX", " S ", " S "),
@@ -52,7 +50,7 @@ public enum  CraftableType {
         return this.name;
     }
 
-    public String getLocalName(Locale locale) {
+    public String getLocalName(String locale) {
         return RandoresTranslations.get(locale, this.getName());
     }
 

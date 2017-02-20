@@ -26,27 +26,26 @@ import com.gmail.socraticphoenix.forge.randore.resource.RandoresResourceManager;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 public class RandoresTranslations {
     private static Map<String, Map<String, String>> translations = new HashMap<String, Map<String, String>>();
     private static Map<String, String> fallback = new HashMap<String, String>();
 
-    public static void register(Locale locale, String key, String value) {
+    public static void register(String locale, String key, String value) {
         RandoresTranslations.ensureExistence(locale);
-        RandoresTranslations.translations.get(locale.toString().toLowerCase()).put(key, value);
+        RandoresTranslations.translations.get(locale.toLowerCase()).put(key, value);
     }
 
-    public static String get(Locale locale, String key) {
-        if (RandoresTranslations.translations.containsKey(locale.toString().toLowerCase())) {
-            return RandoresTranslations.translations.get(locale.toString().toLowerCase()).get(key);
+    public static String get(String locale, String key) {
+        if (RandoresTranslations.translations.containsKey(locale.toLowerCase())) {
+            return RandoresTranslations.translations.get(locale.toLowerCase()).get(key);
         } else {
             return RandoresTranslations.fallback.get(key);
         }
     }
 
-    public static void registerFromResources(Locale locale, String fileName) throws IOException {
+    public static void registerFromResources(String locale, String fileName) throws IOException {
         if (RandoresResourceManager.resourceExists("lang/" + fileName)) {
             List<String> lines = RandoresResourceManager.getResourceLines("lang/" + fileName);
             for (String line : lines) {
@@ -68,9 +67,9 @@ public class RandoresTranslations {
         }
     }
 
-    private static void ensureExistence(Locale locale) {
-        if (!RandoresTranslations.translations.containsKey(locale)) {
-            RandoresTranslations.translations.put(locale.toString().toLowerCase(), new HashMap<String, String>());
+    private static void ensureExistence(String locale) {
+        if (!RandoresTranslations.translations.containsKey(locale.toLowerCase())) {
+            RandoresTranslations.translations.put(locale.toLowerCase(), new HashMap<String, String>());
         }
     }
 

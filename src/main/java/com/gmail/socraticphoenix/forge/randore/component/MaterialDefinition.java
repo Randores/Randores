@@ -36,7 +36,6 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 public class MaterialDefinition {
@@ -80,11 +79,11 @@ public class MaterialDefinition {
         this.seed = seed;
     }
 
-    private String t(String s, Locale locale) {
+    private String t(String s, String locale) {
         return RandoresTranslations.get(locale, s);
     }
 
-    public List<String> generateLore(Locale locale) {
+    public List<String> generateLore(String locale) {
         List<String> list = new ArrayList<String>();
         list.add(TextFormatting.GREEN + t(RandoresTranslations.Keys.INFORMATION, locale) + ":");
         if (this.hasComponent(Components.PICKAXE)) {

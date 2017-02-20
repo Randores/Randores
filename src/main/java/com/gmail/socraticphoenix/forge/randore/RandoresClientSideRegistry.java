@@ -29,7 +29,6 @@ import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.relauncher.Side;
 
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -57,16 +56,16 @@ public class RandoresClientSideRegistry {
         return Minecraft.getMinecraft().player;
     }
 
-    public static Locale getCurrentLocale() {
+    public static String getCurrentLocale() {
         return FMLCommonHandler.instance().getSide() == Side.CLIENT ? RandoresClientSideRegistry.clientSideLocale() : RandoresClientSideRegistry.serverSideLocale();
     }
 
-    private static Locale clientSideLocale() {
-        return Minecraft.getMinecraft().getLanguageManager().getCurrentLanguage().getJavaLocale();
+    private static String clientSideLocale() {
+        return Minecraft.getMinecraft().getLanguageManager().getCurrentLanguage().getLanguageCode();
     }
 
-    private static Locale serverSideLocale() {
-        return Locale.getDefault();
+    private static String serverSideLocale() {
+        return "en_us";
     }
 
     public static void crash(String s, Throwable e) {
