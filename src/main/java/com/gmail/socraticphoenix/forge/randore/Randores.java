@@ -163,9 +163,8 @@ public class Randores {
             MinecraftForge.EVENT_BUS.register(new RandoresClientSideListener());
         }
         MinecraftForge.EVENT_BUS.register(new RandoresRegistryListener());
-        MinecraftForge.EVENT_BUS.register(new RandoresClientListener());
+        MinecraftForge.EVENT_BUS.register(new RandoresPlayerListener());
         MinecraftForge.EVENT_BUS.register(new RandoresWorldEventListener());
-        MinecraftForge.EVENT_BUS.register(new RandoresItemListener());
     }
 
     private static long getRandoresSeedFromWorld(long worldSeed) {

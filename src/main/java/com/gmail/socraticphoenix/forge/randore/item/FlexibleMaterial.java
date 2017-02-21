@@ -22,16 +22,14 @@
 package com.gmail.socraticphoenix.forge.randore.item;
 
 import com.gmail.socraticphoenix.forge.randore.Randores;
-import com.gmail.socraticphoenix.forge.randore.RandoresClientSideRegistry;
 import com.gmail.socraticphoenix.forge.randore.component.Components;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinition;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinitionRegistry;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.relauncher.Side;
 
 import java.util.List;
 
@@ -44,24 +42,18 @@ public class FlexibleMaterial extends Item implements FlexibleItem {
 
     @Override
     public void addInformation(ItemStack stack, EntityPlayer playerIn, List<String> tooltip, boolean advanced) {
-        if (FMLCommonHandler.instance().getSide() == Side.CLIENT && this.getDefinition(playerIn.world).hasComponent(this.getType())) {
-            MaterialDefinition definition = this.getDefinition(playerIn.world);
-            if (!stack.hasDisplayName()) {
-                tooltip.remove(0);
-                tooltip.add(0, definition.getName() + " " + definition.getComponent(this.getType()).getLocalName(RandoresClientSideRegistry.getCurrentLocale()));
-            }
-            tooltip.addAll(definition.generateLore(RandoresClientSideRegistry.getCurrentLocale()));
-        }
-        super.addInformation(stack, playerIn, tooltip, advanced);
+        FlexibleItemHelper.addInformation(this, stack, playerIn, tooltip, advanced);
     }
 
     @Override
     public String getItemStackDisplayName(ItemStack stack) {
-        if (Randores.hasRandoresSeed(stack) && this.getDefinition(Randores.getRandoresSeed(stack)).hasComponent(this.getType())) {
-            MaterialDefinition definition = this.getDefinition(Randores.getRandoresSeed(stack));
-            return definition.getName() + " " + definition.getComponent(this.getType()).getLocalName(RandoresClientSideRegistry.getCurrentLocale());
-        }
-        return super.getItemStackDisplayName(stack);
+        String name = FlexibleItemHelper.getItemStackDisplayName(this, stack);
+        return name == null ? super.getItemStackDisplayName(stack) : name;
+    }
+
+    @Override
+    public void onUpdate(ItemStack stack, World worldIn, Entity entityIn, int itemSlot, boolean isSelected) {
+        FlexibleItemHelper.onUpdate(stack, worldIn, entityIn, itemSlot, isSelected);
     }
 
     @Override

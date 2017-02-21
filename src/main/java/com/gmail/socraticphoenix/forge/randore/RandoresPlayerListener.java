@@ -26,7 +26,6 @@ import com.gmail.socraticphoenix.forge.randore.packet.RandoresPacket;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.world.World;
-import net.minecraftforge.event.entity.player.PlayerContainerEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 
@@ -34,13 +33,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class RandoresClientListener {
+public class RandoresPlayerListener {
     private Map<UUID, Long> playersSeed = new HashMap<UUID, Long>();
-
-    @SubscribeEvent
-    public void onOpenContainer(PlayerContainerEvent.Open ev) {
-
-    }
 
     @SubscribeEvent
     public void onLeave(PlayerEvent.PlayerLoggedOutEvent ev) {
