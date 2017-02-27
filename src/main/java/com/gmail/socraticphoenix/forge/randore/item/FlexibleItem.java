@@ -29,6 +29,8 @@ public interface FlexibleItem {
 
     int index();
 
+    boolean hasDefinition(long seed);
+
     MaterialDefinition getDefinition(long seed);
 
     MaterialDefinition getDefinition(World world);

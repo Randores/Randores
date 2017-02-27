@@ -21,15 +21,16 @@
  */
 package com.gmail.socraticphoenix.forge.randore;
 
+import com.gmail.socraticphoenix.forge.randore.block.FlexibleOre;
 import com.gmail.socraticphoenix.forge.randore.component.Dimension;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinition;
-import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinitionGenerator;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinitionRegistry;
 import com.gmail.socraticphoenix.forge.randore.component.OreComponent;
 import com.gmail.socraticphoenix.forge.randore.crafting.CraftingBlocks;
 import com.gmail.socraticphoenix.forge.randore.util.IntRange;
 import com.google.common.base.Predicate;
 import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.block.state.pattern.BlockMatcher;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -48,18 +49,18 @@ public class RandoresWorldGenerator implements IWorldGenerator {
             long seed = Randores.getRandoresSeed(world);
             for (MaterialDefinition definition : MaterialDefinitionRegistry.get(seed)) {
                 OreComponent component = definition.getOre();
-                if (component.getDimension().getId() == world.provider.getDimension()) {
-                    this.generateOre(component.makeBlock(), world, random, chunkX * 16, chunkZ * 16, component.getMaxVein(), component.getMinVein(), component.getMaxY(), component.getMinY(), component.getMaxOccurences(), component.getMinOccurences(), component.getDimension().getGenerateIn());
+                if (RandoresProbability.percentChance(10, random) && component.getDimension().getId() == world.provider.getDimension()) {
+                    this.generateOre(component.makeBlock().getDefaultState().withProperty(FlexibleOre.HARVEST_LEVEL, definition.getOre().getHarvestLevel()), world, random, chunkX * 16, chunkZ * 16, component.getMaxVein(), component.getMinVein(), component.getMaxY(), component.getMinY(), component.getMaxOccurences(), component.getMinOccurences(), component.getDimension().getGenerateIn());
                 }
 
-                if(Dimension.OVERWORLD.getId() == world.provider.getDimension()) {
-                    this.generateOre(CraftingBlocks.craftiniumOre, world, random, chunkX * 16, chunkZ * 16, 3, 1, 100, 0, 30, 5, Dimension.OVERWORLD.getGenerateIn());
+                if (Dimension.OVERWORLD.getId() == world.provider.getDimension()) {
+                    this.generateOre(CraftingBlocks.craftiniumOre.getDefaultState(), world, random, chunkX * 16, chunkZ * 16, 3, 1, 100, 0, 1, 1, Dimension.OVERWORLD.getGenerateIn());
                 }
             }
         }
     }
 
-    private void generateOre(Block block, World world, Random random, int blockX, int blockZ, int maxVein, int minVein, int maxY, int minY, int maxOccurrences, int minOccurrences, Block[] generateIn) {
+    private void generateOre(IBlockState block, World world, Random random, int blockX, int blockZ, int maxVein, int minVein, int maxY, int minY, int maxOccurrences, int minOccurrences, Block[] generateIn) {
         IntRange vein = new IntRange(minVein, maxVein);
         IntRange height = new IntRange(minY, maxY);
         IntRange occurrences = new IntRange(minOccurrences, maxOccurrences);
@@ -81,7 +82,7 @@ public class RandoresWorldGenerator implements IWorldGenerator {
             }
         }
 
-        WorldGenMinable gen = new WorldGenMinable(block.getDefaultState(), vein.randomElement(random), predicate);
+        WorldGenMinable gen = new WorldGenMinable(block, vein.randomElement(random), predicate);
 
         int i = 0;
         int o = occurrences.randomElement(random);

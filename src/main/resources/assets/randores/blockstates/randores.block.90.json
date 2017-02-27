@@ -1,5 +1,21 @@
 {
     "variants": {
-        "normal": { "model": "randores:randores.block.90" }
+        "normal": { "model": "randores:randores.block.90" },
+        "harvest_level=0": { "model": "randores:randores.block.90" },
+        "harvest_level=1": { "model": "randores:randores.block.90" },
+        "harvest_level=2": { "model": "randores:randores.block.90" },
+        "harvest_level=3": { "model": "randores:randores.block.90" },
+        "harvest_level=4": { "model": "randores:randores.block.90" },
+        "harvest_level=5": { "model": "randores:randores.block.90" },
+        "harvest_level=6": { "model": "randores:randores.block.90" },
+        "harvest_level=7": { "model": "randores:randores.block.90" },
+        "harvest_level=8": { "model": "randores:randores.block.90" },
+        "harvest_level=9": { "model": "randores:randores.block.90" },
+        "harvest_level=10": { "model": "randores:randores.block.90" },
+        "harvest_level=11": { "model": "randores:randores.block.90" },
+        "harvest_level=12": { "model": "randores:randores.block.90" },
+        "harvest_level=13": { "model": "randores:randores.block.90" },
+        "harvest_level=14": { "model": "randores:randores.block.90" },
+        "harvest_level=15": { "model": "randores:randores.block.90" }
     }
 }

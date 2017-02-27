@@ -26,9 +26,20 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 
 public class RandoresPacket implements IMessage {
     private long seed;
+    private int oreCount;
 
     public RandoresPacket() {
         this.seed = 0;
+        this.oreCount = 0;
+    }
+
+    public int getOreCount() {
+        return this.oreCount;
+    }
+
+    public RandoresPacket setOreCount(int oreCount) {
+        this.oreCount = oreCount;
+        return this;
     }
 
     public long getSeed() {
@@ -42,11 +53,13 @@ public class RandoresPacket implements IMessage {
 
     @Override
     public void fromBytes(ByteBuf buf) {
-        this.setSeed(buf.readLong());
+        this.setSeed(buf.readLong()).setOreCount(buf.readInt());
     }
 
     @Override
     public void toBytes(ByteBuf buf) {
         buf.writeLong(this.getSeed());
+        buf.writeInt(this.getOreCount());
     }
+
 }

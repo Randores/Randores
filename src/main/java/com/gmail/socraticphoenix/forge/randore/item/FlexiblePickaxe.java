@@ -65,6 +65,11 @@ public class FlexiblePickaxe extends ItemPickaxe implements FlexibleItem {
     }
 
     @Override
+    public boolean isFull3D() {
+        return true;
+    }
+
+    @Override
     public void onUpdate(ItemStack stack, World worldIn, Entity entityIn, int itemSlot, boolean isSelected) {
         FlexibleItemHelper.onUpdate(stack, worldIn, entityIn, itemSlot, isSelected);
     }
@@ -152,8 +157,8 @@ public class FlexiblePickaxe extends ItemPickaxe implements FlexibleItem {
 
     @Override
     public int getHarvestLevel(ItemStack stack, String toolClass, @Nullable EntityPlayer player, @Nullable IBlockState blockState) {
-        if(this.hasBacker(player.world)) {
-            return this.getBacker(player.world).getHarvestLevel(stack, toolClass, player, blockState);
+        if(this.hasBacker(Randores.getRandoresSeed(stack))) {
+            return this.getBacker(Randores.getRandoresSeed(stack)).getHarvestLevel(stack, toolClass, player, blockState);
         }
         return super.getHarvestLevel(stack, toolClass, player, blockState);
     }
@@ -212,6 +217,11 @@ public class FlexiblePickaxe extends ItemPickaxe implements FlexibleItem {
     @Override
     public MaterialDefinition getDefinition(World world) {
         return this.getDefinition(Randores.getRandoresSeed(world));
+    }
+
+    @Override
+    public boolean hasDefinition(long seed) {
+        return MaterialDefinitionRegistry.contains(seed, this.index);
     }
 
     @Override

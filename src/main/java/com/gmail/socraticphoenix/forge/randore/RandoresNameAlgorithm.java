@@ -33,15 +33,23 @@ public class RandoresNameAlgorithm {
 
     public static String name(Color color) {
         Random random = new Random(color.getRGB());
+        String res = RandoresNameAlgorithm.name(random);
+        while (Randores.containsOffensiveWord(res)) {
+            res = RandoresNameAlgorithm.name(random);
+        }
+        return res;
+    }
+
+    private static String name(Random random) {
         String res = "";
         int consLen = random.nextInt(1) + 2;
         for (int i = 0; i < consLen; i++) {
             res += CONSONANT_DICTIONARY[random.nextInt(CONSONANT_DICTIONARY.length)];
             if (i < consLen - 1) {
                 res += VOWEL_DICTIONARY[random.nextInt(VOWEL_DICTIONARY.length)];
-                if(random.nextInt(10) < 4) {
+                if(random.nextInt(10) == 0) {
                     res += VOWEL_DICTIONARY[random.nextInt(VOWEL_DICTIONARY.length)];
-                    if(random.nextInt(10) == 0) {
+                    if(random.nextInt(30) == 0) {
                         res += VOWEL_DICTIONARY[random.nextInt(VOWEL_DICTIONARY.length)];
                     }
                 }

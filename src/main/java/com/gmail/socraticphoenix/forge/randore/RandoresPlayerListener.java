@@ -53,7 +53,8 @@ public class RandoresPlayerListener {
             UUID id = playerMP.getUniqueID();
             long seed = Randores.getRandoresSeed(world);
             if (!this.playersSeed.containsKey(id) || this.playersSeed.get(id) != seed) {
-                RandoresNetworking.INSTANCE.sendTo(new RandoresPacket().setSeed(Randores.getRandoresSeed(world)), playerMP);
+                Randores.getInstance().getConfiguration().load();
+                RandoresNetworking.INSTANCE.sendTo(new RandoresPacket().setSeed(Randores.getRandoresSeed(world)).setOreCount(Randores.getOreCountConfigProperty()), playerMP);
             }
             this.playersSeed.put(id, seed);
         }
@@ -68,7 +69,8 @@ public class RandoresPlayerListener {
             UUID id = playerMP.getUniqueID();
             long seed = Randores.getRandoresSeed(world);
             if (!this.playersSeed.containsKey(id) || this.playersSeed.get(id) != seed) {
-                RandoresNetworking.INSTANCE.sendTo(new RandoresPacket().setSeed(Randores.getRandoresSeed(world)), playerMP);
+                Randores.getInstance().getConfiguration().load();
+                RandoresNetworking.INSTANCE.sendTo(new RandoresPacket().setSeed(Randores.getRandoresSeed(world)).setOreCount(Randores.getOreCountConfigProperty()), playerMP);
             }
             this.playersSeed.put(id, seed);
         }

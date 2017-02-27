@@ -32,8 +32,9 @@ public class MaterialComponent implements Component {
     private float toughness;
     private int enchantability;
     private Item item;
+    private int[] armorReduction;
 
-    public MaterialComponent(MaterialType type, int harvestLevel, int maxUses, float efficiency, float damage, int enchantability, float toughness, Item item) {
+    public MaterialComponent(MaterialType type, int harvestLevel, int maxUses, float efficiency, float damage, int enchantability, float toughness, int[] armorReduction, Item item) {
         this.type = type;
         this.harvestLevel = harvestLevel;
         this.maxUses = maxUses;
@@ -42,6 +43,11 @@ public class MaterialComponent implements Component {
         this.enchantability = enchantability;
         this.item = item;
         this.toughness = toughness;
+        this.armorReduction = armorReduction;
+    }
+
+    public int[] getArmorReduction() {
+        return this.armorReduction.clone();
     }
 
     @Override

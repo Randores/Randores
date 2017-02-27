@@ -35,5 +35,7 @@ public interface CraftiniumSmelt {
 
     float experience(ItemStack out, World worldIn, BlockPos forge);
 
+    int maxResult(ItemStack in, World worldIn, BlockPos forge);
+
 
 }

@@ -86,6 +86,11 @@ public class FlexibleItemArmor extends ItemArmor implements FlexibleItem, ISpeci
     }
 
     @Override
+    public boolean isFull3D() {
+        return true;
+    }
+
+    @Override
     public Multimap<String, AttributeModifier> getItemAttributeModifiers(EntityEquipmentSlot equipmentSlot) {
         return super.getItemAttributeModifiers(equipmentSlot);
     }
@@ -246,6 +251,11 @@ public class FlexibleItemArmor extends ItemArmor implements FlexibleItem, ISpeci
     @Override
     public int index() {
         return this.index;
+    }
+
+    @Override
+    public boolean hasDefinition(long seed) {
+        return MaterialDefinitionRegistry.contains(seed, this.index);
     }
 
     @Override

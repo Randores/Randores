@@ -34,10 +34,14 @@ public class MaterialDefinitionRegistry {
         return MaterialDefinitionRegistry.definitions.get(seed);
     }
 
+    public static boolean contains(long seed, int index) {
+        List<MaterialDefinition> definitions = MaterialDefinitionRegistry.definitions.get(seed);
+        return definitions != null && index >= 0 && index < definitions.size();
+    }
+
     public static List<MaterialDefinition> remove(long seed) {
         return MaterialDefinitionRegistry.definitions.remove(seed);
     }
-
 
     public static void put(long seed, List<MaterialDefinition> definitions) {
         MaterialDefinitionRegistry.definitions.put(seed, definitions);

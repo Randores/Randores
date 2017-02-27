@@ -36,6 +36,7 @@ import java.io.File;
 import java.io.IOException;
 
 public class FlexibleAtlasSprite extends TextureAtlasSprite {
+    private static int[][] test;
     private String texture;
     private long seed;
 
@@ -70,35 +71,51 @@ public class FlexibleAtlasSprite extends TextureAtlasSprite {
 
     @Override
     public boolean load(IResourceManager manager, ResourceLocation location) {
+        try {
+            if (test == null) {
+                BufferedImage texImg = RandoresResourceManager.getImageResource("test.png");
+                int[][] texData = new int[(int) (1 + (Math.log10(texImg.getWidth()) / Math.log10(2)))][];
+                int[] buffer = new int[texImg.getHeight() * texImg.getWidth()];
+                texImg.getRGB(0, 0, texImg.getWidth(), texImg.getHeight(), buffer, 0, texImg.getWidth());
+                for (int i = 0; i < texData.length; i++) {
+                    texData[i] = buffer;
+                }
+                test = texData;
+            }
+        } catch (IOException e) {
+            Minecraft.getMinecraft().crashed(new CrashReport("\"Fatal error: Unable to load texture \"test\"", e));
+
+        }
+
         String name = this.texture.endsWith(".png") ? this.texture : this.texture + ".png";
         File texture = new File(Randores.getInstance().getTextureFile(this.seed), name);
+        BufferedImage texImg;
         try {
-            BufferedImage texImg;
-            try {
-                if (texture.exists()) {
-                    texImg = ImageIO.read(texture);
-                } else if (RandoresResourceManager.resourceExists(name)) {
-                    texImg = RandoresResourceManager.getImageResource(name);
-                } else {
-                    texImg = RandoresResourceManager.getImageResource("test.png");
-                }
-            } catch (IOException e) {
-                Randores.getInstance().getLogger().error("Fatal Error: Unable to load texture \"" + this.texture + ",\" reverting to test texture.", e);
-                texImg = RandoresResourceManager.getImageResource("test.png");
+            if (texture.exists()) {
+                texImg = ImageIO.read(texture);
+            } else if (RandoresResourceManager.resourceExists(name)) {
+                texImg = RandoresResourceManager.getImageResource(name);
+            } else {
+                this.framesTextureData.clear();
+                this.framesTextureData.add(test.clone());
+                return false;
             }
-            this.setIconHeight(texImg.getHeight());
-            this.setIconWidth(texImg.getWidth());
-            int[][] texData = new int[(int) (1 + (Math.log10(texImg.getWidth()) / Math.log10(2)))][];
-            int[] buffer = new int[texImg.getHeight() * texImg.getWidth()];
-            texImg.getRGB(0, 0, texImg.getWidth(), texImg.getHeight(), buffer, 0, texImg.getWidth());
-            for (int i = 0; i < texData.length; i++) {
-                texData[i] = buffer;
-            }
-            this.framesTextureData.clear();
-            this.framesTextureData.add(texData);
         } catch (IOException e) {
-            Minecraft.getMinecraft().crashed(new CrashReport("\"Fatal error: Unable to load texture \\\"\" + this.texture + \",\\\" and unable to revert to test texture.\"", e));
+            Randores.getInstance().getLogger().error("Fatal Error: Unable to load texture \"" + this.texture + ",\" reverting to test texture.", e);
+            this.framesTextureData.clear();
+            this.framesTextureData.add(test.clone());
+            return false;
         }
+        this.setIconHeight(texImg.getHeight());
+        this.setIconWidth(texImg.getWidth());
+        int[][] texData = new int[(int) (1 + (Math.log10(texImg.getWidth()) / Math.log10(2)))][];
+        int[] buffer = new int[texImg.getHeight() * texImg.getWidth()];
+        texImg.getRGB(0, 0, texImg.getWidth(), texImg.getHeight(), buffer, 0, texImg.getWidth());
+        for (int i = 0; i < texData.length; i++) {
+            texData[i] = buffer;
+        }
+        this.framesTextureData.clear();
+        this.framesTextureData.add(texData);
         return false;
     }
 

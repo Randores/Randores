@@ -45,15 +45,15 @@ public class RandoresClientSideListener {
         ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(CraftingBlocks.craftiniumTable), 0, new ModelResourceLocation("randores:" + Item.getItemFromBlock(CraftingBlocks.craftiniumTable).getUnlocalizedName().substring(5)));
         ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(CraftingBlocks.craftiniumForge), 0, new ModelResourceLocation("randores:" + Item.getItemFromBlock(CraftingBlocks.craftiniumForge).getUnlocalizedName().substring(5)));
 
-        ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(TabBlocks.tabOre), 0, new ModelResourceLocation("randores:" + Item.getItemFromBlock(TabBlocks.tabOre).getUnlocalizedName().substring(5)));
-        ModelLoader.setCustomModelResourceLocation(TabItems.tabItem, 0, new ModelResourceLocation("randores:" + TabItems.tabItem.getUnlocalizedName().substring(5), "inventory"));
-        ModelLoader.setCustomModelResourceLocation(TabItems.tabHoe, 0, new ModelResourceLocation("randores:" + TabItems.tabHoe.getUnlocalizedName().substring(5), "inventory"));
-        ModelLoader.setCustomModelResourceLocation(TabItems.tabAxe, 0, new ModelResourceLocation("randores:" + TabItems.tabAxe.getUnlocalizedName().substring(5), "inventory"));
-        ModelLoader.setCustomModelResourceLocation(TabItems.tabShovel, 0, new ModelResourceLocation("randores:" + TabItems.tabShovel.getUnlocalizedName().substring(5), "inventory"));
-        ModelLoader.setCustomModelResourceLocation(TabItems.tabPickaxe, 0, new ModelResourceLocation("randores:" + TabItems.tabPickaxe.getUnlocalizedName().substring(5), "inventory"));
-        ModelLoader.setCustomModelResourceLocation(TabItems.tabSword, 0, new ModelResourceLocation("randores:" + TabItems.tabSword.getUnlocalizedName().substring(5), "inventory"));
-        ModelLoader.setCustomModelResourceLocation(TabItems.tabHelmet, 0, new ModelResourceLocation("randores:" + TabItems.tabHelmet.getUnlocalizedName().substring(5), "inventory"));
-        ModelLoader.setCustomModelResourceLocation(TabItems.tabStick, 0, new ModelResourceLocation("randores:" + TabItems.tabStick.getUnlocalizedName().substring(5), "inventory"));
+        ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(RandoresTabBlocks.tabOre), 0, new ModelResourceLocation("randores:" + Item.getItemFromBlock(RandoresTabBlocks.tabOre).getUnlocalizedName().substring(5)));
+        ModelLoader.setCustomModelResourceLocation(RandoresTabItems.tabItem, 0, new ModelResourceLocation("randores:" + RandoresTabItems.tabItem.getUnlocalizedName().substring(5), "inventory"));
+        ModelLoader.setCustomModelResourceLocation(RandoresTabItems.tabHoe, 0, new ModelResourceLocation("randores:" + RandoresTabItems.tabHoe.getUnlocalizedName().substring(5), "inventory"));
+        ModelLoader.setCustomModelResourceLocation(RandoresTabItems.tabAxe, 0, new ModelResourceLocation("randores:" + RandoresTabItems.tabAxe.getUnlocalizedName().substring(5), "inventory"));
+        ModelLoader.setCustomModelResourceLocation(RandoresTabItems.tabShovel, 0, new ModelResourceLocation("randores:" + RandoresTabItems.tabShovel.getUnlocalizedName().substring(5), "inventory"));
+        ModelLoader.setCustomModelResourceLocation(RandoresTabItems.tabPickaxe, 0, new ModelResourceLocation("randores:" + RandoresTabItems.tabPickaxe.getUnlocalizedName().substring(5), "inventory"));
+        ModelLoader.setCustomModelResourceLocation(RandoresTabItems.tabSword, 0, new ModelResourceLocation("randores:" + RandoresTabItems.tabSword.getUnlocalizedName().substring(5), "inventory"));
+        ModelLoader.setCustomModelResourceLocation(RandoresTabItems.tabHelmet, 0, new ModelResourceLocation("randores:" + RandoresTabItems.tabHelmet.getUnlocalizedName().substring(5), "inventory"));
+        ModelLoader.setCustomModelResourceLocation(RandoresTabItems.tabStick, 0, new ModelResourceLocation("randores:" + RandoresTabItems.tabStick.getUnlocalizedName().substring(5), "inventory"));
 
 
 

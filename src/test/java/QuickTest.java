@@ -19,31 +19,31 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.gmail.socraticphoenix.forge.randore;
 
-import net.minecraft.item.Item;
+import com.gmail.socraticphoenix.forge.randore.RandoresProbability;
 
-public class TabItems {
+import java.util.Random;
 
-    public static Item tabAxe;
-    public static Item tabHoe;
-    public static Item tabShovel;
-    public static Item tabPickaxe;
-    public static Item tabSword;
-    public static Item tabHelmet;
-    public static Item tabItem;
-    public static Item tabStick;
+public class QuickTest {
 
-    public static void init() {
-        tabAxe = new Item().setUnlocalizedName("tab_axe").setRegistryName("tab_axe");
-        tabHoe = new Item().setUnlocalizedName("tab_hoe").setRegistryName("tab_hoe");
-        tabShovel = new Item().setUnlocalizedName("tab_shovel").setRegistryName("tab_shovel");
-        tabPickaxe = new Item().setUnlocalizedName("tab_pickaxe").setRegistryName("tab_pickaxe");
-        tabSword = new Item().setUnlocalizedName("tab_sword").setRegistryName("tab_sword");
-        tabHelmet = new Item().setUnlocalizedName("tab_helmet").setRegistryName("tab_helmet");
-        tabItem = new Item().setUnlocalizedName("tab_item").setRegistryName("tab_item");
-        tabStick = new Item().setUnlocalizedName("tab_stick").setRegistryName("tab_stick");
-
+    public static void main(String[] args) {
+        Random random = new Random();
+        int[] res = new int[50];
+        for (int i = 0; i < 10000000; i++) {
+            int n = (int) RandoresProbability.oneSidedInflectedNormalRand(0, 50, 20, random);
+            res[n] = res[n] + 1;
+        }
+        for (int i = 0; i < res.length; i++) {
+            System.out.print(i + ":");
+            for (int j = 0; j < 5 - String.valueOf(i).length(); j++) {
+                System.out.print(" ");
+            }
+            for (int j = 0; j < res[i] / 10000; j++) {
+                System.out.print("-");
+            }
+            System.out.println();
+        }
     }
+
 
 }

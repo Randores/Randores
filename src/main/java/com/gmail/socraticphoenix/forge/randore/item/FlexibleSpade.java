@@ -72,6 +72,11 @@ public class FlexibleSpade extends ItemSpade implements FlexibleItem {
     }
 
     @Override
+    public boolean isFull3D() {
+        return true;
+    }
+
+    @Override
     public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         if(this.hasBacker(worldIn)) {
             return this.getBacker(worldIn).onItemUse(player, worldIn, pos, hand, facing, hitX, hitY, hitZ);
@@ -129,8 +134,8 @@ public class FlexibleSpade extends ItemSpade implements FlexibleItem {
 
     @Override
     public int getHarvestLevel(ItemStack stack, String toolClass, @Nullable EntityPlayer player, @Nullable IBlockState blockState) {
-        if (this.hasBacker(player.world)) {
-            return this.getBacker(player.world).getHarvestLevel(stack, toolClass, player, blockState);
+        if(this.hasBacker(Randores.getRandoresSeed(stack))) {
+            return this.getBacker(Randores.getRandoresSeed(stack)).getHarvestLevel(stack, toolClass, player, blockState);
         }
         return super.getHarvestLevel(stack, toolClass, player, blockState);
     }
@@ -189,6 +194,11 @@ public class FlexibleSpade extends ItemSpade implements FlexibleItem {
     @Override
     public MaterialDefinition getDefinition(World world) {
         return this.getDefinition(Randores.getRandoresSeed(world));
+    }
+
+    @Override
+    public boolean hasDefinition(long seed) {
+        return MaterialDefinitionRegistry.contains(seed, this.index);
     }
 
     @Override

@@ -23,7 +23,10 @@ package com.gmail.socraticphoenix.forge.randore.component;
 
 import com.gmail.socraticphoenix.forge.randore.RandoresClientSideRegistry;
 import com.gmail.socraticphoenix.forge.randore.RandoresNameAlgorithm;
+import com.gmail.socraticphoenix.forge.randore.RandoresProbability;
 import com.gmail.socraticphoenix.forge.randore.RandoresTranslations;
+import com.google.common.base.Function;
+import com.google.common.base.Predicate;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor;
@@ -31,20 +34,45 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.util.EnumHelper;
 
+import javax.annotation.Nullable;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 public class MaterialDefinition {
+    public static final Function<Random, Boolean> DEFAULT_HUE_CHOICE = new Function<Random, Boolean>() {
+        @Nullable
+        @Override
+        public Boolean apply(@Nullable Random input) {
+            return RandoresProbability.percentChance(66.66666666666666666666, input);
+        }
+    };
+    public static final Function<Random, Boolean> ARMOR_HUE_CHOICE = new Function<Random, Boolean>() {
+        @Nullable
+        @Override
+        public Boolean apply(@Nullable Random input) {
+            return RandoresProbability.percentChance(5, input);
+        }
+    };
+    public static final Function<Random, Boolean> BRICK_HUE_CHOICE = new Function<Random, Boolean>() {
+        @Nullable
+        @Override
+        public Boolean apply(@Nullable Random input) {
+            return RandoresProbability.percentChance(15, input);
+        }
+    };
+
     private Color color;
     private String name;
 
     private OreComponent ore;
     private MaterialComponent material;
     private List<CraftableComponent> craftables;
+    private List<Component> components;
 
     private Item.ToolMaterial toolMaterial;
     private ItemArmor.ArmorMaterial armorMaterial;
@@ -52,35 +80,59 @@ public class MaterialDefinition {
     private long seed;
     private int totalArmor;
 
+    private int index;
+
     public MaterialDefinition(Color color, OreComponent ore, List<CraftableComponent> craftables, long seed, int index) {
         this.color = color;
         this.ore = ore;
         this.material = ore.getMaterial();
         this.craftables = craftables;
         this.name = RandoresNameAlgorithm.name(this.color);
-        this.toolMaterial = EnumHelper.addToolMaterial(this.name, this.material.getHarvestLevel() + 1, this.material.getMaxUses(), this.material.getEfficiency(), this.material.getDamage(), this.material.getEnchantability());
+        this.toolMaterial = EnumHelper.addToolMaterial(this.name, this.material.getHarvestLevel(), this.material.getMaxUses(), this.material.getEfficiency(), this.material.getDamage(), this.material.getEnchantability());
         this.toolMaterial.setRepairItem(new ItemStack(this.material.makeItem()));
-        float armor = this.material.getEfficiency() * 3;
-        int[] reduc = new int[]{(int) Math.abs(Math.ceil(armor * 0.15)), (int) Math.abs(Math.ceil(armor * 0.3)), (int) Math.abs(Math.ceil(armor * 0.4)), (int) Math.abs(Math.ceil(armor * 0.15))};
-        while (sum(reduc) > 20) {
-            for (int i = 0; i < reduc.length; i++) {
-                reduce(reduc, 0);
-                reduce(reduc, 1);
-                reduce(reduc, 1);
-                reduce(reduc, 2);
-                reduce(reduc, 2);
-                reduce(reduc, 3);
-
-            }
-        }
-        this.totalArmor = sum(reduc);
-        this.armorMaterial = EnumHelper.addArmorMaterial(this.name, "randores_armor:armor." + index, this.material.getMaxUses() / 100, reduc, this.material.getEnchantability(), SoundEvents.ITEM_ARMOR_EQUIP_IRON, this.material.getToughness());
+        this.totalArmor = sum(this.material.getArmorReduction());
+        this.armorMaterial = EnumHelper.addArmorMaterial(this.name, "randores_armor:armor." + index, this.material.getMaxUses() / 100, this.material.getArmorReduction(), this.material.getEnchantability(), SoundEvents.ITEM_ARMOR_EQUIP_IRON, this.material.getToughness());
         this.armorMaterial.setRepairItem(new ItemStack(this.material.makeItem()));
         this.seed = seed;
+        this.index = index;
+
+        this.components = new ArrayList<Component>();
+        this.components.addAll(this.craftables);
+        this.components.add(this.ore);
+        this.components.add(this.material);
+    }
+
+    public int getIndex() {
+        return this.index;
     }
 
     private String t(String s, String locale) {
         return RandoresTranslations.get(locale, s);
+    }
+
+    public List<String> generateBlockLore(String locale) {
+        List<String> list = new ArrayList<String>();
+        list.add(TextFormatting.GREEN + t(RandoresTranslations.Keys.INFORMATION, locale) + ":");
+        list.add(TextFormatting.GREEN + "  " + t(RandoresTranslations.Keys.ORE_HARVEST_LEVEL, locale) + ": " + this.ore.getHarvestLevel());
+        String recipes = TextFormatting.GREEN + "  " + t(RandoresTranslations.Keys.RECIPES, locale) + ": ";
+        if (this.hasComponent(Components.PICKAXE)) {
+            recipes += t(RandoresTranslations.Keys.TOOLS_RECIPE, locale) + ", ";
+        }
+        if (this.hasComponent(Components.HELMET)) {
+            recipes += t(RandoresTranslations.Keys.ARMOR_RECIPE, locale) + ", ";
+        }
+        if (this.hasComponent(Components.SWORD)) {
+            recipes += t(RandoresTranslations.Keys.SWORD_RECIPE, locale) + ", ";
+        }
+        if (this.hasComponent(Components.BRICKS)) {
+            recipes += t(RandoresTranslations.Keys.BRICKS_RECIPE, locale) + ", ";
+        }
+        if (this.hasComponent(Components.STICK)) {
+            recipes += t(RandoresTranslations.Keys.STICK_RECIPE, locale) + ", ";
+        }
+        recipes = recipes.substring(0, recipes.length() - 2);
+        list.add(recipes);
+        return list;
     }
 
     public List<String> generateLore(String locale) {
@@ -88,6 +140,7 @@ public class MaterialDefinition {
         list.add(TextFormatting.GREEN + t(RandoresTranslations.Keys.INFORMATION, locale) + ":");
         if (this.hasComponent(Components.PICKAXE)) {
             list.add(TextFormatting.GREEN + "  " + t(RandoresTranslations.Keys.EFFICIENCY, locale) + ": " + this.material.getEfficiency());
+            list.add(TextFormatting.GREEN + "  " + t(RandoresTranslations.Keys.HARVEST_LEVEL, locale) + ": " + this.material.getHarvestLevel());
         }
         if(this.hasComponent(Components.HELMET)) {
             list.add(TextFormatting.GREEN + "  " + t(RandoresTranslations.Keys.FULL_ARMOR, locale) + ": " + this.totalArmor);
@@ -120,10 +173,12 @@ public class MaterialDefinition {
         return list;
     }
 
-    private void reduce(int[] arr, int slot) {
-        if (arr[slot] > 2) {
-            arr[slot] = arr[slot] - 1;
+    private int sum(int[] arr) {
+        int a = 0;
+        for (int i : arr) {
+            a += i;
         }
+        return a;
     }
 
     public Item.ToolMaterial getToolMaterial() {
@@ -153,28 +208,27 @@ public class MaterialDefinition {
         return null;
     }
 
-    private int sum(int[] arr) {
-        int a = 0;
-        for (int i : arr) {
-            a += i;
-        }
-        return a;
-    }
-
     public long getSeed() {
         return this.seed;
     }
 
     public Map<String, BufferedImage> generateTextures() {
         Map<String, BufferedImage> textures = new HashMap<String, BufferedImage>();
-        textures.put(ore.template(), RandoresClientSideRegistry.getTemplate(ore.template()).applyWith(this.color));
-        textures.put(material.template(), RandoresClientSideRegistry.getTemplate(material.template()).applyWith(this.color));
+        textures.put(ore.template(), RandoresClientSideRegistry.getTemplate(ore.template()).applyWith(this.color, MaterialDefinition.DEFAULT_HUE_CHOICE));
+        textures.put(material.template(), RandoresClientSideRegistry.getTemplate(material.template()).applyWith(this.color, MaterialDefinition.DEFAULT_HUE_CHOICE));
         for (CraftableComponent component : this.craftables) {
             if (component.getType() == CraftableType.HELMET) {
-                textures.put("armor_1", RandoresClientSideRegistry.getTemplate("armor_over_base").applyWith(this.color));
-                textures.put("armor_2", RandoresClientSideRegistry.getTemplate("armor_under_base").applyWith(this.color));
+                textures.put("armor_1", RandoresClientSideRegistry.getTemplate("armor_over_base").applyWith(this.color, MaterialDefinition.ARMOR_HUE_CHOICE));
+                textures.put("armor_2", RandoresClientSideRegistry.getTemplate("armor_under_base").applyWith(this.color, MaterialDefinition.ARMOR_HUE_CHOICE));
             }
-            textures.put(component.template(), RandoresClientSideRegistry.getTemplate(component.template()).applyWith(this.color));
+
+            Function<Random, Boolean> hueChoice;
+            if(component.getType() == CraftableType.BRICKS) {
+                hueChoice = MaterialDefinition.BRICK_HUE_CHOICE;
+            } else {
+                hueChoice = MaterialDefinition.DEFAULT_HUE_CHOICE;
+            }
+            textures.put(component.template(), RandoresClientSideRegistry.getTemplate(component.template()).applyWith(this.color, hueChoice));
         }
         return textures;
     }
@@ -197,6 +251,20 @@ public class MaterialDefinition {
 
     public List<CraftableComponent> getCraftables() {
         return this.craftables;
+    }
+
+    public List<CraftableComponent> getCraftables(Predicate<CraftableType> filter) {
+        List<CraftableComponent> components = new ArrayList<CraftableComponent>();
+        for(CraftableComponent component : this.craftables) {
+            if(filter.apply(component.getType())) {
+                components.add(component);
+            }
+        }
+        return components;
+    }
+
+    public List<Component> getComponents() {
+        return this.components;
     }
 
 }

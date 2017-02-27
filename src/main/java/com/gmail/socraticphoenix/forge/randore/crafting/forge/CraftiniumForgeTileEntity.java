@@ -22,10 +22,6 @@
 package com.gmail.socraticphoenix.forge.randore.crafting.forge;
 
 import com.gmail.socraticphoenix.forge.randore.Randores;
-import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinition;
-import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinitionRegistry;
-import com.gmail.socraticphoenix.forge.randore.crafting.FlexibleRecipe;
-import com.gmail.socraticphoenix.forge.randore.crafting.FlexibleSmelt;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import net.minecraft.block.state.IBlockState;
@@ -219,15 +215,8 @@ public class CraftiniumForgeTileEntity extends TileEntity implements ITickable {
         } else {
             CraftiniumSmelt rec = CraftiniumSmeltRegistry.findMatching(this.input.getStackInSlot(0), this.world, this.pos);
             if (rec != null) {
-                ItemStack output;
-                if (rec instanceof FlexibleRecipe) {
-                    FlexibleSmelt smelt = (FlexibleSmelt) rec;
-                    MaterialDefinition definition = MaterialDefinitionRegistry.get(seed).get(smelt.getIndex());
-                    int max = definition.getOre().getMaxDrops();
-                    output = new ItemStack(definition.getMaterial().makeItem(), max);
-                } else {
-                    output = rec.result(this.input.getStackInSlot(0), this.world, this.pos);
-                }
+                ItemStack output = rec.result(this.input.getStackInSlot(0), this.world, this.pos);
+                output = new ItemStack(output.getItem(), rec.maxResult(this.input.getStackInSlot(0), this.world, this.pos));
                 if (output.isEmpty()) {
                     return false;
                 } else {

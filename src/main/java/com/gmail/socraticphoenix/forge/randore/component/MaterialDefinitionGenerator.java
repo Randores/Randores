@@ -22,14 +22,15 @@
 package com.gmail.socraticphoenix.forge.randore.component;
 
 import com.gmail.socraticphoenix.forge.randore.Randores;
+import com.gmail.socraticphoenix.forge.randore.RandoresProbability;
 import com.gmail.socraticphoenix.forge.randore.block.FlexibleBlockRegistry;
 import com.gmail.socraticphoenix.forge.randore.item.FlexibleItemRegistry;
 import com.gmail.socraticphoenix.forge.randore.texture.FlexibleTextureRegistry;
 import net.minecraft.client.Minecraft;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.MathHelper;
 import org.apache.logging.log4j.Logger;
 
 import javax.imageio.ImageIO;
@@ -46,8 +47,9 @@ import java.util.Random;
 public class MaterialDefinitionGenerator {
 
     public static List<Color> generateColors(Random random) {
+        Randores.getInstance().getConfiguration().load();
         List<Color> colors = new ArrayList<Color>();
-        for (int i = 0; i < 300; i++) {
+        for (int i = 0; i < Randores.getOreCount(); i++) {
             Color color = new Color(random.nextInt(256), random.nextInt(256), random.nextInt(256));
             while (colors.contains(color)) {
                 color = new Color(random.nextInt(256), random.nextInt(256), random.nextInt(256));
@@ -62,53 +64,66 @@ public class MaterialDefinitionGenerator {
         for (int c = 0; c < colors.size(); c++) {
             Color color = colors.get(c);
             Random random = new Random(color.getRGB());
-            MaterialType type;
-            if (percentChance(50, random)) {
-                type = MaterialType.INGOT;
-            } else if (percentChance(30, random)) {
-                if (random.nextBoolean()) {
-                    type = MaterialType.GEM;
-                } else {
-                    type = MaterialType.DUST;
-                }
-            } else if (percentChance(5, random)) {
-                type = MaterialType.EMERALD;
-            } else if (percentChance(5, random)) {
-                type = MaterialType.SHARD;
-            } else if (percentChance(5, random)) {
-                type = MaterialType.CIRCLE_GEM;
-            } else {
-                type = MaterialType.values()[random.nextInt(MaterialType.values().length)];
-            }
-            int uses = random.nextInt(6000) + 200;
-            uses = uses - (uses % 100);
-            MaterialComponent material = new MaterialComponent(type, random.nextInt(4), uses, MathHelper.ceil(random.nextFloat() * random.nextInt(5) + random.nextInt(10) + 2), MathHelper.ceil(random.nextFloat() * random.nextInt(20) + 1), random.nextInt(50) + 1, MathHelper.floor(random.nextFloat() * 3), FlexibleItemRegistry.getMaterials().get(c));
-            OreComponent ore = new OreComponent(material, Dimension.values()[random.nextInt(Dimension.values().length)], random.nextInt(4) + 2, 1, random.nextInt(15) + 2, 2, random.nextInt(200) + 5, 0, 5, random.nextInt(15) + 5, random.nextBoolean() || material.getType() == MaterialType.INGOT, random.nextFloat() * 2, random.nextFloat() * random.nextInt(10) + 0.5f, random.nextFloat() * random.nextInt(50) + 2f, Item.getItemFromBlock(FlexibleBlockRegistry.getOres().get(c)));
+            MaterialType type = MaterialType.values()[(int) RandoresProbability.expRand(2.5, 0, MaterialType.values().length, random)];
+            Dimension dimension = Dimension.values()[random.nextInt(Dimension.values().length)];
+
+            int uses = (int) Math.ceil(RandoresProbability.oneSidedInflectedNormalRand(20, 6000, 2000, random));
+            uses -= uses % 10;
+
+            double commonality = RandoresProbability.inflectedNormalRand(10, 70, 40, 25, random);
+            int commonalityInt = (int) Math.round(commonality);
+            double rarity = 80 - commonality;
+            int rarityInt = 80 - commonalityInt;
+
+            int toolHarvestLevel = RandoresProbability.clamp(rarityInt / 22 + 1, Item.ToolMaterial.WOOD.getHarvestLevel(), Item.ToolMaterial.DIAMOND.getHarvestLevel());
+            int efficiency = (int) (rarity / 6 + RandoresProbability.oneSidedInflectedNormalRand(0, 10, 2, random));
+            int damage = (int) (rarity / 13 + RandoresProbability.oneSidedInflectedNormalRand(0, 10, 3, random));
+            int enchantability = (int) (rarity / 3 + RandoresProbability.oneSidedInflectedNormalRand(0, 20, 5, random));
+            int toughness = random.nextInt(3);
+
+            int maxY = RandoresProbability.clamp((int) (commonalityInt + RandoresProbability.oneSidedInflectedNormalRand(20, 100, 20, random)), 10, 65);
+            int minY = RandoresProbability.clamp((int) (commonalityInt - (commonalityInt - Math.floor(RandoresProbability.expRand(2, 0, commonality, random))) + 1), 1, maxY - 5);
+            int maxOccurrences = commonalityInt / 20 + 1;
+            int minOccurrences = maxOccurrences - random.nextInt(maxOccurrences);
+            int oreHarvestLevel = RandoresProbability.clamp(rarityInt / 10, Blocks.IRON_ORE.getHarvestLevel(Blocks.IRON_ORE.getDefaultState()), Blocks.DIAMOND_ORE.getHarvestLevel(Blocks.DIAMOND_ORE.getDefaultState()));
+            int maxDrops = (int) Math.floor(RandoresProbability.oneSidedInflectedNormalRand(2, 8, 5, random));
+            int minDrops = (int) RandoresProbability.oneSidedInflectedNormalRand(1, maxDrops, 5, random);
+            int maxVein = (int) (commonality / 4) + 2;
+            int minVein = (int) Math.ceil(RandoresProbability.expRand(1.2, 2, maxVein, random));
+            float smeltingXp = (float) RandoresProbability.inflectedNormalRand(0, 1.25, 0.75, 0.25, random);
+            float hardness = (float) Math.round(rarity / 14);
+            float resistance = (float) Math.round(rarity / 7);
+            int[] armor = new int[] {rarityInt / 20, rarityInt / 8, rarityInt / 6, rarityInt / 20};
+            MaterialDefinitionGenerator.clampArmor(armor);
+
+            MaterialComponent material = new MaterialComponent(type, toolHarvestLevel, uses, efficiency, damage, enchantability, toughness, armor, FlexibleItemRegistry.getMaterial(c));
+            OreComponent ore = new OreComponent(material, dimension, maxDrops, minDrops, maxVein, minVein, maxY, minY, minOccurrences, maxOccurrences, type == MaterialType.INGOT, smeltingXp, hardness, resistance, oreHarvestLevel, Item.getItemFromBlock(FlexibleBlockRegistry.getOres().get(c)));
+
             List<CraftableComponent> components = new ArrayList<CraftableComponent>();
             boolean hasComponents = false;
-            if (percentChance(75, random)) {
+            if (percentChance(60, random)) {
                 hasComponents = true;
                 components.add(new CraftableComponent(CraftableType.HELMET, 1, FlexibleItemRegistry.getHelmet(c)));
                 components.add(new CraftableComponent(CraftableType.CHESTPLATE, 1, FlexibleItemRegistry.getChestplate(c)));
                 components.add(new CraftableComponent(CraftableType.LEGGINGS, 1, FlexibleItemRegistry.getLeggings(c)));
                 components.add(new CraftableComponent(CraftableType.BOOTS, 1, FlexibleItemRegistry.getBoots(c)));
             }
-            if (percentChance(75, random)) {
+            if (percentChance(60, random)) {
                 hasComponents = true;
                 components.add(new CraftableComponent(CraftableType.PICKAXE, 1, FlexibleItemRegistry.getPickaxe(c)));
                 components.add(new CraftableComponent(CraftableType.AXE, 1, FlexibleItemRegistry.getAxe(c)));
                 components.add(new CraftableComponent(CraftableType.HOE, 1, FlexibleItemRegistry.getHoe(c)));
                 components.add(new CraftableComponent(CraftableType.SHOVEL, 1, FlexibleItemRegistry.getSpade(c)));
             }
-            if (percentChance(75, random)) {
+            if (percentChance(60, random)) {
                 hasComponents = true;
                 components.add(new CraftableComponent(CraftableType.SWORD, 1, FlexibleItemRegistry.getSword(c)));
             }
-            if (percentChance(50, random)) {
+            if (percentChance(90, random)) {
                 hasComponents = true;
                 components.add(new CraftableComponent(CraftableType.BRICKS, 4, Item.getItemFromBlock(FlexibleBlockRegistry.getBricks().get(c))));
             }
-            if (percentChance(25, random)) {
+            if (percentChance(50, random)) {
                 hasComponents = true;
                 components.add(new CraftableComponent(CraftableType.STICK, 2, FlexibleItemRegistry.getStick(c)));
             }
@@ -168,11 +183,23 @@ public class MaterialDefinitionGenerator {
         for (int i = 0; i < definitions.size(); i++) {
             FlexibleTextureRegistry.getBlock(i).setTexture("block." + i, seed);
             FlexibleTextureRegistry.getItem(i).setTexture("item." + i + ".png", seed);
-            for(CraftableType type : CraftableType.values()) {
+            for (CraftableType type : CraftableType.values()) {
                 if (type == CraftableType.BRICKS) {
                     FlexibleTextureRegistry.getBlock(type.getIndex(i)).setTexture("bricks." + i + ".png", seed);
                 } else {
                     FlexibleTextureRegistry.getItem(type.getIndex(i)).setTexture(type.getTemplate().replaceAll("_base", "") + "." + i + ".png", seed);
+                }
+            }
+        }
+
+        for (int i = definitions.size(); i < 300; i++) {
+            FlexibleTextureRegistry.getBlock(i).setTexture("test", seed);
+            FlexibleTextureRegistry.getItem(i).setTexture("test", seed);
+            for (CraftableType type : CraftableType.values()) {
+                if (type == CraftableType.BRICKS) {
+                    FlexibleTextureRegistry.getBlock(type.getIndex(i)).setTexture("test", seed);
+                } else {
+                    FlexibleTextureRegistry.getItem(type.getIndex(i)).setTexture("test", seed);
                 }
             }
         }
@@ -200,7 +227,7 @@ public class MaterialDefinitionGenerator {
             List<MaterialDefinition> definitions = MaterialDefinitionGenerator.makeDefinitions(MaterialDefinitionGenerator.generateColors(new Random(seed)), seed);
             MaterialDefinitionGenerator.logStatistics(definitions);
             MaterialDefinitionRegistry.put(seed, definitions);
-            for (int i = 0; i < 300; i++) {
+            for (int i = 0; i < Randores.getOreCount(); i++) {
                 Item.ToolMaterial toolMaterial = definitions.get(i).getToolMaterial();
                 ItemArmor.ArmorMaterial armorMaterial = definitions.get(i).getArmorMaterial();
                 FlexibleItemRegistry.getHoe(i).registerBacker(seed, toolMaterial);
@@ -256,6 +283,46 @@ public class MaterialDefinitionGenerator {
                 Minecraft.getMinecraft().getTextureManager().bindTexture(new ResourceLocation("randores_armor", "armor." + i + "_2.png"));
             }
         }
+
+        for (int i = definitions.size(); i < 300; i++) {
+            Minecraft.getMinecraft().getTextureManager().deleteTexture(new ResourceLocation("randores_armor", "armor." + i + "_1.png"));
+            Minecraft.getMinecraft().getTextureManager().deleteTexture(new ResourceLocation("randores_armor", "armor." + i + "_2.png"));
+
+        }
+    }
+
+    private static void clampArmor(int[] reduc) {
+        for (int i = 0; i < reduc.length; i++) {
+            if(reduc[i] < 1) {
+                reduc[i] = 1;
+            }
+        }
+
+        while (sum(reduc) > 20) {
+            for (int i = 0; i < reduc.length; i++) {
+                reduce(reduc, 0);
+                reduce(reduc, 1);
+                reduce(reduc, 1);
+                reduce(reduc, 2);
+                reduce(reduc, 2);
+                reduce(reduc, 3);
+
+            }
+        }
+    }
+
+    private static void reduce(int[] arr, int slot) {
+        if (arr[slot] > 2) {
+            arr[slot] = arr[slot] - 1;
+        }
+    }
+
+    private static int sum(int[] arr) {
+        int a = 0;
+        for (int i : arr) {
+            a += i;
+        }
+        return a;
     }
 
 }

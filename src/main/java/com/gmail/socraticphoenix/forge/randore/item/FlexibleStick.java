@@ -57,6 +57,11 @@ public class FlexibleStick extends Item implements FlexibleItem {
     }
 
     @Override
+    public boolean isFull3D() {
+        return true;
+    }
+
+    @Override
     public MaterialDefinition getDefinition(long seed) {
         return MaterialDefinitionRegistry.get(seed).get(this.index);
     }
@@ -64,6 +69,11 @@ public class FlexibleStick extends Item implements FlexibleItem {
     @Override
     public MaterialDefinition getDefinition(World world) {
         return this.getDefinition(Randores.getRandoresSeed(world));
+    }
+
+    @Override
+    public boolean hasDefinition(long seed) {
+        return MaterialDefinitionRegistry.contains(seed, this.index);
     }
 
     @Override

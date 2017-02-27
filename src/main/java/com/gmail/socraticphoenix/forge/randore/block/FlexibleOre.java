@@ -28,29 +28,37 @@ import com.gmail.socraticphoenix.forge.randore.component.OreComponent;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.properties.IProperty;
+import net.minecraft.block.properties.PropertyInteger;
+import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemTool;
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 public class FlexibleOre extends Block {
     private int index;
+    public static final PropertyInteger HARVEST_LEVEL = PropertyInteger.create("harvest_level", 0, 15);
 
     public FlexibleOre(int index) {
         super(Material.ROCK);
         this.setSoundType(SoundType.STONE);
         this.index = index;
+        for (int i = 0; i < 16; i++) {
+            this.setHarvestLevel("pickaxe", i, this.getDefaultState().withProperty(HARVEST_LEVEL, i));
+        }
     }
 
     public MaterialDefinition getDefinition(long seed) {
@@ -86,17 +94,33 @@ public class FlexibleOre extends Block {
     }
 
     @Override
-    public void harvestBlock(World worldIn, EntityPlayer player, BlockPos pos, IBlockState state, @Nullable TileEntity te, ItemStack stack) {
-        if (stack.getItem() instanceof ItemTool) {
-            MaterialDefinition definition = this.getDefinition(Randores.getRandoresSeed(worldIn));
-            ItemTool tool = (ItemTool) stack.getItem();
-            if(!tool.getToolClasses(stack).isEmpty()) {
-                int level = tool.getHarvestLevel(stack, tool.getToolClasses(stack).iterator().next(), player, state);
-                if (level >= definition.getMaterial().getHarvestLevel()) {
-                    super.harvestBlock(worldIn, player, pos, state, te, stack);
-                }
-            }
+    public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
+        if(MaterialDefinitionRegistry.contains(Randores.getRandoresSeed(worldIn), this.index)) {
+            return this.getDefaultState().withProperty(HARVEST_LEVEL, MaterialDefinitionRegistry.get(Randores.getRandoresSeed(worldIn)).get(this.index).getOre().getHarvestLevel());
+        } else {
+            return this.getDefaultState();
         }
+    }
+
+    @Override
+    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+        playerIn.sendMessage(new TextComponentString(this.getHarvestLevel(state) + ""));
+        return super.onBlockActivated(worldIn, pos, state, playerIn, hand, facing, hitX, hitY, hitZ);
+    }
+
+    @Override
+    public IBlockState getStateFromMeta(int meta) {
+        return this.getDefaultState().withProperty(HARVEST_LEVEL, meta);
+    }
+
+    @Override
+    public int getMetaFromState(IBlockState state) {
+        return state.getValue(HARVEST_LEVEL);
+    }
+
+    @Override
+    protected BlockStateContainer createBlockState() {
+        return new BlockStateContainer(this, new IProperty[]{HARVEST_LEVEL});
     }
 
     @Override

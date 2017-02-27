@@ -50,7 +50,9 @@ public class OreComponent implements Component {
 
     private Item item;
 
-    public OreComponent(MaterialComponent material, Dimension dimension, int maxDrops, int minDrops, int maxVein, int minVein, int maxY, int minY, int minOccurences, int maxOccurences, boolean requiresSmelting, float smeltingXp, float hardness, float resistance, Item item) {
+    private int harvestLevel;
+
+    public OreComponent(MaterialComponent material, Dimension dimension, int maxDrops, int minDrops, int maxVein, int minVein, int maxY, int minY, int minOccurences, int maxOccurences, boolean requiresSmelting, float smeltingXp, float hardness, float resistance, int harvestLevel, Item item) {
         this.material = material;
         this.dimension = dimension;
         this.maxDrops = maxDrops;
@@ -66,6 +68,7 @@ public class OreComponent implements Component {
         this.hardness = hardness;
         this.resistance = resistance;
         this.item = item;
+        this.harvestLevel = harvestLevel;
     }
 
     public Block makeBlock() {
@@ -159,4 +162,7 @@ public class OreComponent implements Component {
     }
 
 
+    public int getHarvestLevel() {
+        return this.harvestLevel;
+    }
 }

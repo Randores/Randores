@@ -52,6 +52,11 @@ public class FlexibleSword extends ItemSword implements FlexibleItem {
     }
 
     @Override
+    public boolean isFull3D() {
+        return true;
+    }
+
+    @Override
     public void addInformation(ItemStack stack, EntityPlayer playerIn, List<String> tooltip, boolean advanced) {
         FlexibleItemHelper.addInformation(this, stack, playerIn, tooltip, advanced);
     }
@@ -198,6 +203,11 @@ public class FlexibleSword extends ItemSword implements FlexibleItem {
     @Override
     public MaterialDefinition getDefinition(World world) {
         return this.getDefinition(Randores.getRandoresSeed(world));
+    }
+
+    @Override
+    public boolean hasDefinition(long seed) {
+        return MaterialDefinitionRegistry.contains(seed, this.index);
     }
 
     @Override

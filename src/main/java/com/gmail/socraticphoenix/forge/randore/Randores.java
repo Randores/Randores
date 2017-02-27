@@ -27,8 +27,8 @@ import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinitionRegis
 import com.gmail.socraticphoenix.forge.randore.crafting.CraftingBlocks;
 import com.gmail.socraticphoenix.forge.randore.crafting.CraftingGuiHandler;
 import com.gmail.socraticphoenix.forge.randore.crafting.CraftingItems;
-import com.gmail.socraticphoenix.forge.randore.crafting.FlexibleRecipe;
-import com.gmail.socraticphoenix.forge.randore.crafting.FlexibleSmelt;
+import com.gmail.socraticphoenix.forge.randore.crafting.table.FlexibleRecipe;
+import com.gmail.socraticphoenix.forge.randore.crafting.forge.FlexibleSmelt;
 import com.gmail.socraticphoenix.forge.randore.crafting.forge.CraftiniumDelegateSmelt;
 import com.gmail.socraticphoenix.forge.randore.crafting.forge.CraftiniumForgeTileEntity;
 import com.gmail.socraticphoenix.forge.randore.crafting.forge.CraftiniumSmeltRegistry;
@@ -36,6 +36,8 @@ import com.gmail.socraticphoenix.forge.randore.crafting.table.CraftiniumDelegate
 import com.gmail.socraticphoenix.forge.randore.crafting.table.CraftiniumRecipeRegistry;
 import com.gmail.socraticphoenix.forge.randore.item.FlexibleItem;
 import com.gmail.socraticphoenix.forge.randore.item.FlexibleItemRegistry;
+import com.gmail.socraticphoenix.forge.randore.module.equip.RandoresMobEquip;
+import com.gmail.socraticphoenix.forge.randore.module.loot.RandoresLoot;
 import com.gmail.socraticphoenix.forge.randore.packet.RandoresNetworking;
 import com.gmail.socraticphoenix.forge.randore.resource.RandoresResourceManager;
 import com.google.common.base.Supplier;
@@ -48,17 +50,17 @@ import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.nbt.NBTTagString;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.config.ConfigCategory;
 import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.common.config.Property;
 import net.minecraftforge.common.util.EnumHelper;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLInterModComms;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
@@ -70,12 +72,13 @@ import org.apache.logging.log4j.Logger;
 import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-@Mod(modid = "randores", name = "Socratic_Phoenix's Randores", version = "1.5")
+@Mod(modid = "randores", name = "Socratic_Phoenix's Randores", version = "1.8")
 public class Randores {
     public static final Item.ToolMaterial MATERIAL_DEFAULT = EnumHelper.addToolMaterial("MATERIAL_DEFAULT", 1, 100, 1, 1, 1);
     public static final ItemArmor.ArmorMaterial ARMOR_DEFAULT = EnumHelper.addArmorMaterial("ARMOR_DEFAULT", "no_texture", 100, new int[]{1, 1, 1, 1}, 1, SoundEvents.ITEM_ARMOR_EQUIP_IRON, 1);
@@ -88,61 +91,62 @@ public class Randores {
     public static final CreativeTabs TAB_BLOCKS = new RandoresTab("randores_blocks", new Supplier<Item>() {
         @Override
         public Item get() {
-            return Item.getItemFromBlock(TabBlocks.tabOre);
+            return Item.getItemFromBlock(RandoresTabBlocks.tabOre);
         }
     });
     public static final CreativeTabs TAB_MATERIALS = new RandoresTab("randores_materials", new Supplier<Item>() {
         @Override
         public Item get() {
-            return TabItems.tabItem;
+            return RandoresTabItems.tabItem;
         }
     });
     public static final CreativeTabs TAB_STICKS = new RandoresTab("randores_sticks", new Supplier<Item>() {
         @Override
         public Item get() {
-            return TabItems.tabStick;
+            return RandoresTabItems.tabStick;
         }
     });
     public static final CreativeTabs TAB_HOES = new RandoresTab("randores_hoes", new Supplier<Item>() {
         @Override
         public Item get() {
-            return TabItems.tabHoe;
+            return RandoresTabItems.tabHoe;
         }
     });
     public static final CreativeTabs TAB_SWORDS = new RandoresTab("randores_swords", new Supplier<Item>() {
         @Override
         public Item get() {
-            return TabItems.tabSword;
+            return RandoresTabItems.tabSword;
         }
     });
     public static final CreativeTabs TAB_AXES = new RandoresTab("randores_axes", new Supplier<Item>() {
         @Override
         public Item get() {
-            return TabItems.tabAxe;
+            return RandoresTabItems.tabAxe;
         }
     });
     public static final CreativeTabs TAB_PICKAXES = new RandoresTab("randores_pickaxes", new Supplier<Item>() {
         @Override
         public Item get() {
-            return TabItems.tabPickaxe;
+            return RandoresTabItems.tabPickaxe;
         }
     });
     public static final CreativeTabs TAB_SPADES = new RandoresTab("randores_spades", new Supplier<Item>() {
         @Override
         public Item get() {
-            return TabItems.tabShovel;
+            return RandoresTabItems.tabShovel;
         }
     });
     public static final CreativeTabs TAB_ARMOR = new RandoresTab("randores_armor", new Supplier<Item>() {
         @Override
         public Item get() {
-            return TabItems.tabHelmet;
+            return RandoresTabItems.tabHelmet;
         }
     });
 
 
     private static Randores instance;
     private static Map<Long, Long> worldSeeds = new HashMap<Long, Long>();
+    private static List<String> offensiveWords = new ArrayList<String>();
     @SidedProxy(modId = "randores", clientSide = "com.gmail.socraticphoenix.forge.randore.RandoresClientProxy", serverSide = "com.gmail.socraticphoenix.forge.randore.RandoresProxy")
     private static RandoresProxy proxy;
 
@@ -164,7 +168,12 @@ public class Randores {
         }
         MinecraftForge.EVENT_BUS.register(new RandoresRegistryListener());
         MinecraftForge.EVENT_BUS.register(new RandoresPlayerListener());
+        MinecraftForge.EVENT_BUS.register(new RandoresLivingUpdate());
         MinecraftForge.EVENT_BUS.register(new RandoresWorldEventListener());
+
+        //Modules
+        MinecraftForge.EVENT_BUS.register(new RandoresMobEquip());
+        MinecraftForge.EVENT_BUS.register(new RandoresLoot());
     }
 
     private static long getRandoresSeedFromWorld(long worldSeed) {
@@ -217,31 +226,13 @@ public class Randores {
     public static ItemStack applyData(ItemStack stack, long seed) {
         if (stack.getItem() instanceof FlexibleItem) {
             FlexibleItem item = (FlexibleItem) stack.getItem();
-            if (item.getDefinition(seed).hasComponent(item.getType())) {
+            if (item.hasDefinition(seed) && item.getDefinition(seed).hasComponent(item.getType())) {
                 NBTTagCompound randores = stack.getOrCreateSubCompound("randores");
                 randores.setLong("seed", seed);
                 stack.setTagInfo("randores", randores);
             }
         }
         return stack;
-    }
-
-    private static void applyLore(List<String> lore, ItemStack stack) {
-        NBTTagCompound compound = stack.getOrCreateSubCompound("display");
-        NBTTagList list;
-        if (compound.hasKey("Lore")) {
-            list = compound.getTagList("Lore", 8);
-        } else {
-            list = new NBTTagList();
-        }
-        for (String s : lore) {
-            list.appendTag(new NBTTagString(TextFormatting.RESET + "" + TextFormatting.GREEN + s));
-        }
-        compound.setTag("Lore", list);
-    }
-
-    private static String makeName(String name) {
-        return TextFormatting.RESET + name;
     }
 
     public static ItemStack applyData(ItemStack stack, World world) {
@@ -264,6 +255,39 @@ public class Randores {
         return stack.getSubCompound("randores") != null && stack.getSubCompound("randores").hasKey("seed");
     }
 
+    public static int getOreCountConfigProperty() {
+        int res;
+        Configuration config = Randores.getInstance().getConfiguration();
+        ConfigCategory category = config.getCategory("config");
+        if (!category.containsKey("orecount")) {
+            Property property = new Property("orecount", "300", Property.Type.INTEGER);
+            property.setMinValue(0).setMaxValue(300);
+            property.setComment("The number of ores to generate in each world. Maximum 300, minimum 0.");
+            category.put("orecount", property);
+            config.save();
+            res = 300;
+        } else {
+            res = category.get("orecount").getInt();
+        }
+        if (res > 300) {
+            res = 300;
+            category.put("orecount", new Property("orecount", "300", Property.Type.INTEGER));
+            config.save();
+        }
+        if (FMLCommonHandler.instance().getSide() == Side.CLIENT) {
+            RandoresClientSideRegistry.setOreCount(res);
+        }
+        return res;
+    }
+
+    public static int getOreCount() {
+        if (FMLCommonHandler.instance().getSide() == Side.CLIENT) {
+            return RandoresClientSideRegistry.getOreCount();
+        } else {
+            return Randores.getOreCountConfigProperty();
+        }
+    }
+
     public Configuration getConfiguration() {
         return this.configuration;
     }
@@ -271,12 +295,29 @@ public class Randores {
     @Mod.EventHandler
     public void onPreInit(FMLPreInitializationEvent ev) {
         try {
+            Randores.offensiveWords.addAll(RandoresResourceManager.getResourceLines("offensive_words.txt"));
+
             this.tex.mkdirs();
             if (!this.conf.exists()) {
                 this.conf.createNewFile();
             }
 
+            this.getConfiguration().load();
+
             RandoresTranslations.registerFallback();
+
+            Randores.getOreCountConfigProperty();
+
+            ConfigCategory config = this.getConfiguration().getCategory("modules");
+            if(!config.containsKey("mobequip")) {
+                config.put("mobequip", new Property("mobequip", "false", Property.Type.BOOLEAN));
+            }
+
+            if(!config.containsKey("dungeonloot")) {
+                config.put("dungeonloot", new Property("dungeonloot", "false", Property.Type.BOOLEAN));
+            }
+            
+            this.getConfiguration().save();
 
             List<String> languages = RandoresResourceManager.getResourceLines("ab_dict.txt");
             for (String lang : languages) {
@@ -317,10 +358,21 @@ public class Randores {
         }
     }
 
+    public static boolean containsOffensiveWord(String string) {
+        for(String s : Randores.offensiveWords) {
+            if(string.toLowerCase().contains(s.toLowerCase())) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     @Mod.EventHandler
     public void onInit(FMLInitializationEvent ev) {
+        FMLInterModComms.sendMessage("waila", "register", "com.gmail.socraticphoenix.forge.randore.compatability.waila.RandoresWailaHandler.callbackRegister");
         NetworkRegistry.INSTANCE.registerGuiHandler(this, new CraftingGuiHandler());
-        GameRegistry.registerWorldGenerator(new RandoresWorldGenerator(), 0);
+        GameRegistry.registerWorldGenerator(new RandoresWorldGenerator(), 100);
         this.logger.info("Running proxy initialization...");
         Randores.proxy.initSided();
         this.logger.info("Proxy initialized.");
@@ -352,5 +404,9 @@ public class Randores {
 
     public File getTextureFile(long seed) {
         return new File(this.tex, String.valueOf(seed).replaceAll("-", "_"));
+    }
+
+    public File getTextureDir() {
+        return this.tex;
     }
 }

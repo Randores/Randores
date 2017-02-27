@@ -41,7 +41,7 @@ public class FlexibleBrick extends Block {
 
     public FlexibleBrick(int index) {
         super(Material.ROCK);
-        this.setHardness(1.5F).setResistance(10.0F);
+        this.setHardness(1.5F).setResistance(10.0F).setHarvestLevel("pickaxe", 0);
         this.index = index;
         this.setSoundType(SoundType.STONE);
     }
@@ -60,6 +60,8 @@ public class FlexibleBrick extends Block {
         }
         return drops;
     }
+
+
 
     @Override
     protected boolean canSilkHarvest() {

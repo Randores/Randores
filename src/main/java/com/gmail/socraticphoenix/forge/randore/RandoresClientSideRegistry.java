@@ -30,11 +30,21 @@ import net.minecraftforge.fml.relauncher.Side;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class RandoresClientSideRegistry {
     private static AtomicLong currentSeed = new AtomicLong();
+    private static AtomicInteger oreNumber = new AtomicInteger();
     private static Map<String, TextureTemplate> templates = new HashMap<String, TextureTemplate>();
+
+    public static int getOreCount() {
+        return RandoresClientSideRegistry.oreNumber.get();
+    }
+
+    public static void setOreCount(int count) {
+        RandoresClientSideRegistry.oreNumber.set(count);
+    }
 
     public static TextureTemplate getTemplate(String name) {
         return RandoresClientSideRegistry.templates.get(name);
@@ -70,5 +80,9 @@ public class RandoresClientSideRegistry {
 
     public static void crash(String s, Throwable e) {
         Minecraft.getMinecraft().crashed(new CrashReport(s, e));
+    }
+
+    public static boolean isInitialized() {
+        return RandoresClientSideRegistry.getCurrentSeed() != 0;
     }
 }

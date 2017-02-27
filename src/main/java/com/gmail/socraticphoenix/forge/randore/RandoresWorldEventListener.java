@@ -50,6 +50,7 @@ public class RandoresWorldEventListener {
     public void onWorldLoad(WorldEvent.Load ev) throws IOException {
         Logger logger = Randores.getInstance().getLogger();
         World world = ev.getWorld();
+        Randores.getInstance().getConfiguration().load();
         if (!world.isRemote) {
             long seed = Randores.getRandoresSeed(world);
             this.loaded.add(seed);

@@ -82,6 +82,9 @@ public class RandoresTranslations {
         String DAMAGE = "randores.materials.base_damage";
         String DURABILITY = "randores.materials.durability";
         String ENCHANTABILITY = "randores.materials.enchantability";
+        String HARVEST_LEVEL = "randores.materials.harvest";
+        String ORE_HARVEST_LEVEL = "randores.materials.ore_harvest";
+        String CAN_HARVEST = "randores.materials.can_harvest";
         String RECIPES = "randores.materials.recipes";
         String TOOLS_RECIPE = "randores.recipes.tools";
         String ARMOR_RECIPE = "randores.recipes.armor";

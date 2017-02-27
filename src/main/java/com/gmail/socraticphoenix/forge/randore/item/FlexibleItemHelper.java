@@ -36,7 +36,7 @@ import java.util.List;
 public class FlexibleItemHelper {
 
     public static void addInformation(FlexibleItem item, ItemStack stack, EntityPlayer playerIn, List<String> tooltip, boolean advanced) {
-        if (FMLCommonHandler.instance().getSide() == Side.CLIENT && item.getDefinition(playerIn.world).hasComponent(item.getType())) {
+        if (FMLCommonHandler.instance().getSide() == Side.CLIENT && item.hasDefinition(Randores.getRandoresSeed(playerIn.world)) && item.getDefinition(playerIn.world).hasComponent(item.getType())) {
             MaterialDefinition definition = item.getDefinition(playerIn.world);
             if (!stack.hasDisplayName()) {
                 tooltip.remove(0);
@@ -47,7 +47,7 @@ public class FlexibleItemHelper {
     }
 
     public static String getItemStackDisplayName(FlexibleItem item, ItemStack stack) {
-        if (Randores.hasRandoresSeed(stack) && item.getDefinition(Randores.getRandoresSeed(stack)).hasComponent(item.getType())) {
+        if (Randores.hasRandoresSeed(stack) && item.hasDefinition(Randores.getRandoresSeed(stack)) && item.getDefinition(Randores.getRandoresSeed(stack)).hasComponent(item.getType())) {
             MaterialDefinition definition = item.getDefinition(Randores.getRandoresSeed(stack));
             return definition.getName() + " " + definition.getComponent(item.getType()).getLocalName(RandoresClientSideRegistry.getCurrentLocale());
         }
@@ -55,7 +55,7 @@ public class FlexibleItemHelper {
     }
 
     public static void onUpdate(ItemStack stack, World worldIn, Entity entityIn, int itemSlot, boolean isSelected) {
-        if(!Randores.hasRandoresSeed(stack) || Randores.getRandoresSeed(worldIn) != Randores.getRandoresSeed(stack)) {
+        if (!Randores.hasRandoresSeed(stack) || Randores.getRandoresSeed(worldIn) != Randores.getRandoresSeed(stack)) {
             Randores.applyData(stack, worldIn);
         }
     }

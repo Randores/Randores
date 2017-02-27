@@ -24,7 +24,7 @@ package com.gmail.socraticphoenix.forge.randore;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 
-public class TabBlocks {
+public class RandoresTabBlocks {
 
     public static Block tabOre;
 

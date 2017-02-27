@@ -56,4 +56,9 @@ public class CraftiniumDelegateSmelt implements CraftiniumSmelt {
         return this.xp;
     }
 
+    @Override
+    public int maxResult(ItemStack in, World worldIn, BlockPos forge) {
+        return this.out.getCount();
+    }
+
 }

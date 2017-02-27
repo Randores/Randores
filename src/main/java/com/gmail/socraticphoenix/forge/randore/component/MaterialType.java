@@ -25,11 +25,11 @@ import com.gmail.socraticphoenix.forge.randore.RandoresTranslations;
 
 public enum  MaterialType {
     INGOT(RandoresTranslations.Keys.INGOT, "ingot"),
-    DUST(RandoresTranslations.Keys.DUST, "dust"),
     GEM(RandoresTranslations.Keys.GEM, "gem"),
     EMERALD(RandoresTranslations.Keys.EMERALD, "emerald"),
     CIRCLE_GEM(RandoresTranslations.Keys.CIRCLE_GEM, "circular_gem"),
-    SHARD(RandoresTranslations.Keys.SHARD, "shard");
+    SHARD(RandoresTranslations.Keys.SHARD, "shard"),
+    DUST(RandoresTranslations.Keys.DUST, "dust");
 
     private String template;
     private String name;

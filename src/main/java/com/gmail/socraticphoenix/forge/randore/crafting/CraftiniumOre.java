@@ -40,7 +40,7 @@ public class CraftiniumOre extends Block {
 
     @Override
     public int quantityDropped(Random random) {
-        return random.nextInt(10) + 1;
+        return random.nextInt(32) + 8;
     }
 
     @Override

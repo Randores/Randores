@@ -19,7 +19,7 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.gmail.socraticphoenix.forge.randore.crafting;
+package com.gmail.socraticphoenix.forge.randore.crafting.table;
 
 import com.gmail.socraticphoenix.forge.randore.Randores;
 import com.gmail.socraticphoenix.forge.randore.component.Component;
@@ -27,7 +27,6 @@ import com.gmail.socraticphoenix.forge.randore.component.Components;
 import com.gmail.socraticphoenix.forge.randore.component.CraftableType;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinition;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinitionRegistry;
-import com.gmail.socraticphoenix.forge.randore.crafting.table.CraftiniumRecipe;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.InventoryCrafting;

@@ -63,8 +63,12 @@ public class RandoresPacketHandler implements IMessageHandler<RandoresPacket, IM
             public void run() {
                 final Logger logger = Randores.getInstance().getLogger();
                 final long seed = message.getSeed();
+                final int count = message.getOreCount();
                 RandoresClientSideRegistry.setCurrentSeed(seed);
+                RandoresClientSideRegistry.setOreCount(count);
+                Randores.getInstance().getConfiguration().load();
                 logger.info("Received seed information: " + seed);
+                logger.info("Recieved ore-count information: " + count);
                 logger.info("Obtaining definitions...");
                 final List<MaterialDefinition> definitions;
                 if (!MaterialDefinitionRegistry.contains(seed)) {
@@ -121,7 +125,7 @@ public class RandoresPacketHandler implements IMessageHandler<RandoresPacket, IM
                         }
                         FlexibleTextureRegistry.setInitialized(true);
                         FlexibleTextureRegistry.setTextureSeed(seed);
-                        logger.info("Resources loaded, definitions loaded, and textures properly set up. Randores is ready!");
+                        logger.info("Resources reloading, definitions loaded, and textures properly set up. Randores is ready!");
                     }
                 });
 

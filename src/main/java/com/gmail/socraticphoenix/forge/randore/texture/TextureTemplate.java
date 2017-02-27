@@ -21,6 +21,8 @@
  */
 package com.gmail.socraticphoenix.forge.randore.texture;
 
+import com.google.common.base.Function;
+
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
@@ -55,13 +57,15 @@ public class TextureTemplate {
         return new BufferedImage(cm, raster, isAlphaPremultiplied, null);
     }
 
-    public int getIntegerColor(Color color, boolean varyHue, int tint, int shade, Random random) {
+    public int getIntegerColor(Color color, boolean varyHue, int tint, int shade, Random random, Function<Random, Boolean> hueChoice) {
         if (varyHue) {
-            if (TextureTemplate.percentChance(33.33, random)) {
-                color = color.brighter();
-            } else if (TextureTemplate.percentChance(33.33, random)) {
-                color = color.darker();
-            } //else don't change the color
+            if(hueChoice.apply(random)) {
+                if(random.nextBoolean()) {
+                    color = color.brighter();
+                } else {
+                    color = color.darker();
+                }
+            }
         }
 
         if (tint != 0) {
@@ -79,13 +83,13 @@ public class TextureTemplate {
         return color.getRGB();
     }
 
-    public BufferedImage applyWith(Color color) {
+    public BufferedImage applyWith(Color color, Function<Random, Boolean> hueChoice) {
         Random random = new Random(color.getRGB());
         BufferedImage image = deepCopy(this.image);
         for (PixelTemplate template : this.pixelTemplates) {
             int x = template.getX();
             int y = template.getY();
-            int rgb = this.getIntegerColor(color, template.isVaryHue(), template.getTint(), template.getShade(), random);
+            int rgb = this.getIntegerColor(color, template.isVaryHue(), template.getTint(), template.getShade(), random, hueChoice);
             image.setRGB(x, y, rgb);
         }
         return image;

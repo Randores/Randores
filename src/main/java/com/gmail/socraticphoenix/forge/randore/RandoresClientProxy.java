@@ -66,44 +66,53 @@ public class RandoresClientProxy extends RandoresProxy {
                     if (date.before(now)) {
                         logger.info("Texture cache for seed: " + seed + " expired, deleting textures...");
                         cache.remove(entry.getKey());
-                        for (File tex : texDir.listFiles()) {
-                            boolean succesful = tex.delete();
-                            if (!succesful) {
-                                logger.info("Failed to delete file " + tex.getAbsolutePath() + ", trying 3 more times...");
-                            }
-                            for (int i = 0; i < 3 && succesful; i++) {
-                                succesful = tex.delete();
-                                if (!succesful) {
-                                    logger.info("Failed to delete file " + tex.getAbsolutePath() + ", trying " + (3 - (i + 1)) + " more times...");
-                                }
-                            }
-                            if (!succesful) {
-                                Minecraft.getMinecraft().crashed(new CrashReport("Failed to remove Randores cache file " + tex.getAbsolutePath(), new IOException("Failed to delete file")));
-                                return;
-                            }
-                        }
-                        boolean succesful = texDir.delete();
-                        if (!succesful) {
-                            logger.info("Failed to delete file " + texDir.getAbsolutePath() + ", trying 3 more times...");
-                        }
-                        for (int i = 0; i < 3 && succesful; i++) {
-                            succesful = texDir.delete();
-                            if (!succesful) {
-                                logger.info("Failed to delete file " + texDir.getAbsolutePath() + ", trying " + (3 - (i + 1)) + " more times...");
-                            }
-                        }
-                        if (!succesful) {
-                            Minecraft.getMinecraft().crashed(new CrashReport("Failed to remove Randores cache file " + texDir.getAbsolutePath(), new IOException("Failed to delete file")));
+                        if(!delete(texDir)) {
                             return;
                         }
+                        logger.info("Deleted textures for seed: " + seed);
                     }
-                    logger.info("Finished refreshing cache entries.");
                 }
                 configuration.save();
             } catch (NumberFormatException e) {
                 logger.info("Cache entry determined invalid, " + entry.getKey() + " is not a long... removing.");
                 cache.remove(entry.getKey());
             }
+        }
+
+        File[] dirs = Randores.getInstance().getTextureDir().listFiles();
+        if(dirs != null) {
+            for(File file : dirs) {
+                String seed = file.getName().replace("_", "-");
+                if(!cache.containsKey(seed)) {
+                    logger.info("Texture directory determined invalid, " + seed + " is not registered in the texture cache... removing.");
+                    if(!this.delete(file)) {
+                        return;
+                    }
+                    logger.info("Deleted texture directory: " + seed);
+                }
+            }
+        }
+
+        ConfigCategory conf = configuration.getCategory("config");
+        if(!conf.containsKey("invalidatecache")) {
+            conf.put("invalidatecache", new Property("invalidatecache", "false", Property.Type.BOOLEAN));
+        }
+
+        boolean invalidate = conf.get("invalidatecache").getBoolean();
+        if(invalidate) {
+            logger.info("Texture cache invalidated, removing all textures...");
+            cache.clear();
+            conf.put("invalidatecache", new Property("invalidatecache", "false", Property.Type.BOOLEAN));
+            configuration.save();
+            File[] files = Randores.getInstance().getTextureDir().listFiles();
+            if(files != null) {
+                for (File file : files) {
+                    if(!this.delete(file)) {
+                        return;
+                    }
+                }
+            }
+            logger.info("Removed all textures.");
         }
 
         logger.info("Loading texture templates...");
@@ -155,6 +164,42 @@ public class RandoresClientProxy extends RandoresProxy {
 
     @Override
     public void initSided() {
+    }
+
+    private boolean delete(File texDir) {
+        Logger logger = Randores.getInstance().getLogger();
+        for (File tex : texDir.listFiles()) {
+            boolean succesful = tex.delete();
+            if (!succesful) {
+                logger.info("Failed to delete file " + tex.getAbsolutePath() + ", trying 3 more times...");
+            }
+            for (int i = 0; i < 3 && !succesful; i++) {
+                succesful = tex.delete();
+                if (!succesful) {
+                    logger.info("Failed to delete file " + tex.getAbsolutePath() + ", trying " + (3 - (i + 1)) + " more times...");
+                }
+            }
+            if (!succesful) {
+                Minecraft.getMinecraft().crashed(new CrashReport("Failed to remove Randores cache file " + tex.getAbsolutePath(), new IOException("Failed to delete file")));
+                return false;
+            }
+        }
+        boolean succesful = texDir.delete();
+        if (!succesful) {
+            logger.info("Failed to delete file " + texDir.getAbsolutePath() + ", trying 3 more times...");
+        }
+        for (int i = 0; i < 3 && !succesful; i++) {
+            succesful = texDir.delete();
+            if (!succesful) {
+                logger.info("Failed to delete file " + texDir.getAbsolutePath() + ", trying " + (3 - (i + 1)) + " more times...");
+            }
+        }
+        if (!succesful) {
+            Minecraft.getMinecraft().crashed(new CrashReport("Failed to remove Randores cache file " + texDir.getAbsolutePath(), new IOException("Failed to delete file")));
+            return false;
+        }
+
+        return true;
     }
 
 }

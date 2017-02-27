@@ -21,6 +21,9 @@
  */
 package com.gmail.socraticphoenix.forge.randore.item;
 
+import com.gmail.socraticphoenix.forge.randore.component.CraftableType;
+import net.minecraft.item.Item;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -37,6 +40,34 @@ public class FlexibleItemRegistry {
     private static List<FlexibleItemArmor> chestplates = Collections.synchronizedList(new ArrayList<FlexibleItemArmor>());
     private static List<FlexibleItemArmor> leggings = Collections.synchronizedList(new ArrayList<FlexibleItemArmor>());
     private static List<FlexibleItemArmor> boots = Collections.synchronizedList(new ArrayList<FlexibleItemArmor>());
+
+    public static Item get(CraftableType type, int index) {
+        switch (type) {
+            case AXE:
+                return getAxe(index);
+            case HOE:
+                return getHoe(index);
+            case PICKAXE:
+                return getPickaxe(index);
+            case SHOVEL:
+                return getSpade(index);
+            case SWORD:
+                return getSword(index);
+            case STICK:
+                return getStick(index);
+            case BOOTS:
+                return getBoots(index);
+            case CHESTPLATE:
+                return getChestplate(index);
+            case HELMET:
+                return getHelmet(index);
+            case LEGGINGS:
+                return getLeggings(index);
+            case BRICKS:
+            default:
+                throw new IllegalArgumentException("Invalid craftable type for item; " + type);
+        }
+    }
 
     public static FlexibleItemArmor getBoots(int index) {
         return FlexibleItemRegistry.boots.get(index);
@@ -61,7 +92,7 @@ public class FlexibleItemRegistry {
     public static void addLeggings(FlexibleItemArmor armor) {
         FlexibleItemRegistry.leggings.add(armor);
     }
-    
+
     public static FlexibleItemArmor getChestplate(int index) {
         return FlexibleItemRegistry.chestplates.get(index);
     }
@@ -73,7 +104,7 @@ public class FlexibleItemRegistry {
     public static void addChestplate(FlexibleItemArmor armor) {
         FlexibleItemRegistry.chestplates.add(armor);
     }
-    
+
     public static FlexibleItemArmor getHelmet(int index) {
         return FlexibleItemRegistry.helmets.get(index);
     }
@@ -81,7 +112,7 @@ public class FlexibleItemRegistry {
     public static List<FlexibleItemArmor> getHelmets() {
         return FlexibleItemRegistry.helmets;
     }
-    
+
     public static void addHelmet(FlexibleItemArmor armor) {
         FlexibleItemRegistry.helmets.add(armor);
     }

@@ -19,12 +19,11 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.gmail.socraticphoenix.forge.randore.crafting;
+package com.gmail.socraticphoenix.forge.randore.crafting.forge;
 
 import com.gmail.socraticphoenix.forge.randore.Randores;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinition;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinitionRegistry;
-import com.gmail.socraticphoenix.forge.randore.crafting.forge.CraftiniumSmelt;
 import com.gmail.socraticphoenix.forge.randore.util.IntRange;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -76,6 +75,12 @@ public class FlexibleSmelt implements CraftiniumSmelt {
     public float experience(ItemStack in, World worldIn, BlockPos forge) {
         MaterialDefinition definition = this.getDefinition(worldIn);
         return definition.getOre().getSmeltingXp();
+    }
+
+    @Override
+    public int maxResult(ItemStack in, World worldIn, BlockPos forge) {
+        MaterialDefinition definition = this.getDefinition(worldIn);
+        return definition.getOre().getMaxDrops();
     }
 
 }

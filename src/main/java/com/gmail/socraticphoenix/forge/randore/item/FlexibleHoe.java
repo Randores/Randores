@@ -152,7 +152,7 @@ public class FlexibleHoe extends ItemHoe implements FlexibleItem {
 
     @Override
     public boolean isFull3D() {
-        return super.isFull3D();
+        return true;
     }
 
     @Override
@@ -190,6 +190,11 @@ public class FlexibleHoe extends ItemHoe implements FlexibleItem {
     @Override
     public MaterialDefinition getDefinition(World world) {
         return this.getDefinition(Randores.getRandoresSeed(world));
+    }
+
+    @Override
+    public boolean hasDefinition(long seed) {
+        return MaterialDefinitionRegistry.contains(seed, this.index);
     }
 
     @Override
