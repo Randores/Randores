@@ -91,7 +91,7 @@ public class MaterialDefinition {
         this.toolMaterial = EnumHelper.addToolMaterial(this.name, this.material.getHarvestLevel(), this.material.getMaxUses(), this.material.getEfficiency(), this.material.getDamage(), this.material.getEnchantability());
         this.toolMaterial.setRepairItem(new ItemStack(this.material.makeItem()));
         this.totalArmor = sum(this.material.getArmorReduction());
-        this.armorMaterial = EnumHelper.addArmorMaterial(this.name, "randores_armor:armor." + index, this.material.getMaxUses() / 100, this.material.getArmorReduction(), this.material.getEnchantability(), SoundEvents.ITEM_ARMOR_EQUIP_IRON, this.material.getToughness());
+        this.armorMaterial = EnumHelper.addArmorMaterial(this.name, "randores_armor:armor." + index, this.material.getMaxUses(), this.material.getArmorReduction(), this.material.getEnchantability(), SoundEvents.ITEM_ARMOR_EQUIP_IRON, this.material.getToughness());
         this.armorMaterial.setRepairItem(new ItemStack(this.material.makeItem()));
         this.seed = seed;
         this.index = index;
@@ -264,6 +264,16 @@ public class MaterialDefinition {
     }
 
     public List<Component> getComponents() {
+        return this.components;
+    }
+
+    public List<Component> getComponents(Predicate<Components> filter) {
+        List<Component> components = new ArrayList<Component>();
+        for(Component component : this.components) {
+            if(filter.apply(component.type())) {
+                components.add(component);
+            }
+        }
         return this.components;
     }
 

@@ -27,17 +27,19 @@ import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinitionRegis
 import com.gmail.socraticphoenix.forge.randore.crafting.CraftingBlocks;
 import com.gmail.socraticphoenix.forge.randore.crafting.CraftingGuiHandler;
 import com.gmail.socraticphoenix.forge.randore.crafting.CraftingItems;
-import com.gmail.socraticphoenix.forge.randore.crafting.table.FlexibleRecipe;
-import com.gmail.socraticphoenix.forge.randore.crafting.forge.FlexibleSmelt;
 import com.gmail.socraticphoenix.forge.randore.crafting.forge.CraftiniumDelegateSmelt;
 import com.gmail.socraticphoenix.forge.randore.crafting.forge.CraftiniumForgeTileEntity;
 import com.gmail.socraticphoenix.forge.randore.crafting.forge.CraftiniumSmeltRegistry;
+import com.gmail.socraticphoenix.forge.randore.crafting.forge.FlexibleSmelt;
 import com.gmail.socraticphoenix.forge.randore.crafting.table.CraftiniumDelegateRecipe;
 import com.gmail.socraticphoenix.forge.randore.crafting.table.CraftiniumRecipeRegistry;
+import com.gmail.socraticphoenix.forge.randore.crafting.table.FlexibleRecipe;
 import com.gmail.socraticphoenix.forge.randore.item.FlexibleItem;
 import com.gmail.socraticphoenix.forge.randore.item.FlexibleItemRegistry;
+import com.gmail.socraticphoenix.forge.randore.module.altar.RandoresAltarGenerator;
 import com.gmail.socraticphoenix.forge.randore.module.equip.RandoresMobEquip;
 import com.gmail.socraticphoenix.forge.randore.module.loot.RandoresLoot;
+import com.gmail.socraticphoenix.forge.randore.module.starter.RandoresStarterKit;
 import com.gmail.socraticphoenix.forge.randore.packet.RandoresNetworking;
 import com.gmail.socraticphoenix.forge.randore.resource.RandoresResourceManager;
 import com.google.common.base.Supplier;
@@ -143,7 +145,6 @@ public class Randores {
         }
     });
 
-
     private static Randores instance;
     private static Map<Long, Long> worldSeeds = new HashMap<Long, Long>();
     private static List<String> offensiveWords = new ArrayList<String>();
@@ -174,6 +175,7 @@ public class Randores {
         //Modules
         MinecraftForge.EVENT_BUS.register(new RandoresMobEquip());
         MinecraftForge.EVENT_BUS.register(new RandoresLoot());
+        MinecraftForge.EVENT_BUS.register(new RandoresStarterKit());
     }
 
     private static long getRandoresSeedFromWorld(long worldSeed) {
@@ -316,6 +318,22 @@ public class Randores {
             if(!config.containsKey("dungeonloot")) {
                 config.put("dungeonloot", new Property("dungeonloot", "false", Property.Type.BOOLEAN));
             }
+
+            if(!config.containsKey("dimensionless")) {
+                config.put("dimensionless", new Property("dimensionless", "false", Property.Type.BOOLEAN));
+            }
+
+            if(!config.containsKey("starterkit")) {
+                config.put("starterkit", new Property("starterkit", "false", Property.Type.BOOLEAN));
+            }
+
+            if(!config.containsKey("altar")) {
+                config.put("altar", new Property("altar", "false", Property.Type.BOOLEAN));
+            }
+
+            if(!config.containsKey("youtubemode")) {
+                config.put("youtubemode", new Property("youtubemode", "false", Property.Type.BOOLEAN));
+            }
             
             this.getConfiguration().save();
 
@@ -372,7 +390,8 @@ public class Randores {
     public void onInit(FMLInitializationEvent ev) {
         FMLInterModComms.sendMessage("waila", "register", "com.gmail.socraticphoenix.forge.randore.compatability.waila.RandoresWailaHandler.callbackRegister");
         NetworkRegistry.INSTANCE.registerGuiHandler(this, new CraftingGuiHandler());
-        GameRegistry.registerWorldGenerator(new RandoresWorldGenerator(), 100);
+        GameRegistry.registerWorldGenerator(new RandoresWorldGenerator(), 10);
+        GameRegistry.registerWorldGenerator(new RandoresAltarGenerator(), 0);
         this.logger.info("Running proxy initialization...");
         Randores.proxy.initSided();
         this.logger.info("Proxy initialized.");

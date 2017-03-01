@@ -24,19 +24,29 @@ package com.gmail.socraticphoenix.forge.randore.component;
 import com.gmail.socraticphoenix.forge.randore.RandoresTranslations;
 
 public enum  MaterialType {
-    INGOT(RandoresTranslations.Keys.INGOT, "ingot"),
-    GEM(RandoresTranslations.Keys.GEM, "gem"),
-    EMERALD(RandoresTranslations.Keys.EMERALD, "emerald"),
-    CIRCLE_GEM(RandoresTranslations.Keys.CIRCLE_GEM, "circular_gem"),
-    SHARD(RandoresTranslations.Keys.SHARD, "shard"),
-    DUST(RandoresTranslations.Keys.DUST, "dust");
+    INGOT(RandoresTranslations.Keys.INGOT, "ingot", "ore"),
+    GEM(RandoresTranslations.Keys.GEM, "gem", "gem2_ore"),
+    EMERALD(RandoresTranslations.Keys.EMERALD, "emerald", "gem_ore"),
+    CIRCLE_GEM(RandoresTranslations.Keys.CIRCLE_GEM, "circular_gem", "circle_ore"),
+    SHARD(RandoresTranslations.Keys.SHARD, "shard", "shard_ore"),
+    DUST(RandoresTranslations.Keys.DUST, "dust", "dust_ore");
 
     private String template;
+    private String oreTemplate;
     private String name;
 
-    MaterialType(String name, String template) {
+    MaterialType(String name, String template, String oreTemplate) {
         this.template = template + "_base";
+        this.oreTemplate = oreTemplate + "_base";
         this.name = name;
+    }
+
+    public String getOreTemplate(Dimension dimension) {
+        return (dimension == Dimension.END ? "end_" : dimension == Dimension.NETHER ? "nether_" : "") + this.getOreTemplate();
+    }
+
+    public String getOreTemplate() {
+        return this.oreTemplate;
     }
 
     public String getName() {

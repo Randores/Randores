@@ -119,7 +119,6 @@ public class RandoresClientProxy extends RandoresProxy {
         try {
             List<String> dictionary = RandoresResourceManager.getResourceLines("aa_dict.txt");
             for (String entry : dictionary) {
-                logger.info("Loading texture template \"" + entry + "\"");
                 List<String> config = RandoresResourceManager.getResourceLines(entry + ".txt");
                 BufferedImage texture = RandoresResourceManager.getImageResource(entry + ".png");
                 TextureTemplate template = new TextureTemplate(config, texture);

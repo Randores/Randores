@@ -33,4 +33,6 @@ public interface Component {
 
     String getLocalName(String locale);
 
+    Components type();
+
 }

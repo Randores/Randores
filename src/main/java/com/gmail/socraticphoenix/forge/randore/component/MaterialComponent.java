@@ -70,6 +70,11 @@ public class MaterialComponent implements Component {
         return this.type.getLocalName(locale);
     }
 
+    @Override
+    public Components type() {
+        return Components.MATERIAL;
+    }
+
     public float getToughness() {
         return this.toughness;
     }

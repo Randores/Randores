@@ -24,7 +24,6 @@ package com.gmail.socraticphoenix.forge.randore.compatability.waila;
 import com.gmail.socraticphoenix.forge.randore.Randores;
 import com.gmail.socraticphoenix.forge.randore.RandoresClientSideRegistry;
 import com.gmail.socraticphoenix.forge.randore.RandoresTranslations;
-import com.gmail.socraticphoenix.forge.randore.block.FlexibleOre;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinition;
 import com.gmail.socraticphoenix.forge.randore.item.FlexibleItem;
 import mcp.mobius.waila.api.IWailaConfigHandler;
@@ -45,6 +44,10 @@ import java.util.List;
 
 public class RandoresWailaHandler implements IWailaDataProvider {
 
+    public static void callbackRegister(IWailaRegistrar registrar) {
+        registrar.registerBodyProvider(new RandoresWailaHandler(), Block.class);
+    }
+
     @Override
     public ItemStack getWailaStack(IWailaDataAccessor iWailaDataAccessor, IWailaConfigHandler iWailaConfigHandler) {
         return null;
@@ -60,19 +63,18 @@ public class RandoresWailaHandler implements IWailaDataProvider {
         Block block = iWailaDataAccessor.getBlock();
         Item item = Item.getItemFromBlock(block);
         String locale = RandoresClientSideRegistry.getCurrentLocale();
-        if(item instanceof FlexibleItem) {
+        if (item instanceof FlexibleItem) {
             MaterialDefinition definition = ((FlexibleItem) item).getDefinition(Randores.getRandoresSeed(iWailaDataAccessor.getWorld()));
             list.addAll(definition.generateBlockLore(locale));
-            if(block instanceof FlexibleOre) {
-                String canHarvest = TextFormatting.GREEN + "  " + t(RandoresTranslations.Keys.CAN_HARVEST, locale) + ": ";
-                if (block.canHarvestBlock(iWailaDataAccessor.getWorld(), iWailaDataAccessor.getPosition(), iWailaDataAccessor.getPlayer())) {
-                    canHarvest += TextFormatting.DARK_GREEN + "\u2714";
-                } else {
-                    canHarvest += TextFormatting.RED + "\u2718";
-                }
-                list.add(canHarvest);
+            String canHarvest = TextFormatting.GREEN + "  " + t(RandoresTranslations.Keys.CAN_HARVEST, locale) + ": ";
+            if (block.canHarvestBlock(iWailaDataAccessor.getWorld(), iWailaDataAccessor.getPosition(), iWailaDataAccessor.getPlayer())) {
+                canHarvest += TextFormatting.DARK_GREEN + "\u2714";
+            } else {
+                canHarvest += TextFormatting.RED + "\u2718";
             }
+            list.add(canHarvest);
         }
+
         return list;
     }
 
@@ -84,10 +86,6 @@ public class RandoresWailaHandler implements IWailaDataProvider {
     @Override
     public NBTTagCompound getNBTData(EntityPlayerMP entityPlayerMP, TileEntity tileEntity, NBTTagCompound nbtTagCompound, World world, BlockPos blockPos) {
         return null;
-    }
-
-    public static void callbackRegister(IWailaRegistrar registrar) {
-        registrar.registerBodyProvider(new RandoresWailaHandler(), Block.class);
     }
 
     private String t(String s, String locale) {

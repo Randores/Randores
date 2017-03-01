@@ -95,6 +95,11 @@ public class OreComponent implements Component {
         return RandoresTranslations.get(locale, this.getName());
     }
 
+    @Override
+    public Components type() {
+        return Components.ORE;
+    }
+
     public float getHardness() {
         return this.hardness;
     }
@@ -156,9 +161,7 @@ public class OreComponent implements Component {
     }
 
     public String template() {
-        String ore = getType() == MaterialType.INGOT || getType() == MaterialType.DUST ? "ore_base" : "gem_ore_base";
-        String dimension = this.dimension == Dimension.END ? "end_" : this.dimension == Dimension.NETHER ? "nether_" : "";
-        return dimension + ore;
+        return this.material.getType().getOreTemplate(this.dimension);
     }
 
 

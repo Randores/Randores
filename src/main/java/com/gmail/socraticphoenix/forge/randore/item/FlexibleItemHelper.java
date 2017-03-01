@@ -23,6 +23,7 @@ package com.gmail.socraticphoenix.forge.randore.item;
 
 import com.gmail.socraticphoenix.forge.randore.Randores;
 import com.gmail.socraticphoenix.forge.randore.RandoresClientSideRegistry;
+import com.gmail.socraticphoenix.forge.randore.block.FlexibleOre;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinition;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -42,7 +43,10 @@ public class FlexibleItemHelper {
                 tooltip.remove(0);
                 tooltip.add(0, definition.getName() + " " + definition.getComponent(item.getType()).getLocalName(RandoresClientSideRegistry.getCurrentLocale()));
             }
-            tooltip.addAll(definition.generateLore(RandoresClientSideRegistry.getCurrentLocale()));
+
+            if((item instanceof FlexibleItemBlock && ((FlexibleItemBlock) item).getBlock() instanceof FlexibleOre) || item instanceof FlexibleMaterial) {
+                tooltip.addAll(definition.generateLore(RandoresClientSideRegistry.getCurrentLocale()));
+            }
         }
     }
 

@@ -25,6 +25,7 @@ import net.minecraft.item.Item;
 
 public class CraftableComponent implements Component {
     private CraftableType type;
+    private Components component;
     private int quantity;
     private Item item;
 
@@ -32,6 +33,7 @@ public class CraftableComponent implements Component {
         this.type = type;
         this.quantity = quantity;
         this.item = item;
+        this.component = Components.fromCraftable(type);
     }
 
     @Override
@@ -52,6 +54,11 @@ public class CraftableComponent implements Component {
     @Override
     public String getLocalName(String locale) {
         return this.type.getLocalName(locale);
+    }
+
+    @Override
+    public Components type() {
+        return this.component;
     }
 
     public String template() {
