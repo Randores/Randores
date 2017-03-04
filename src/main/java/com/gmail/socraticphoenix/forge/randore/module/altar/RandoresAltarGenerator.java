@@ -37,6 +37,7 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntityChest;
+import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.IChunkGenerator;
@@ -54,7 +55,7 @@ public class RandoresAltarGenerator implements IWorldGenerator {
     public void generate(Random random, int chunkX, int chunkZ, World world, IChunkGenerator chunkGenerator, IChunkProvider chunkProvider) {
         long seed = Randores.getRandoresSeed(world);
         if (!world.isRemote && world.provider.getDimension() == Dimension.OVERWORLD.getId()) {
-            if (Randores.getInstance().getConfiguration().getCategory("modules").get("altar").getBoolean() && RandoresProbability.percentChance(Randores.getInstance().getConfiguration().getCategory("modules").get("youtubemode").getBoolean() ? 20 : 2, random)) {
+            if (Randores.getInstance().getConfiguration().getCategory("modules").get("altar").getBoolean() && RandoresProbability.percentChance(Randores.getInstance().getConfiguration().getCategory("modules").get("youtubemode").getBoolean() ? 10 : 0.5, random)) {
                 List<MaterialDefinition> definitions = MaterialDefinitionRegistry.get(seed);
                 MaterialDefinition definition;
                 int tries = 0;
@@ -76,8 +77,14 @@ public class RandoresAltarGenerator implements IWorldGenerator {
                         BlockPos pos = new BlockPos(blockX, i, blockZ);
                         if (world.getBlockState(pos).getBlock() != Blocks.AIR && !world.getBlockState(pos).getBlock().isReplaceable(world, pos)) {
                             blockY = i + 1;
-                            if (world.getHeight() - 10 > blockY && (world.getBlockState(pos).isOpaqueCube()) && !world.getBlockState(pos).getBlock().isLeaves(world.getBlockState(pos), world, pos)) {
-                                valid = true;
+                            if (world.getHeight() - 10 > blockY && world.getBlockState(pos).isOpaqueCube() && world.getBlockState(pos).getRenderType() != EnumBlockRenderType.LIQUID && !world.getBlockState(pos).getBlock().isLeaves(world.getBlockState(pos), world, pos)) {
+                                int numBelow = 0;
+                                BlockPos down = pos;
+                                while (this.hasAir(world, down, 2, 2)) {
+                                    numBelow++;
+                                    down = down.add(0, -1, 0);
+                                }
+                                valid = numBelow < 10;
                             }
                             break;
                         }

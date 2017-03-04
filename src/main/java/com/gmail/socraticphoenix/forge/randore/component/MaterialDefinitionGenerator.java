@@ -31,6 +31,8 @@ import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.logging.log4j.Logger;
 
 import javax.imageio.ImageIO;
@@ -86,14 +88,14 @@ public class MaterialDefinitionGenerator {
             int maxOccurrences = commonalityInt / 20 + 1;
             int minOccurrences = maxOccurrences - random.nextInt(maxOccurrences);
             int oreHarvestLevel = RandoresProbability.clamp(rarityInt / 10, Blocks.IRON_ORE.getHarvestLevel(Blocks.IRON_ORE.getDefaultState()), Blocks.DIAMOND_ORE.getHarvestLevel(Blocks.DIAMOND_ORE.getDefaultState()));
-            int maxDrops = (int) Math.floor(RandoresProbability.oneSidedInflectedNormalRand(2, 8, 5, random));
-            int minDrops = (int) RandoresProbability.oneSidedInflectedNormalRand(1, maxDrops, 5, random);
-            int maxVein = (int) (commonality / 4) + 2;
+            int maxDrops = (int) Math.floor(RandoresProbability.oneSidedInflectedNormalRand(2, 6, 3, random));
+            int minDrops = (int) RandoresProbability.oneSidedInflectedNormalRand(1, maxDrops, 2, random);
+            int maxVein = (int) (commonality / 10) + 2;
             int minVein = (int) Math.ceil(RandoresProbability.expRand(1.2, 2, maxVein, random));
             float smeltingXp = (float) RandoresProbability.inflectedNormalRand(0, 1.25, 0.75, 0.25, random);
             float hardness = (float) Math.round(rarity / 14);
             float resistance = (float) Math.round(rarity / 7);
-            int[] armor = new int[] {rarityInt / 20, rarityInt / 8, rarityInt / 6, rarityInt / 20};
+            int[] armor = new int[]{rarityInt / 20, rarityInt / 8, rarityInt / 6, rarityInt / 20};
             MaterialDefinitionGenerator.clampArmor(armor);
 
             MaterialComponent material = new MaterialComponent(type, toolHarvestLevel, uses, efficiency, damage, enchantability, toughness, armor, FlexibleItemRegistry.getMaterial(c));
@@ -101,29 +103,29 @@ public class MaterialDefinitionGenerator {
 
             List<CraftableComponent> components = new ArrayList<CraftableComponent>();
             boolean hasComponents = false;
-            if (percentChance(60, random)) {
+            if (RandoresProbability.percentChance(60, random)) {
                 hasComponents = true;
                 components.add(new CraftableComponent(CraftableType.HELMET, 1, FlexibleItemRegistry.getHelmet(c)));
                 components.add(new CraftableComponent(CraftableType.CHESTPLATE, 1, FlexibleItemRegistry.getChestplate(c)));
                 components.add(new CraftableComponent(CraftableType.LEGGINGS, 1, FlexibleItemRegistry.getLeggings(c)));
                 components.add(new CraftableComponent(CraftableType.BOOTS, 1, FlexibleItemRegistry.getBoots(c)));
             }
-            if (percentChance(60, random)) {
+            if (RandoresProbability.percentChance(60, random)) {
                 hasComponents = true;
                 components.add(new CraftableComponent(CraftableType.PICKAXE, 1, FlexibleItemRegistry.getPickaxe(c)));
                 components.add(new CraftableComponent(CraftableType.AXE, 1, FlexibleItemRegistry.getAxe(c)));
                 components.add(new CraftableComponent(CraftableType.HOE, 1, FlexibleItemRegistry.getHoe(c)));
                 components.add(new CraftableComponent(CraftableType.SHOVEL, 1, FlexibleItemRegistry.getSpade(c)));
             }
-            if (percentChance(60, random)) {
+            if (RandoresProbability.percentChance(60, random)) {
                 hasComponents = true;
                 components.add(new CraftableComponent(CraftableType.SWORD, 1, FlexibleItemRegistry.getSword(c)));
             }
-            if (percentChance(90, random)) {
+            if (RandoresProbability.percentChance(90, random)) {
                 hasComponents = true;
                 components.add(new CraftableComponent(CraftableType.BRICKS, 4, Item.getItemFromBlock(FlexibleBlockRegistry.getBricks().get(c))));
             }
-            if (percentChance(50, random)) {
+            if (RandoresProbability.percentChance(50, random)) {
                 hasComponents = true;
                 components.add(new CraftableComponent(CraftableType.STICK, 2, FlexibleItemRegistry.getStick(c)));
             }
@@ -144,11 +146,6 @@ public class MaterialDefinitionGenerator {
             definitions.add(definition);
         }
         return definitions;
-    }
-
-    public static boolean percentChance(double percent, Random random) {
-        double result = random.nextDouble() * 100;
-        return result <= percent;
     }
 
     public static void logStatistics(List<MaterialDefinition> definitions) {
@@ -179,6 +176,7 @@ public class MaterialDefinitionGenerator {
         }
     }
 
+    @SideOnly(Side.CLIENT)
     public static void setupTextures(List<MaterialDefinition> definitions, long seed) {
         for (int i = 0; i < definitions.size(); i++) {
             FlexibleTextureRegistry.getBlock(i).setTexture("block." + i, seed);
@@ -243,6 +241,7 @@ public class MaterialDefinitionGenerator {
         }
     }
 
+    @SideOnly(Side.CLIENT)
     public static void generateAndSetupTextures(List<MaterialDefinition> definitions, long seed) throws IOException {
         for (int i = 0; i < definitions.size(); i++) {
             MaterialDefinition def = definitions.get(i);
@@ -272,6 +271,7 @@ public class MaterialDefinitionGenerator {
         MaterialDefinitionGenerator.setupTextures(definitions, seed);
     }
 
+    @SideOnly(Side.CLIENT)
     public static void setupArmorTextures(List<MaterialDefinition> definitions) {
         for (int i = 0; i < definitions.size(); i++) {
             MaterialDefinition def = definitions.get(i);
@@ -293,21 +293,18 @@ public class MaterialDefinitionGenerator {
 
     private static void clampArmor(int[] reduc) {
         for (int i = 0; i < reduc.length; i++) {
-            if(reduc[i] < 1) {
+            if (reduc[i] < 1) {
                 reduc[i] = 1;
             }
         }
 
         while (sum(reduc) > 20) {
-            for (int i = 0; i < reduc.length; i++) {
-                reduce(reduc, 0);
-                reduce(reduc, 1);
-                reduce(reduc, 1);
-                reduce(reduc, 2);
-                reduce(reduc, 2);
-                reduce(reduc, 3);
-
-            }
+            reduce(reduc, 0);
+            reduce(reduc, 1);
+            reduce(reduc, 1);
+            reduce(reduc, 2);
+            reduce(reduc, 2);
+            reduce(reduc, 3);
         }
     }
 

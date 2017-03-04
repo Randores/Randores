@@ -274,7 +274,7 @@ public class MaterialDefinition {
                 components.add(component);
             }
         }
-        return this.components;
+        return components;
     }
 
 }
