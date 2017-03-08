@@ -123,11 +123,6 @@ public class CraftiniumForgeTileEntity extends TileEntity implements ITickable {
         }
     }
 
-    @Override
-    public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing) {
-        return this.getCapability(capability, facing) != null;
-    }
-
     @Nullable
     @Override
     public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing) {
