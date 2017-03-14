@@ -214,6 +214,7 @@ public class MaterialDefinitionGenerator {
 
     @SideOnly(Side.CLIENT)
     public static void generateAndSetupTextures(List<MaterialDefinition> definitions, long seed) {
+        RandoresArmorResourcePack.clear();
         for (int i = 0; i < definitions.size(); i++) {
             MaterialDefinition def = definitions.get(i);
             Map<String, TextureData> textures = def.generateTextures();

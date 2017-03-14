@@ -23,6 +23,9 @@ package com.gmail.socraticphoenix.forge.randore;
 
 import com.gmail.socraticphoenix.forge.randore.block.FlexibleBlockRegistry;
 import com.gmail.socraticphoenix.forge.randore.block.FlexibleOre;
+import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinition;
+import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinitionGenerator;
+import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinitionRegistry;
 import com.gmail.socraticphoenix.forge.randore.crafting.CraftingBlocks;
 import com.gmail.socraticphoenix.forge.randore.crafting.CraftingItems;
 import com.gmail.socraticphoenix.forge.randore.item.FlexibleItemRegistry;
@@ -38,6 +41,8 @@ import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+
+import java.util.List;
 
 public class RandoresClientSideListener {
 
@@ -60,7 +65,6 @@ public class RandoresClientSideListener {
         ModelLoader.setCustomModelResourceLocation(RandoresTabItems.tabSword, 0, new ModelResourceLocation("randores:" + RandoresTabItems.tabSword.getUnlocalizedName().substring(5), "inventory"));
         ModelLoader.setCustomModelResourceLocation(RandoresTabItems.tabHelmet, 0, new ModelResourceLocation("randores:" + RandoresTabItems.tabHelmet.getUnlocalizedName().substring(5), "inventory"));
         ModelLoader.setCustomModelResourceLocation(RandoresTabItems.tabStick, 0, new ModelResourceLocation("randores:" + RandoresTabItems.tabStick.getUnlocalizedName().substring(5), "inventory"));
-
 
 
         for (Item item : FlexibleItemRegistry.getMaterials()) {
@@ -125,6 +129,16 @@ public class RandoresClientSideListener {
 
     @SubscribeEvent
     @SideOnly(Side.CLIENT)
+    public void onPostSTitch(TextureStitchEvent.Post ev) {
+        if (RandoresClientSideRegistry.isInitialized() && MaterialDefinitionRegistry.contains(RandoresClientSideRegistry.getCurrentSeed())) {
+            long seed = RandoresClientSideRegistry.getCurrentSeed();
+            List<MaterialDefinition> definitions = MaterialDefinitionRegistry.get(seed);
+            MaterialDefinitionGenerator.setupArmorTextures(definitions);
+        }
+    }
+
+    @SubscribeEvent
+    @SideOnly(Side.CLIENT)
     public void onStitch(TextureStitchEvent.Pre ev) {
         if (FlexibleTextureRegistry.itemQuantity() == 0) {
             for (int i = 0; i < Randores.registeredAmount() * 11; i++) {
@@ -148,6 +162,13 @@ public class RandoresClientSideListener {
             for (FlexibleAtlasSprite sprite : FlexibleTextureRegistry.getBlockSprites()) {
                 ev.getMap().setTextureEntry(sprite);
             }
+        }
+
+        Randores.getInstance().getConfiguration().load();
+        if (RandoresClientSideRegistry.isInitialized() && MaterialDefinitionRegistry.contains(RandoresClientSideRegistry.getCurrentSeed())) {
+            long seed = RandoresClientSideRegistry.getCurrentSeed();
+            List<MaterialDefinition> definitions = MaterialDefinitionRegistry.get(seed);
+            MaterialDefinitionGenerator.generateAndSetupTextures(definitions, seed);
         }
 
     }

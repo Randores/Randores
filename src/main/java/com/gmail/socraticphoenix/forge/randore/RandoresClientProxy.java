@@ -23,12 +23,10 @@ package com.gmail.socraticphoenix.forge.randore;
 
 import com.gmail.socraticphoenix.forge.randore.resource.RandoresResourceManager;
 import com.gmail.socraticphoenix.forge.randore.texture.RandoresArmorResourcePack;
-import com.gmail.socraticphoenix.forge.randore.texture.RandoresDelegatingResourceManager;
 import com.gmail.socraticphoenix.forge.randore.texture.RandoresLazyResourcePack;
 import com.gmail.socraticphoenix.forge.randore.texture.TextureTemplate;
 import com.google.common.io.Files;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.IReloadableResourceManager;
 import net.minecraft.client.resources.IResourcePack;
 import net.minecraft.crash.CrashReport;
 import net.minecraftforge.common.config.Configuration;
@@ -73,21 +71,21 @@ public class RandoresClientProxy extends RandoresProxy {
                 if (packs != null) {
                     for (File dir : packs) {
                         logger.info("Attempting to load pack: " + dir.getName());
-                        for(String dict : dictionary) {
+                        for (String dict : dictionary) {
                             File tex = new File(dir, dict + ".png");
                             File temp = new File(dir, dict + ".txt");
                             boolean success = true;
-                            if(!tex.exists()) {
+                            if (!tex.exists()) {
                                 logger.info("No texture for template: " + dict);
                                 success = false;
                             }
 
-                            if(!temp.exists()) {
+                            if (!temp.exists()) {
                                 logger.info("No config for template: " + dict);
                                 success = false;
                             }
 
-                            if(success) {
+                            if (success) {
                                 TextureTemplate textureTemplate = new TextureTemplate(Files.readLines(temp, Charset.forName("UTF8")), ImageIO.read(tex));
                                 RandoresClientSideRegistry.putTemplate(dir.getName() + ":" + dict, textureTemplate);
                             }
@@ -102,32 +100,6 @@ public class RandoresClientProxy extends RandoresProxy {
             }
         } catch (IOException e) {
             Minecraft.getMinecraft().crashed(new CrashReport("Unable to load texture templates.", e));
-            return;
-        }
-
-        logger.info("Hacking resource manager...");
-        List<Field> rCandidates = new ArrayList<Field>();
-        for(Field field : Minecraft.class.getDeclaredFields()) {
-            if(field.getType() == IReloadableResourceManager.class) {
-                rCandidates.add(field);
-            }
-        }
-        logger.info("Number of candidates: " + rCandidates.size());
-        if (rCandidates.size() == 1) {
-            Field field = rCandidates.get(0);
-            boolean accessible = field.isAccessible();
-            field.setAccessible(true);
-            try {
-                field.set(Minecraft.getMinecraft(), new RandoresDelegatingResourceManager((IReloadableResourceManager) field.get(Minecraft.getMinecraft())));
-                logger.info("Succesfully hacked resource manager.");
-            } catch (IllegalAccessException e) {
-                Minecraft.getMinecraft().crashed(new CrashReport("Fatal error, candidate not accessible", e));
-                return;
-            } finally {
-                field.setAccessible(accessible);
-            }
-        } else {
-            Minecraft.getMinecraft().crashed(new CrashReport("Fatal error, expected 1 candidate, but found " + rCandidates.size(), new IllegalStateException()));
             return;
         }
 
@@ -159,7 +131,7 @@ public class RandoresClientProxy extends RandoresProxy {
             } finally {
                 field.setAccessible(accessible);
             }
-        } else {
+        }  else {
             Minecraft.getMinecraft().crashed(new CrashReport("Fatal error, expected 1 candidate, but found " + candidates.size(), new IllegalStateException()));
             return;
         }
