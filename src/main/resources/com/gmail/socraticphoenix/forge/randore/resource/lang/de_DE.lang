@@ -37,4 +37,7 @@ randores.items.emerald=Smaragd
 randores.items.circle_gem=Edelstein
 randores.items.shard=Scherbe
 ------------ End of Translations Block 1 ------------
-
+randores.name.format=${name}-${item}
+randores.texture.loaded=Deine Ressourcen sind bereits geladen!
+randores.recipes.torch=Fackeln
+randores.items.torch=Umhüllte Fackel
