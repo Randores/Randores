@@ -20,29 +20,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import com.gmail.socraticphoenix.forge.randore.RandoresProbability;
-
-import java.util.Random;
+import java.io.IOException;
 
 public class QuickTest {
 
-    public static void main(String[] args) {
-        Random random = new Random();
-        int[] res = new int[50];
-        for (int i = 0; i < 10000000; i++) {
-            int n = (int) RandoresProbability.oneSidedInflectedNormalRand(0, 50, 20, random);
-            res[n] = res[n] + 1;
-        }
-        for (int i = 0; i < res.length; i++) {
-            System.out.print(i + ":");
-            for (int j = 0; j < 5 - String.valueOf(i).length(); j++) {
-                System.out.print(" ");
-            }
-            for (int j = 0; j < res[i] / 10000; j++) {
-                System.out.print("-");
-            }
-            System.out.println();
-        }
+    public static void main(String[] args) throws IOException {
+
     }
 
 

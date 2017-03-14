@@ -74,8 +74,8 @@ public class RandoresTranslations {
     }
 
     public interface Keys {
-        String TEXTURES_MESSAGE = "randores.texture.setup";
         String RESOURCES_RELOADING = "randores.texture.reloading";
+        String RESOURCES_LOADED = "randores.texture.loaded";
         String INFORMATION = "randores.material.information";
         String EFFICIENCY = "randores.material.efficiency";
         String FULL_ARMOR = "randores.materials.full_armor";
@@ -91,6 +91,7 @@ public class RandoresTranslations {
         String SWORD_RECIPE = "randores.recipes.sword";
         String BRICKS_RECIPE = "randores.recipes.bricks";
         String STICK_RECIPE = "randores.recipes.stick";
+        String TORCH_RECIPE = "randores.recipes.torch";
         String CRAFTINIUM_FORGE = "randores.blocks.forge";
         String CRAFTINIUM_TABLE = "randores.blocks.table";
         String ORE = "randores.items.ore";
@@ -111,6 +112,8 @@ public class RandoresTranslations {
         String EMERALD = "randores.items.emerald";
         String CIRCLE_GEM = "randores.items.circle_gem";
         String SHARD = "randores.items.shard";
+        String TORCH = "randores.items.torch";
+        String FORMAT = "randores.name.format";
     }
 
 }

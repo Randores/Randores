@@ -22,6 +22,7 @@
 package com.gmail.socraticphoenix.forge.randore.item;
 
 import com.gmail.socraticphoenix.forge.randore.Randores;
+import com.gmail.socraticphoenix.forge.randore.texture.RandoresArmorResourcePack;
 import com.gmail.socraticphoenix.forge.randore.component.Components;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinition;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinitionRegistry;
@@ -31,6 +32,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
@@ -67,6 +69,11 @@ public class FlexibleItemArmor extends ItemArmor implements FlexibleItem, ISpeci
         } else {
             return 1;
         }
+    }
+
+    @Override
+    public Item getThis() {
+        return this;
     }
 
     @Override
@@ -205,7 +212,7 @@ public class FlexibleItemArmor extends ItemArmor implements FlexibleItem, ISpeci
     @Nullable
     @Override
     public String getArmorTexture(ItemStack stack, Entity entity, EntityEquipmentSlot slot, String type) {
-        return "randores_armor:armor." + this.index + "_" + this.renderIndex + ".png";
+        return RandoresArmorResourcePack.DOMAIN + ":armor." + this.index + "_" + this.renderIndex + ".png";
     }
 
     @Override

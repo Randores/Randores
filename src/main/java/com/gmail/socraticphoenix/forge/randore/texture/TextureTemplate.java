@@ -25,42 +25,51 @@ import com.google.common.base.Function;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
-import java.awt.image.ColorModel;
-import java.awt.image.WritableRaster;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 public class TextureTemplate {
     private List<PixelTemplate> pixelTemplates;
-    private BufferedImage image;
+    private PixelTemplate[][] templatesMap;
+    private int[] image;
+    private int width;
+    private int height;
 
     public TextureTemplate(List<String> content, BufferedImage image) {
-        this.image = image;
+        this.width = image.getWidth();
+        this.height = image.getHeight();
+        this.image = image.getRGB(0, 0, image.getWidth(), image.getHeight(), new int[this.width * this.height], 0, image.getWidth());
+
         this.pixelTemplates = new ArrayList<PixelTemplate>();
         for (String s : content) {
             if (!s.isEmpty()) {
                 this.pixelTemplates.add(new PixelTemplate(s));
             }
         }
+
+        this.templatesMap = new PixelTemplate[this.height][this.width];
+        for (PixelTemplate template : this.pixelTemplates) {
+            this.templatesMap[template.getY()][template.getX()] = template;
+        }
     }
 
-    public static boolean percentChance(double percent, Random random) {
-        double result = random.nextDouble() * 100;
-        return result <= percent;
+    public List<PixelTemplate> getPixelTemplates() {
+        return this.pixelTemplates;
     }
 
-    private static BufferedImage deepCopy(BufferedImage bi) {
-        ColorModel cm = bi.getColorModel();
-        boolean isAlphaPremultiplied = cm.isAlphaPremultiplied();
-        WritableRaster raster = bi.copyData(null);
-        return new BufferedImage(cm, raster, isAlphaPremultiplied, null);
+    public int getWidth() {
+        return this.width;
+    }
+
+    public int getHeight() {
+        return this.height;
     }
 
     public int getIntegerColor(Color color, boolean varyHue, int tint, int shade, Random random, Function<Random, Boolean> hueChoice) {
         if (varyHue) {
-            if(hueChoice.apply(random)) {
-                if(random.nextBoolean()) {
+            if (hueChoice.apply(random)) {
+                if (random.nextBoolean()) {
                     color = color.brighter();
                 } else {
                     color = color.darker();
@@ -83,16 +92,27 @@ public class TextureTemplate {
         return color.getRGB();
     }
 
-    public BufferedImage applyWith(Color color, Function<Random, Boolean> hueChoice) {
+    public TextureData applyWith(Color color, Function<Random, Boolean> hueChoice) {
         Random random = new Random(color.getRGB());
-        BufferedImage image = deepCopy(this.image);
-        for (PixelTemplate template : this.pixelTemplates) {
-            int x = template.getX();
-            int y = template.getY();
-            int rgb = this.getIntegerColor(color, template.isVaryHue(), template.getTint(), template.getShade(), random, hueChoice);
-            image.setRGB(x, y, rgb);
+        int[] image = this.image.clone();
+        int yoff = 0;
+        int off = 0;
+        for (int y = 0; y < this.height; y++, yoff += this.width) {
+            off = yoff;
+            for (int x = 0; x < this.width; x++) {
+                PixelTemplate template = this.templatesMap[y][x];
+                if(template != null) {
+                    image[off] = this.getIntegerColor(color, template.isVaryHue(), template.getTint(), template.getShade(), random, hueChoice);
+                }
+                off++;
+            }
+
         }
-        return image;
+        int[][] texData = new int[(int) (1 + (Math.log10(this.width) / Math.log10(2)))][];
+        for (int i = 0; i < texData.length; i++) {
+            texData[i] = image;
+        }
+        return new TextureData(texData, this.width, this.height);
     }
 
 }

@@ -40,6 +40,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 
@@ -54,6 +56,10 @@ public class CraftiniumForgeTileEntity extends TileEntity implements ITickable {
     private int cookTime;
     private int totalCookTime;
 
+    private int divisor;
+
+    private boolean brokenByCreative;
+
     public CraftiniumForgeTileEntity() {
         this.input = new ItemStackHandler(1);
         this.output = new SelectiveItemStackHandler(1, Predicates.<ItemStack>alwaysFalse());
@@ -67,7 +73,24 @@ public class CraftiniumForgeTileEntity extends TileEntity implements ITickable {
         this.currentItemBurnTime = 0;
         this.cookTime = 0;
         this.totalCookTime = 0;
+        this.divisor = 1;
+        this.brokenByCreative = false;
+    }
 
+    public boolean isBrokenByCreative() {
+        return this.brokenByCreative;
+    }
+
+    public void setBrokenByCreative(boolean brokenByCreative) {
+        this.brokenByCreative = brokenByCreative;
+    }
+
+    public int getDivisor() {
+        return this.divisor;
+    }
+
+    public void setDivisor(int divisor) {
+        this.divisor = divisor;
     }
 
     @Nullable
@@ -82,6 +105,7 @@ public class CraftiniumForgeTileEntity extends TileEntity implements ITickable {
     }
 
     @Override
+    @SideOnly(Side.CLIENT)
     public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
         super.onDataPacket(net, pkt);
         this.handleUpdateTag(pkt.getNbtCompound());
@@ -123,11 +147,18 @@ public class CraftiniumForgeTileEntity extends TileEntity implements ITickable {
         }
     }
 
+    @Override
+    public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing) {
+        return capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY || super.hasCapability(capability, facing);
+    }
+
     @Nullable
     @Override
     public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing) {
         if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
-            this.markDirty();
+            if (this.world != null) {;
+                this.world.markChunkDirty(this.pos, this);
+            }
             if (facing == null) {
                 return (T) this.input;
             } else if (facing.getAxis().isHorizontal()) {
@@ -150,8 +181,9 @@ public class CraftiniumForgeTileEntity extends TileEntity implements ITickable {
         this.output.deserializeNBT(randores.getCompoundTag("output"));
         this.furnaceBurnTime = randores.getInteger("burn_time");
         this.cookTime = randores.getInteger("cook_time");
-        this.totalCookTime = compound.getByte("cook_time_total");
-        this.currentItemBurnTime = TileEntityFurnace.getItemBurnTime(this.fuel.getStackInSlot(0));
+        this.totalCookTime = randores.getInteger("cook_time_total");
+        this.divisor = randores.getInteger("furnace_speed");
+        this.currentItemBurnTime = this.getBurnTime(this.fuel.getStackInSlot(0));
     }
 
     @Override
@@ -164,6 +196,7 @@ public class CraftiniumForgeTileEntity extends TileEntity implements ITickable {
         randores.setInteger("burn_time", this.furnaceBurnTime);
         randores.setInteger("cook_time", this.cookTime);
         randores.setInteger("cook_time_total", this.totalCookTime);
+        randores.setInteger("furnace_speed", this.divisor);
         compound.setTag("randores", randores);
         return compound;
     }
@@ -218,7 +251,7 @@ public class CraftiniumForgeTileEntity extends TileEntity implements ITickable {
                     ItemStack currentResult = this.output.getStackInSlot(0);
                     if (currentResult.isEmpty()) {
                         return true;
-                    } else if (!currentResult.isItemEqual(output)) {
+                    } else if (!currentResult.getItem().equals(output.getItem())) {
                         return false;
                     } else {
                         int result = currentResult.getCount() + output.getCount();
@@ -253,18 +286,19 @@ public class CraftiniumForgeTileEntity extends TileEntity implements ITickable {
 
         if (this.isBurning()) {
             this.furnaceBurnTime--;
+
         }
 
         if (!this.world.isRemote) {
             ItemStack fuel = this.fuel.getStackInSlot(0);
             ItemStack input = this.input.getStackInSlot(0);
-            if(this.totalCookTime == 0 && this.canSmelt(Randores.getRandoresSeed(this.world))) {
+            if (this.totalCookTime == 0 && this.canSmelt(Randores.getRandoresSeed(this.world))) {
                 this.totalCookTime = this.getCookTime(input);
                 needsSave = true;
             }
             if (this.isBurning() || (!fuel.isEmpty() && !input.isEmpty())) {
                 if (!this.isBurning() && this.canSmelt(Randores.getRandoresSeed(this.world))) {
-                    this.furnaceBurnTime = TileEntityFurnace.getItemBurnTime(fuel);
+                    this.furnaceBurnTime = this.getBurnTime(fuel);
                     this.currentItemBurnTime = this.furnaceBurnTime;
                     if (this.isBurning()) {
                         needsSave = true;
@@ -305,8 +339,14 @@ public class CraftiniumForgeTileEntity extends TileEntity implements ITickable {
         }
     }
 
+    private int getBurnTime(ItemStack stack) {
+        int burn = TileEntityFurnace.getItemBurnTime(stack) / this.divisor;
+        return burn == 0 ? 1 : burn;
+    }
+
     private int getCookTime(ItemStack stack) {
-        return 100;
+        int time = 200 / this.divisor;
+        return time == 0 ? 1 : time;
     }
 
     public NonNullList<ItemStack> getSlots() {

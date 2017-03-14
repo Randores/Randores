@@ -29,11 +29,11 @@ public class CraftableComponent implements Component {
     private int quantity;
     private Item item;
 
-    public CraftableComponent(CraftableType type, int quantity, Item item) {
+    public CraftableComponent(CraftableType type, Item item) {
         this.type = type;
-        this.quantity = quantity;
         this.item = item;
         this.component = Components.fromCraftable(type);
+        this.quantity = this.component.quantity();
     }
 
     @Override

@@ -22,6 +22,8 @@
 package com.gmail.socraticphoenix.forge.randore.crafting.forge;
 
 import com.gmail.socraticphoenix.forge.randore.Randores;
+import com.gmail.socraticphoenix.forge.randore.RandoresClientSideRegistry;
+import com.gmail.socraticphoenix.forge.randore.component.Components;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinition;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinitionRegistry;
 import com.gmail.socraticphoenix.forge.randore.util.IntRange;
@@ -45,6 +47,17 @@ public class FlexibleSmelt implements CraftiniumSmelt {
         return MaterialDefinitionRegistry.get(Randores.getRandoresSeed(world)).get(this.index);
     }
 
+    public boolean tryClientIsRegistered() {
+        long seed = RandoresClientSideRegistry.getCurrentSeed();
+        if (MaterialDefinitionRegistry.contains(seed, this.index)) {
+            MaterialDefinition definition = MaterialDefinitionRegistry.get(seed).get(this.index);
+            if (definition.hasComponent(Components.MATERIAL)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     @Override
     public boolean matches(ItemStack in, World worldIn, BlockPos forge) {
         MaterialDefinition definition = this.getDefinition(worldIn);
@@ -65,6 +78,32 @@ public class FlexibleSmelt implements CraftiniumSmelt {
         return stack;
     }
 
+    public ItemStack tryClientGetInput() {
+        if(this.tryClientIsRegistered()) {
+            long seed = RandoresClientSideRegistry.getCurrentSeed();
+            if(MaterialDefinitionRegistry.contains(seed, this.index)) {
+                MaterialDefinition definition = MaterialDefinitionRegistry.get(seed).get(this.index);
+                ItemStack stack = new ItemStack(definition.getOre().makeItem());
+                Randores.applyData(stack, seed);
+                return stack;
+            }
+        }
+        return ItemStack.EMPTY;
+    }
+
+    public ItemStack tryClientGetOutput() {
+        if(this.tryClientIsRegistered()) {
+            long seed = RandoresClientSideRegistry.getCurrentSeed();
+            if(MaterialDefinitionRegistry.contains(seed, this.index)) {
+                MaterialDefinition definition = MaterialDefinitionRegistry.get(seed).get(this.index);
+                ItemStack stack = new ItemStack(definition.getMaterial().makeItem(), 1);
+                Randores.applyData(stack, seed);
+                return stack;
+            }
+        }
+        return ItemStack.EMPTY;
+    }
+
     @Override
     public boolean matchesExperience(ItemStack out, World worldIn, BlockPos forge) {
         MaterialDefinition definition = this.getDefinition(worldIn);
@@ -75,6 +114,17 @@ public class FlexibleSmelt implements CraftiniumSmelt {
     public float experience(ItemStack in, World worldIn, BlockPos forge) {
         MaterialDefinition definition = this.getDefinition(worldIn);
         return definition.getOre().getSmeltingXp();
+    }
+
+    public float tryClientGetXp() {
+        if(this.tryClientIsRegistered()) {
+            long seed = RandoresClientSideRegistry.getCurrentSeed();
+            if(MaterialDefinitionRegistry.contains(seed, this.index)) {
+                MaterialDefinition definition = MaterialDefinitionRegistry.get(seed).get(this.index);
+                return definition.getOre().getSmeltingXp();
+            }
+        }
+        return 0f;
     }
 
     @Override

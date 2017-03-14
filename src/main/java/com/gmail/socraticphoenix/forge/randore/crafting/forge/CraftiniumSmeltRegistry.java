@@ -35,6 +35,16 @@ public class CraftiniumSmeltRegistry {
         CraftiniumSmeltRegistry.smelts.add(smelt);
     }
 
+    public static List<FlexibleSmelt> getFlexible() {
+        List<FlexibleSmelt> smelts = new ArrayList<FlexibleSmelt>();
+        for(CraftiniumSmelt smelt : CraftiniumSmeltRegistry.smelts) {
+            if(smelt instanceof FlexibleSmelt) {
+                smelts.add((FlexibleSmelt) smelt);
+            }
+        }
+        return smelts;
+    }
+
     public static List<CraftiniumSmelt> getSmelts() {
         return CraftiniumSmeltRegistry.smelts;
     }

@@ -32,6 +32,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemSpade;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumActionResult;
@@ -53,6 +54,11 @@ public class FlexibleSpade extends ItemSpade implements FlexibleItem {
         super(Randores.MATERIAL_DEFAULT);
         this.index = index;
         this.backers = new HashMap<Long, ItemSpade>();
+    }
+
+    @Override
+    public Item getThis() {
+        return this;
     }
 
     @Override

@@ -1,0 +1,6 @@
+{
+    "parent": "block/torch",
+    "textures": {
+        "torch": "randores:blocks/tab_torch"
+    }
+}

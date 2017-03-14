@@ -50,7 +50,7 @@ public class RandoresWorldGenerator implements IWorldGenerator {
 
             for (MaterialDefinition definition : MaterialDefinitionRegistry.get(seed)) {
                 OreComponent component = definition.getOre();
-                if (RandoresProbability.percentChance(Randores.getInstance().getConfiguration().getCategory("modules").get("youtubemode").getBoolean() ? 60 : 10, random) && (component.getDimension().getId() == world.provider.getDimension() || Randores.getInstance().getConfiguration().getCategory("modules").get("dimensionless").getBoolean())) {
+                if (RandoresProbability.percentChance(RandoresProbability.clamp(Randores.getInstance().getConfiguration().getCategory("modules").get("youtubemode").getBoolean() ? 30000 / Randores.getOreCount() : 9000 / Randores.getOreCount(), 10, 100), random) && (component.getDimension().getId() == world.provider.getDimension() || Randores.getInstance().getConfiguration().getCategory("modules").get("dimensionless").getBoolean())) {
                     this.generateOre(component.makeBlock().getDefaultState().withProperty(FlexibleOre.HARVEST_LEVEL, definition.getOre().getHarvestLevel()), world, random, chunkX * 16, chunkZ * 16, component.getMaxVein(), component.getMinVein(), component.getMaxY(), component.getMinY(), component.getMaxOccurences(), component.getMinOccurences(), component.getDimension().getGenerateIn());
                 }
 

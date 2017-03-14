@@ -21,19 +21,38 @@
  */
 package com.gmail.socraticphoenix.forge.randore.block;
 
+import com.gmail.socraticphoenix.forge.randore.item.FlexibleItem;
+
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class FlexibleBlockRegistry {
-    private static List<FlexibleOre> ores = new ArrayList<FlexibleOre>();
-    private static List<FlexibleBrick> bricks = new ArrayList<FlexibleBrick>();
+    private static List<FlexibleOre> ores = Collections.synchronizedList(new ArrayList<FlexibleOre>());
+    private static List<FlexibleBrick> bricks = Collections.synchronizedList(new ArrayList<FlexibleBrick>());
+    private static List<FlexibleTorch> torches = Collections.synchronizedList(new ArrayList<FlexibleTorch>());
+    private static List<FlexibleItem> all = Collections.synchronizedList(new ArrayList<FlexibleItem>());
+
+    public static List<FlexibleItem> getAll() {
+        return all;
+    }
+
+    public static List<FlexibleTorch> getTorches() {
+        return torches;
+    }
+
+    public static void addTorch(FlexibleTorch torch) {
+        torches.add(torch);
+        all.add(torch);
+    }
 
     public static List<FlexibleBrick> getBricks() {
         return bricks;
     }
 
     public static void addBrick(FlexibleBrick brick) {
-        FlexibleBlockRegistry.bricks.add(brick);
+        bricks.add(brick);
+        all.add(brick);
     }
 
     public static List<FlexibleOre> getOres() {
@@ -41,6 +60,7 @@ public class FlexibleBlockRegistry {
     }
 
     public static void addOres(FlexibleOre block) {
-        FlexibleBlockRegistry.ores.add(block);
+        ores.add(block);
+        all.add(block);
     }
 }

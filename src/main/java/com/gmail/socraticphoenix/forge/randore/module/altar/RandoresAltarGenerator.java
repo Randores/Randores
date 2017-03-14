@@ -32,12 +32,12 @@ import com.gmail.socraticphoenix.forge.randore.util.IntRange;
 import com.google.common.base.Predicate;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockChest;
+import net.minecraft.block.material.MaterialLiquid;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntityChest;
-import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.IChunkGenerator;
@@ -77,7 +77,7 @@ public class RandoresAltarGenerator implements IWorldGenerator {
                         BlockPos pos = new BlockPos(blockX, i, blockZ);
                         if (world.getBlockState(pos).getBlock() != Blocks.AIR && !world.getBlockState(pos).getBlock().isReplaceable(world, pos)) {
                             blockY = i + 1;
-                            if (world.getHeight() - 10 > blockY && world.getBlockState(pos).isOpaqueCube() && world.getBlockState(pos).getRenderType() != EnumBlockRenderType.LIQUID && !world.getBlockState(pos).getBlock().isLeaves(world.getBlockState(pos), world, pos)) {
+                            if (world.getHeight() - 10 > blockY && world.getBlockState(pos).isOpaqueCube() && !(world.getBlockState(pos).getMaterial() instanceof MaterialLiquid) && !world.getBlockState(pos).getBlock().isLeaves(world.getBlockState(pos), world, pos)) {
                                 int numBelow = 0;
                                 BlockPos down = pos;
                                 while (this.hasAir(world, down, 2, 2)) {
@@ -111,7 +111,7 @@ public class RandoresAltarGenerator implements IWorldGenerator {
                         world.setBlockState(valuables, Blocks.CHEST.getDefaultState());
                         TileEntityChest chest = new TileEntityChest(BlockChest.Type.BASIC);
                         for (int i = 0; i < chest.getSizeInventory(); i++) {
-                            if (RandoresProbability.percentChance(40, random)) {
+                            if (RandoresProbability.percentChance(30, random)) {
                                 List<Component> components = definition.getComponents(new Predicate<Components>() {
                                     @Override
                                     public boolean apply(@Nullable Components input) {

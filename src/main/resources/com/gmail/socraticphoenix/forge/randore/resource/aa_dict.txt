@@ -35,3 +35,4 @@ shard_base
 shovel_base
 stick_base
 sword_base
+torch_base

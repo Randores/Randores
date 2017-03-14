@@ -1,4 +1,3 @@
-randores.texture.setup=Randores is setting up your textures in a separate thread. Your resources will reload in a moment.
 randores.texture.reloading=Reloading your resources! Expect a screen freeze for ~30 seconds.
 randores.material.information=Randores Material Information
 randores.material.name=Name
@@ -37,3 +36,7 @@ randores.items.emerald=Emerald
 randores.items.circle_gem=Gem
 randores.items.shard=Shard
 ------------ End of Translations Block 1 ------------
+randores.name.format=${name} ${item}
+randores.texture.loaded=Your resources are already loaded!
+randores.recipes.torch=Torches
+randores.items.torch=Encased Torch

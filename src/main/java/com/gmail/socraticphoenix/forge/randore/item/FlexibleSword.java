@@ -32,6 +32,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemSword;
 import net.minecraft.util.math.BlockPos;
@@ -49,6 +50,11 @@ public class FlexibleSword extends ItemSword implements FlexibleItem {
         super(Randores.MATERIAL_DEFAULT);
         this.index = index;
         this.backers = new HashMap<Long, ItemSword>();
+    }
+
+    @Override
+    public Item getThis() {
+        return this;
     }
 
     @Override

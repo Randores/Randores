@@ -72,6 +72,13 @@ public class RandoresProbability {
     }
 
     public static double inflectedNormalRand(double min, double max, double mean, double stdev, Random random) {
+        if(min == max) {
+            throw new IllegalArgumentException("min == max");
+        } else if (!(min <= mean && mean < max)) {
+            throw new IllegalArgumentException("Mean is not between min and max");
+        } else if (min > max) {
+            throw new IllegalArgumentException("min > max");
+        }
         return RandoresProbability.inflectedNormalNormalize(min, max, mean, RandoresProbability.normalRand(mean, stdev, random));
     }
 
@@ -92,14 +99,14 @@ public class RandoresProbability {
             return shifted;
         } else if (shifted < min) {
             while (shifted < min) {
-                shifted = mean - shifted + min;
+                shifted = mean - (min - shifted);
             }
-            return RandoresProbability.inflectedNormalNormalize(min, max, mean, shifted);
+            return shifted;
         } else if (shifted >= max) {
             while (shifted >= max) {
-                shifted = mean + shifted - max;
+                shifted = mean + (shifted - max);
             }
-            return RandoresProbability.inflectedNormalNormalize(min, max, mean, shifted);
+            return shifted;
         } else {
             return Double.NaN;
         }

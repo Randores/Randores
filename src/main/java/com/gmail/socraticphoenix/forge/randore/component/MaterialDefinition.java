@@ -25,6 +25,8 @@ import com.gmail.socraticphoenix.forge.randore.RandoresClientSideRegistry;
 import com.gmail.socraticphoenix.forge.randore.RandoresNameAlgorithm;
 import com.gmail.socraticphoenix.forge.randore.RandoresProbability;
 import com.gmail.socraticphoenix.forge.randore.RandoresTranslations;
+import com.gmail.socraticphoenix.forge.randore.texture.RandoresArmorResourcePack;
+import com.gmail.socraticphoenix.forge.randore.texture.TextureData;
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import net.minecraft.init.SoundEvents;
@@ -36,7 +38,6 @@ import net.minecraftforge.common.util.EnumHelper;
 
 import javax.annotation.Nullable;
 import java.awt.Color;
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -91,7 +92,7 @@ public class MaterialDefinition {
         this.toolMaterial = EnumHelper.addToolMaterial(this.name, this.material.getHarvestLevel(), this.material.getMaxUses(), this.material.getEfficiency(), this.material.getDamage(), this.material.getEnchantability());
         this.toolMaterial.setRepairItem(new ItemStack(this.material.makeItem()));
         this.totalArmor = sum(this.material.getArmorReduction());
-        this.armorMaterial = EnumHelper.addArmorMaterial(this.name, "randores_armor:armor." + index, this.material.getMaxUses(), this.material.getArmorReduction(), this.material.getEnchantability(), SoundEvents.ITEM_ARMOR_EQUIP_IRON, this.material.getToughness());
+        this.armorMaterial = EnumHelper.addArmorMaterial(this.name, RandoresArmorResourcePack.DOMAIN + ":armor." + index, this.material.getMaxUses() / 10, this.material.getArmorReduction(), this.material.getEnchantability(), SoundEvents.ITEM_ARMOR_EQUIP_IRON, this.material.getToughness());
         this.armorMaterial.setRepairItem(new ItemStack(this.material.makeItem()));
         this.seed = seed;
         this.index = index;
@@ -124,11 +125,14 @@ public class MaterialDefinition {
         if (this.hasComponent(Components.SWORD)) {
             recipes += t(RandoresTranslations.Keys.SWORD_RECIPE, locale) + ", ";
         }
+        if (this.hasComponent(Components.STICK)) {
+            recipes += t(RandoresTranslations.Keys.STICK_RECIPE, locale) + ", ";
+        }
         if (this.hasComponent(Components.BRICKS)) {
             recipes += t(RandoresTranslations.Keys.BRICKS_RECIPE, locale) + ", ";
         }
-        if (this.hasComponent(Components.STICK)) {
-            recipes += t(RandoresTranslations.Keys.STICK_RECIPE, locale) + ", ";
+        if (this.hasComponent(Components.TORCH)) {
+            recipes += t(RandoresTranslations.Keys.TORCH_RECIPE, locale) + ", ";
         }
         recipes = recipes.substring(0, recipes.length() - 2);
         list.add(recipes);
@@ -162,11 +166,14 @@ public class MaterialDefinition {
         if (this.hasComponent(Components.SWORD)) {
             recipes += t(RandoresTranslations.Keys.SWORD_RECIPE, locale) + ", ";
         }
+        if (this.hasComponent(Components.STICK)) {
+            recipes += t(RandoresTranslations.Keys.STICK_RECIPE, locale) + ", ";
+        }
         if (this.hasComponent(Components.BRICKS)) {
             recipes += t(RandoresTranslations.Keys.BRICKS_RECIPE, locale) + ", ";
         }
-        if (this.hasComponent(Components.STICK)) {
-            recipes += t(RandoresTranslations.Keys.STICK_RECIPE, locale) + ", ";
+        if (this.hasComponent(Components.TORCH)) {
+            recipes += t(RandoresTranslations.Keys.TORCH_RECIPE, locale) + ", ";
         }
         recipes = recipes.substring(0, recipes.length() - 2);
         list.add(recipes);
@@ -212,8 +219,8 @@ public class MaterialDefinition {
         return this.seed;
     }
 
-    public Map<String, BufferedImage> generateTextures() {
-        Map<String, BufferedImage> textures = new HashMap<String, BufferedImage>();
+    public Map<String, TextureData> generateTextures() {
+        Map<String, TextureData> textures = new HashMap<String, TextureData>();
         textures.put(ore.template(), RandoresClientSideRegistry.getTemplate(ore.template()).applyWith(this.color, MaterialDefinition.DEFAULT_HUE_CHOICE));
         textures.put(material.template(), RandoresClientSideRegistry.getTemplate(material.template()).applyWith(this.color, MaterialDefinition.DEFAULT_HUE_CHOICE));
         for (CraftableComponent component : this.craftables) {

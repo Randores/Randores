@@ -25,7 +25,6 @@ import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinitionGener
 import net.minecraft.world.World;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -48,7 +47,6 @@ public class RandoresWorldEventListener {
 
     @SubscribeEvent
     public void onWorldLoad(WorldEvent.Load ev) throws IOException {
-        Logger logger = Randores.getInstance().getLogger();
         World world = ev.getWorld();
         Randores.getInstance().getConfiguration().load();
         if (!world.isRemote) {

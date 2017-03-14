@@ -21,6 +21,8 @@
  */
 package com.gmail.socraticphoenix.forge.randore.item;
 
+import com.gmail.socraticphoenix.forge.randore.block.FlexibleBlockRegistry;
+import com.gmail.socraticphoenix.forge.randore.component.Components;
 import com.gmail.socraticphoenix.forge.randore.component.CraftableType;
 import net.minecraft.item.Item;
 
@@ -40,33 +42,48 @@ public class FlexibleItemRegistry {
     private static List<FlexibleItemArmor> chestplates = Collections.synchronizedList(new ArrayList<FlexibleItemArmor>());
     private static List<FlexibleItemArmor> leggings = Collections.synchronizedList(new ArrayList<FlexibleItemArmor>());
     private static List<FlexibleItemArmor> boots = Collections.synchronizedList(new ArrayList<FlexibleItemArmor>());
+    private static List<FlexibleItem> all = Collections.synchronizedList(new ArrayList<FlexibleItem>());
+
+    public static List<FlexibleItem> getAll() {
+        return all;
+    }
+
+    public static FlexibleItem get(Components components, int index) {
+        switch (components) {
+            case AXE:
+                return FlexibleItemRegistry.getAxe(index);
+            case HOE:
+                return FlexibleItemRegistry.getHoe(index);
+            case PICKAXE:
+                return FlexibleItemRegistry.getPickaxe(index);
+            case SHOVEL:
+                return FlexibleItemRegistry.getSpade(index);
+            case SWORD:
+                return FlexibleItemRegistry.getSword(index);
+            case STICK:
+                return FlexibleItemRegistry.getStick(index);
+            case BOOTS:
+                return FlexibleItemRegistry.getBoots(index);
+            case CHESTPLATE:
+                return FlexibleItemRegistry.getChestplate(index);
+            case HELMET:
+                return FlexibleItemRegistry.getHelmet(index);
+            case LEGGINGS:
+                return FlexibleItemRegistry.getLeggings(index);
+            case MATERIAL:
+                return FlexibleItemRegistry.getMaterial(index);
+            case ORE:
+                return FlexibleBlockRegistry.getOres().get(index);
+            case BRICKS:
+                return FlexibleBlockRegistry.getBricks().get(index);
+            case TORCH:
+                return FlexibleBlockRegistry.getTorches().get(index);
+        }
+        throw new IllegalArgumentException("Unknown component: " + components);
+    }
 
     public static Item get(CraftableType type, int index) {
-        switch (type) {
-            case AXE:
-                return getAxe(index);
-            case HOE:
-                return getHoe(index);
-            case PICKAXE:
-                return getPickaxe(index);
-            case SHOVEL:
-                return getSpade(index);
-            case SWORD:
-                return getSword(index);
-            case STICK:
-                return getStick(index);
-            case BOOTS:
-                return getBoots(index);
-            case CHESTPLATE:
-                return getChestplate(index);
-            case HELMET:
-                return getHelmet(index);
-            case LEGGINGS:
-                return getLeggings(index);
-            case BRICKS:
-            default:
-                throw new IllegalArgumentException("Invalid craftable type for item; " + type);
-        }
+        return FlexibleItemRegistry.get(Components.fromCraftable(type), index).getThis();
     }
 
     public static FlexibleItemArmor getBoots(int index) {
@@ -79,6 +96,7 @@ public class FlexibleItemRegistry {
 
     public static void addBoots(FlexibleItemArmor armor) {
         FlexibleItemRegistry.boots.add(armor);
+        FlexibleItemRegistry.all.add(armor);
     }
 
     public static FlexibleItemArmor getLeggings(int index) {
@@ -91,6 +109,7 @@ public class FlexibleItemRegistry {
 
     public static void addLeggings(FlexibleItemArmor armor) {
         FlexibleItemRegistry.leggings.add(armor);
+        FlexibleItemRegistry.all.add(armor);
     }
 
     public static FlexibleItemArmor getChestplate(int index) {
@@ -103,6 +122,7 @@ public class FlexibleItemRegistry {
 
     public static void addChestplate(FlexibleItemArmor armor) {
         FlexibleItemRegistry.chestplates.add(armor);
+        FlexibleItemRegistry.all.add(armor);
     }
 
     public static FlexibleItemArmor getHelmet(int index) {
@@ -115,6 +135,7 @@ public class FlexibleItemRegistry {
 
     public static void addHelmet(FlexibleItemArmor armor) {
         FlexibleItemRegistry.helmets.add(armor);
+        FlexibleItemRegistry.all.add(armor);
     }
 
     public static FlexibleStick getStick(int index) {
@@ -127,6 +148,7 @@ public class FlexibleItemRegistry {
 
     public static void addStick(FlexibleStick stick) {
         FlexibleItemRegistry.sticks.add(stick);
+        FlexibleItemRegistry.all.add(stick);
     }
 
     public static FlexibleSpade getSpade(int index) {
@@ -139,6 +161,7 @@ public class FlexibleItemRegistry {
 
     public static void addSpade(FlexibleSpade spade) {
         FlexibleItemRegistry.spades.add(spade);
+        FlexibleItemRegistry.all.add(spade);
     }
 
     public static FlexiblePickaxe getPickaxe(int index) {
@@ -151,6 +174,7 @@ public class FlexibleItemRegistry {
 
     public static void addPickaxe(FlexiblePickaxe pickaxe) {
         FlexibleItemRegistry.pickaxes.add(pickaxe);
+        FlexibleItemRegistry.all.add(pickaxe);
     }
 
     public static FlexibleAxe getAxe(int index) {
@@ -163,6 +187,7 @@ public class FlexibleItemRegistry {
 
     public static void addAxe(FlexibleAxe axe) {
         FlexibleItemRegistry.axes.add(axe);
+        FlexibleItemRegistry.all.add(axe);
     }
 
     public static FlexibleSword getSword(int index) {
@@ -175,6 +200,7 @@ public class FlexibleItemRegistry {
 
     public static void addSword(FlexibleSword sword) {
         FlexibleItemRegistry.swords.add(sword);
+        FlexibleItemRegistry.all.add(sword);
     }
 
     public static FlexibleHoe getHoe(int index) {
@@ -187,6 +213,7 @@ public class FlexibleItemRegistry {
 
     public static void addHoe(FlexibleHoe hoe) {
         FlexibleItemRegistry.hoes.add(hoe);
+        FlexibleItemRegistry.all.add(hoe);
     }
 
     public static FlexibleMaterial getMaterial(int index) {
@@ -199,6 +226,7 @@ public class FlexibleItemRegistry {
 
     public static void addMaterial(FlexibleMaterial material) {
         FlexibleItemRegistry.materials.add(material);
+        FlexibleItemRegistry.all.add(material);
     }
 
 }

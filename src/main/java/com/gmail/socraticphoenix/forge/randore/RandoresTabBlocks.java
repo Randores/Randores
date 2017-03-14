@@ -27,9 +27,11 @@ import net.minecraft.block.material.Material;
 public class RandoresTabBlocks {
 
     public static Block tabOre;
+    public static Block tabTorch;
 
     public static void init() {
         tabOre = new Block(Material.ROCK).setUnlocalizedName("tab_ore").setRegistryName("tab_ore");
+        tabTorch = new Block(Material.WOOD).setUnlocalizedName("tab_torch").setRegistryName("tab_torch");
     }
 
 }

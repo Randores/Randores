@@ -22,6 +22,7 @@
 package com.gmail.socraticphoenix.forge.randore.crafting.table;
 
 import com.gmail.socraticphoenix.forge.randore.Randores;
+import com.gmail.socraticphoenix.forge.randore.RandoresClientSideRegistry;
 import com.gmail.socraticphoenix.forge.randore.component.Component;
 import com.gmail.socraticphoenix.forge.randore.component.Components;
 import com.gmail.socraticphoenix.forge.randore.component.CraftableType;
@@ -50,6 +51,8 @@ public class FlexibleRecipe implements CraftiniumRecipe {
     private int width;
     private int height;
 
+    private Object[] inputs;
+
     public FlexibleRecipe(int index, CraftableType type, Object... mappings) {
         this(index, Components.fromCraftable(type), type.getRecipe()[0], type.getRecipe()[1], type.getRecipe()[2], mappings);
     }
@@ -64,7 +67,7 @@ public class FlexibleRecipe implements CraftiniumRecipe {
             Character character = (Character) mappings[i];
             Object obj = mappings[i + 1];
             ItemStack stack = ItemStack.EMPTY;
-            if(obj instanceof Item) {
+            if (obj instanceof Item) {
                 stack = new ItemStack((Item) obj);
             } else if (obj instanceof ItemStack) {
                 stack = (ItemStack) obj;
@@ -74,11 +77,11 @@ public class FlexibleRecipe implements CraftiniumRecipe {
                 stacks.addAll(OreDictionary.getOres((String) obj));
             }
 
-            if(!stack.isEmpty()) {
+            if (!stack.isEmpty()) {
                 stacks.add(stack);
             }
 
-             this.items.put(character, stacks);
+            this.items.put(character, stacks);
         }
 
         int xMax = 0;
@@ -95,6 +98,37 @@ public class FlexibleRecipe implements CraftiniumRecipe {
 
         this.width = xMax + 1;
         this.height = yMax + 1;
+
+        String shape = top + middle + bottom;
+        this.inputs = new Object[shape.length()];
+        int x = 0;
+        for (char c : shape.toCharArray()) {
+            Object input = this.items.get(c);
+            this.inputs[x++] = input == null ? ItemStack.EMPTY : input;
+        }
+
+        List<Character> unused = new ArrayList<Character>();
+        for(Character key : this.items.keySet()) {
+            if(shape.indexOf(key) == -1) {
+                unused.add(key);
+            }
+        }
+
+        for (Character key : unused) {
+            this.items.remove(key);
+        }
+    }
+
+    public int getWidth() {
+        return this.width;
+    }
+
+    public int getHeight() {
+        return this.height;
+    }
+
+    public Object[] getInputs() {
+        return this.inputs;
     }
 
     private boolean surroundingEmpty(InventoryCrafting crafting, int x, int y, int x2, int y2) {
@@ -171,6 +205,31 @@ public class FlexibleRecipe implements CraftiniumRecipe {
     @Override
     public NonNullList<ItemStack> remaining(InventoryCrafting inv, World worldIn, BlockPos table, EntityPlayer player) {
         return NonNullList.withSize(inv.getSizeInventory(), ItemStack.EMPTY);
+    }
+
+    public boolean tryClientIsRegistered() {
+        long seed = RandoresClientSideRegistry.getCurrentSeed();
+        if (MaterialDefinitionRegistry.contains(seed, this.index)) {
+            MaterialDefinition definition = MaterialDefinitionRegistry.get(seed).get(this.index);
+            if (definition.hasComponent(this.type)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public ItemStack tryClientGetOutput() {
+        long seed = RandoresClientSideRegistry.getCurrentSeed();
+        if (MaterialDefinitionRegistry.contains(seed, this.index)) {
+            MaterialDefinition definition = MaterialDefinitionRegistry.get(seed).get(this.index);
+            if (definition.hasComponent(this.type)) {
+                Component component = definition.getComponent(this.type);
+                ItemStack stack = new ItemStack(component.makeItem(), component.quantity());
+                Randores.applyData(stack, seed);
+                return stack;
+            }
+        }
+        return ItemStack.EMPTY;
     }
 
     private boolean checkMatch(ItemStack[][] inventory) {

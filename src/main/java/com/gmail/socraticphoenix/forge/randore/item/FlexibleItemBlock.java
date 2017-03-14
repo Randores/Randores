@@ -28,6 +28,7 @@ import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinitionRegis
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
@@ -42,6 +43,11 @@ public class FlexibleItemBlock extends ItemBlock implements FlexibleItem {
         super(block);
         this.index = index;
         this.component = component;
+    }
+
+    @Override
+    public Item getThis() {
+        return this;
     }
 
     @Override

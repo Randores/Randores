@@ -29,19 +29,15 @@ import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinitionGener
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinitionRegistry;
 import com.gmail.socraticphoenix.forge.randore.texture.FlexibleTextureRegistry;
 import net.minecraft.client.Minecraft;
-import net.minecraft.crash.CrashReport;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.text.TextComponentString;
-import net.minecraftforge.common.config.ConfigCategory;
-import net.minecraftforge.common.config.Configuration;
-import net.minecraftforge.common.config.Property;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.logging.log4j.Logger;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -49,17 +45,11 @@ public class RandoresPacketHandler implements IMessageHandler<RandoresPacket, IM
     private static int index = 0;
 
     @Override
+    @SideOnly(Side.CLIENT)
     public IMessage onMessage(final RandoresPacket message, final MessageContext ctx) {
-        Minecraft.getMinecraft().addScheduledTask(new Runnable() {
-            @Override
-            public void run() {
-                EntityPlayer player = RandoresClientSideRegistry.getClientPlayer();
-                player.sendMessage(new TextComponentString("[Randores] " + RandoresTranslations.get(RandoresClientSideRegistry.getCurrentLocale(), RandoresTranslations.Keys.TEXTURES_MESSAGE)));
-            }
-        });
-
         Runnable runnable = new Runnable() {
             @Override
+            @SideOnly(Side.CLIENT)
             public void run() {
                 final Logger logger = Randores.getInstance().getLogger();
                 final long seed = message.getSeed();
@@ -82,34 +72,17 @@ public class RandoresPacketHandler implements IMessageHandler<RandoresPacket, IM
                 }
                 logger.info("Definitions Statistics:");
                 MaterialDefinitionGenerator.logStatistics(definitions);
-                File texture = Randores.getInstance().getTextureFile(seed);
-                Configuration configuration = Randores.getInstance().getConfiguration();
-                ConfigCategory category = configuration.getCategory("TextureCache");
-                category.put(String.valueOf(seed), new Property(String.valueOf(seed), String.valueOf(System.currentTimeMillis()), Property.Type.STRING));
-                configuration.save();
-                if (texture.exists()) {
-                    logger.info("Textures are cached for seed: " + seed + ", setting up textures and reloading resources...");
-                    MaterialDefinitionGenerator.setupTextures(definitions, seed);
-                } else {
-                    logger.info("Textures are not cached for seed: " + seed + ", generating textures");
-                    try {
-                        MaterialDefinitionGenerator.generateAndSetupTextures(definitions, seed);
-                    } catch (IOException e) {
-                        Minecraft.getMinecraft().crashed(new CrashReport("Failed to generate Randores textures.", e));
-                        return;
-                    }
-                    logger.info("Generated textures... reloading resources...");
-                }
 
                 Minecraft.getMinecraft().addScheduledTask(new Runnable() {
                     @Override
+                    @SideOnly(Side.CLIENT)
                     public void run() {
                         EntityPlayer player = RandoresClientSideRegistry.getClientPlayer();
                         if (!FlexibleTextureRegistry.isInitialized() || FlexibleTextureRegistry.getTextureSeed() != seed) {
-                            MaterialDefinitionGenerator.setupArmorTextures(definitions);
                             player.sendMessage(new TextComponentString("[Randores] " + RandoresTranslations.get(RandoresClientSideRegistry.getCurrentLocale(), RandoresTranslations.Keys.RESOURCES_RELOADING)));
                             new Thread(new Runnable() {
                                 @Override
+                                @SideOnly(Side.CLIENT)
                                 public void run() {
                                     try {
                                         TimeUnit.SECONDS.sleep(5);
@@ -121,7 +94,7 @@ public class RandoresPacketHandler implements IMessageHandler<RandoresPacket, IM
                                 }
                             }).start();
                         } else {
-                            player.sendMessage(new TextComponentString("[Randores] It looks like your resources are already set up... They won't be reloaded."));
+                            player.sendMessage(new TextComponentString("[Randores] " +  RandoresTranslations.get(RandoresClientSideRegistry.getCurrentLocale(), RandoresTranslations.Keys.RESOURCES_LOADED)));
                         }
                         FlexibleTextureRegistry.setInitialized(true);
                         FlexibleTextureRegistry.setTextureSeed(seed);

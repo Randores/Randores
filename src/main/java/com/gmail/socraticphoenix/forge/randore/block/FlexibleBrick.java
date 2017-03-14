@@ -22,12 +22,15 @@
 package com.gmail.socraticphoenix.forge.randore.block;
 
 import com.gmail.socraticphoenix.forge.randore.Randores;
+import com.gmail.socraticphoenix.forge.randore.component.Components;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinition;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinitionRegistry;
+import com.gmail.socraticphoenix.forge.randore.item.FlexibleItem;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
@@ -36,7 +39,7 @@ import net.minecraft.world.World;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FlexibleBrick extends Block {
+public class FlexibleBrick extends Block implements FlexibleItem {
     private int index;
 
     public FlexibleBrick(int index) {
@@ -46,8 +49,34 @@ public class FlexibleBrick extends Block {
         this.setSoundType(SoundType.STONE);
     }
 
+    @Override
+    public int index() {
+        return this.index;
+    }
+
+    @Override
+    public boolean hasDefinition(long seed) {
+        return MaterialDefinitionRegistry.contains(seed, this.index);
+    }
+
+    @Override
     public MaterialDefinition getDefinition(long seed) {
         return MaterialDefinitionRegistry.get(seed).get(this.index);
+    }
+
+    @Override
+    public MaterialDefinition getDefinition(World world) {
+        return this.getDefinition(Randores.getRandoresSeed(world));
+    }
+
+    @Override
+    public Components getType() {
+        return Components.ORE;
+    }
+
+    @Override
+    public Item getThis() {
+        return Item.getItemFromBlock(this);
     }
 
     @Override

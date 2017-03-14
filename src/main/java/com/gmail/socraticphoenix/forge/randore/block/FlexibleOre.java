@@ -22,9 +22,12 @@
 package com.gmail.socraticphoenix.forge.randore.block;
 
 import com.gmail.socraticphoenix.forge.randore.Randores;
+import com.gmail.socraticphoenix.forge.randore.component.Components;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinition;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinitionRegistry;
 import com.gmail.socraticphoenix.forge.randore.component.OreComponent;
+import com.gmail.socraticphoenix.forge.randore.item.FlexibleItem;
+import com.gmail.socraticphoenix.forge.randore.util.IntRange;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
@@ -41,25 +44,50 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class FlexibleOre extends Block {
+public class FlexibleOre extends Block implements FlexibleItem {
     private int index;
     public static final PropertyInteger HARVEST_LEVEL = PropertyInteger.create("harvest_level", 0, 15);
+    private Random rand = new Random();
 
     public FlexibleOre(int index) {
         super(Material.ROCK);
         this.setSoundType(SoundType.STONE);
         this.index = index;
-        for (int i = 0; i < 16; i++) {
-            this.setHarvestLevel("pickaxe", i, this.getDefaultState().withProperty(HARVEST_LEVEL, i));
-        }
     }
 
+    @Override
+    public int index() {
+        return this.index;
+    }
+
+    @Override
+    public boolean hasDefinition(long seed) {
+        return MaterialDefinitionRegistry.contains(seed, this.index);
+    }
+
+    @Override
     public MaterialDefinition getDefinition(long seed) {
         return MaterialDefinitionRegistry.get(seed).get(this.index);
+    }
+
+    @Override
+    public MaterialDefinition getDefinition(World world) {
+        return this.getDefinition(Randores.getRandoresSeed(world));
+    }
+
+    @Override
+    public Components getType() {
+        return Components.ORE;
+    }
+
+    @Override
+    public Item getThis() {
+        return Item.getItemFromBlock(this);
     }
 
     public OreComponent getComponent(long seed) {
@@ -72,14 +100,23 @@ public class FlexibleOre extends Block {
         if (world instanceof World) {
             World worldw = (World) world;
             long seed = Randores.getRandoresSeed(worldw);
-            Random random = worldw.rand;
 
             if (this.getComponent(seed).isRequiresSmelting()) {
                 ItemStack stack = new ItemStack(Item.getItemFromBlock(this), 1);
                 Randores.applyData(stack, worldw);
                 drops.add(stack);
             } else {
-                int amount = (random.nextInt(this.getComponent(seed).getMaxDrops() - this.getComponent(seed).getMinDrops()) + this.getComponent(seed).getMinDrops()) + (fortune > 0 ? random.nextInt(fortune) * random.nextInt(fortune) : 0);
+                int max = this.getComponent(seed).getMaxDrops();
+                int min = this.getComponent(seed).getMinDrops();
+                IntRange range = new IntRange(min, max);
+                int amount = range.randomElement(this.rand);
+                if(fortune > 0) {
+                    int i = this.rand.nextInt(fortune + 2) - 1;
+                    if(i < 0) {
+                        i = 0;
+                    }
+                    amount = amount * (i + 1);
+                }
                 ItemStack stack = new ItemStack(this.getDefinition(seed).getMaterial().makeItem());
                 Randores.applyData(stack, worldw);
                 for (int i = 0; i < amount; i++) {
@@ -129,5 +166,15 @@ public class FlexibleOre extends Block {
         return true;
     }
 
+    @Nullable
+    @Override
+    public String getHarvestTool(IBlockState state) {
+        return "pickaxe";
+    }
+
+    @Override
+    public int getHarvestLevel(IBlockState state) {
+        return state.getValue(HARVEST_LEVEL);
+    }
 
 }

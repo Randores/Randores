@@ -25,7 +25,6 @@ import com.gmail.socraticphoenix.forge.randore.Randores;
 import com.gmail.socraticphoenix.forge.randore.crafting.CraftingBlocks;
 import com.gmail.socraticphoenix.forge.randore.crafting.CraftingGuiType;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockFurnace;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
@@ -37,7 +36,6 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.inventory.InventoryHelper;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumBlockRenderType;
@@ -50,11 +48,15 @@ import net.minecraft.util.Rotation;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class CraftiniumForge extends Block {
@@ -95,6 +97,29 @@ public class CraftiniumForge extends Block {
         }
     }
 
+    @Override
+    public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
+        super.onBlockPlacedBy(worldIn, pos, state, placer, stack);
+        if (!worldIn.isRemote) {
+            if (stack.getSubCompound("randores") != null && stack.getSubCompound("randores").hasKey("furnace_speed")) {
+                int speed = stack.getSubCompound("randores").getInteger("furnace_speed");
+                TileEntity entity = worldIn.getTileEntity(pos);
+                if (entity instanceof CraftiniumForgeTileEntity) {
+                    ((CraftiniumForgeTileEntity) entity).setDivisor(speed);
+                }
+            }
+        }
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public void addInformation(ItemStack stack, EntityPlayer player, List<String> tooltip, boolean advanced) {
+        super.addInformation(stack, player, tooltip, advanced);
+        if (stack.getSubCompound("randores") != null && stack.getSubCompound("randores").hasKey("furnace_speed")) {
+            int speed = stack.getSubCompound("randores").getInteger("furnace_speed");
+            tooltip.add(TextFormatting.GRAY + "Furnace Speed: " + speed);
+        }
+    }
 
     @Override
     public boolean hasTileEntity(IBlockState state) {
@@ -109,15 +134,24 @@ public class CraftiniumForge extends Block {
 
     @Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-        if(!worldIn.isRemote) {
+        if (!worldIn.isRemote) {
             playerIn.openGui(Randores.getInstance(), CraftingGuiType.FORGE.ordinal(), worldIn, pos.getX(), pos.getY(), pos.getZ());
         }
         return true;
     }
 
     @Override
-    public Item getItemDropped(IBlockState state, Random rand, int fortune) {
-        return Item.getItemFromBlock(this);
+    public List<ItemStack> getDrops(IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
+        List<ItemStack> drops = new ArrayList<ItemStack>();
+        TileEntity entity = world.getTileEntity(pos);
+        int speed = 1;
+        if (entity instanceof CraftiniumForgeTileEntity) {
+            speed = ((CraftiniumForgeTileEntity) entity).getDivisor();
+        }
+        ItemStack stack = new ItemStack(this);
+        stack.getOrCreateSubCompound("randores").setInteger("furnace_speed", speed);
+        drops.add(stack);
+        return drops;
     }
 
     public void onBlockAdded(World worldIn, BlockPos pos, IBlockState state) {
@@ -222,6 +256,14 @@ public class CraftiniumForge extends Block {
     }
 
     @Override
+    public void onBlockHarvested(World worldIn, BlockPos pos, IBlockState state, EntityPlayer player) {
+        TileEntity te = worldIn.getTileEntity(pos);
+        if(te instanceof CraftiniumForgeTileEntity) {
+            ((CraftiniumForgeTileEntity) te).setBrokenByCreative(player.isCreative());
+        }
+    }
+
+    @Override
     public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
         if (!keepInventory) {
             TileEntity tileEntity = worldIn.getTileEntity(pos);
@@ -230,11 +272,23 @@ public class CraftiniumForge extends Block {
                 InventoryHelper.spawnItemStack(worldIn, pos.getX(), pos.getY(), pos.getZ(), entity.getFuel().getStackInSlot(0));
                 InventoryHelper.spawnItemStack(worldIn, pos.getX(), pos.getY(), pos.getZ(), entity.getOutput().getStackInSlot(0));
                 InventoryHelper.spawnItemStack(worldIn, pos.getX(), pos.getY(), pos.getZ(), entity.getInput().getStackInSlot(0));
+
+                if(!entity.isBrokenByCreative()) {
+                    List<ItemStack> drops = this.getDrops(worldIn, pos, state, 0);
+                    for (ItemStack stack : drops) {
+                        spawnAsEntity(worldIn, pos, stack);
+                    }
+                }
                 worldIn.updateComparatorOutputLevel(pos, this);
             }
         }
 
         super.breakBlock(worldIn, pos, state);
+    }
+
+    @Override
+    public void dropBlockAsItemWithChance(World worldIn, BlockPos pos, IBlockState state, float chance, int fortune) {
+
     }
 
     @Override

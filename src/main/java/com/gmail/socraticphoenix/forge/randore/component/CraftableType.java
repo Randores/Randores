@@ -21,29 +21,37 @@
  */
 package com.gmail.socraticphoenix.forge.randore.component;
 
+import com.gmail.socraticphoenix.forge.randore.Randores;
 import com.gmail.socraticphoenix.forge.randore.RandoresTranslations;
 
-public enum  CraftableType {
-    AXE(RandoresTranslations.Keys.AXE, "axe", " XX", " SX", " S "),
-    HOE(RandoresTranslations.Keys.HOE, "hoe", " XX", " S ", " S "),
-    PICKAXE(RandoresTranslations.Keys.PICKAXE, "pickaxe", "XXX", " S ", " S "),
-    SHOVEL(RandoresTranslations.Keys.SHOVEL, "shovel", "X  ", "S  ", "S  "),
-    SWORD(RandoresTranslations.Keys.SWORD, "sword", "X  ", "X  ", "S  "),
-    STICK(RandoresTranslations.Keys.STICK, "stick", " X ", "X  ", "   "),
-    BOOTS(RandoresTranslations.Keys.BOOTS, "boots", "X X", "X X", "   "),
-    CHESTPLATE(RandoresTranslations.Keys.CHESTPLATE, "chestplate", "X X", "XXX", "XXX"),
-    HELMET(RandoresTranslations.Keys.HELMET, "helmet", "XXX", "X X", "   "),
-    LEGGINGS(RandoresTranslations.Keys.LEGGINGS, "leggings", "XXX", "X X", "X X"),
-    BRICKS(RandoresTranslations.Keys.BRICKS, "brick", "XX ", "XX ", "   ");
+public enum CraftableType {
+    AXE(0, RandoresTranslations.Keys.AXE, "axe", " XX", " SX", " S "),
+    HOE(0, RandoresTranslations.Keys.HOE, "hoe", " XX", " S ", " S "),
+    PICKAXE(0, RandoresTranslations.Keys.PICKAXE, "pickaxe", "XXX", " S ", " S "),
+    SHOVEL(0, RandoresTranslations.Keys.SHOVEL, "shovel", "X  ", "S  ", "S  "),
+    SWORD(0, RandoresTranslations.Keys.SWORD, "sword", "X  ", "X  ", "S  "),
+    STICK(0, RandoresTranslations.Keys.STICK, "stick", " X ", "X  ", "   "),
+    BOOTS(0, RandoresTranslations.Keys.BOOTS, "boots", "X X", "X X", "   "),
+    CHESTPLATE(0, RandoresTranslations.Keys.CHESTPLATE, "chestplate", "X X", "XXX", "XXX"),
+    HELMET(0, RandoresTranslations.Keys.HELMET, "helmet", "XXX", "X X", "   "),
+    LEGGINGS(0, RandoresTranslations.Keys.LEGGINGS, "leggings", "XXX", "X X", "X X"),
+    BRICKS(10, RandoresTranslations.Keys.BRICKS, "brick", "XX ", "XX ", "   "),
+    TORCH(10, RandoresTranslations.Keys.TORCH, "torch", "XXX", "XTX", "XXX");
 
     private String template;
     private String name;
     private String[] recipe;
+    private int subtraction;
 
-    CraftableType(String name, String template, String... recipe) {
+    CraftableType(int subtraction, String name, String template, String... recipe) {
         this.template = template + "_base";
         this.recipe = recipe;
         this.name = name;
+        this.subtraction = subtraction;
+    }
+
+    public boolean isBlock() {
+        return this.subtraction == 10;
     }
 
     public String getName() {
@@ -62,12 +70,12 @@ public enum  CraftableType {
         return this.recipe;
     }
 
+    public boolean contains(int index) {
+        return this.getIndex(0) <= index && index < this.getIndex(0) + Randores.registeredAmount();
+    }
+
     public int getIndex(int index) {
-        if(this == BRICKS) {
-            return index + 300;
-        } else {
-            return index + (300 * (this.ordinal() + 1));
-        }
+        return index + (Randores.registeredAmount() * (this.ordinal() + 1 - this.subtraction));
     }
 
 

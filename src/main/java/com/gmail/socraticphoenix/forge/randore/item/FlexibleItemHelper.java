@@ -23,6 +23,7 @@ package com.gmail.socraticphoenix.forge.randore.item;
 
 import com.gmail.socraticphoenix.forge.randore.Randores;
 import com.gmail.socraticphoenix.forge.randore.RandoresClientSideRegistry;
+import com.gmail.socraticphoenix.forge.randore.RandoresTranslations;
 import com.gmail.socraticphoenix.forge.randore.block.FlexibleOre;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinition;
 import net.minecraft.entity.Entity;
@@ -53,7 +54,10 @@ public class FlexibleItemHelper {
     public static String getItemStackDisplayName(FlexibleItem item, ItemStack stack) {
         if (Randores.hasRandoresSeed(stack) && item.hasDefinition(Randores.getRandoresSeed(stack)) && item.getDefinition(Randores.getRandoresSeed(stack)).hasComponent(item.getType())) {
             MaterialDefinition definition = item.getDefinition(Randores.getRandoresSeed(stack));
-            return definition.getName() + " " + definition.getComponent(item.getType()).getLocalName(RandoresClientSideRegistry.getCurrentLocale());
+            String format = RandoresTranslations.get(RandoresClientSideRegistry.getCurrentLocale(), RandoresTranslations.Keys.FORMAT);
+            String name = definition.getName();
+            String itemName = definition.getComponent(item.getType()).getLocalName(RandoresClientSideRegistry.getCurrentLocale());
+            return format.replace("${name}", name).replace("${item}", itemName);
         }
         return null;
     }

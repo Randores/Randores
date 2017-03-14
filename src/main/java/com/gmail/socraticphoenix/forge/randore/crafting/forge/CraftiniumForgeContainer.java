@@ -75,7 +75,7 @@ public class CraftiniumForgeContainer extends Container {
         super.detectAndSendChanges();
 
         for (int i = 0; i < this.listeners.size(); ++i) {
-            IContainerListener icontainerlistener = (IContainerListener) this.listeners.get(i);
+            IContainerListener icontainerlistener = this.listeners.get(i);
 
             if (this.cookTime != this.tileEntity.getField(2)) {
                 icontainerlistener.sendProgressBarUpdate(this, 2, this.tileEntity.getField(2));

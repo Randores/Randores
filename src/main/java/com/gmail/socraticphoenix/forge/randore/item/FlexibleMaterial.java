@@ -82,6 +82,11 @@ public class FlexibleMaterial extends Item implements FlexibleItem {
     }
 
     @Override
+    public Item getThis() {
+        return this;
+    }
+
+    @Override
     public int index() {
         return this.index;
     }

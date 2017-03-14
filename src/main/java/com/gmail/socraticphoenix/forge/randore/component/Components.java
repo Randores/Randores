@@ -21,29 +21,65 @@
  */
 package com.gmail.socraticphoenix.forge.randore.component;
 
+import com.gmail.socraticphoenix.forge.randore.Randores;
 import net.minecraft.inventory.EntityEquipmentSlot;
 
 public enum Components {
-    AXE(CraftableType.AXE, EntityEquipmentSlot.MAINHAND),
-    HOE(CraftableType.HOE, EntityEquipmentSlot.MAINHAND),
-    PICKAXE(CraftableType.PICKAXE, EntityEquipmentSlot.MAINHAND),
-    SHOVEL(CraftableType.SHOVEL, EntityEquipmentSlot.MAINHAND),
-    SWORD(CraftableType.SWORD, EntityEquipmentSlot.MAINHAND),
-    STICK(CraftableType.STICK, EntityEquipmentSlot.MAINHAND),
-    BOOTS(CraftableType.BOOTS, EntityEquipmentSlot.FEET),
-    CHESTPLATE(CraftableType.CHESTPLATE, EntityEquipmentSlot.CHEST),
-    HELMET(CraftableType.HELMET, EntityEquipmentSlot.HEAD),
-    LEGGINGS(CraftableType.LEGGINGS, EntityEquipmentSlot.LEGS),
-    BRICKS(CraftableType.BRICKS, EntityEquipmentSlot.MAINHAND),
-    MATERIAL(null, EntityEquipmentSlot.MAINHAND),
-    ORE(null, EntityEquipmentSlot.MAINHAND);
+    AXE(CraftableType.AXE, EntityEquipmentSlot.MAINHAND, 1),
+    HOE(CraftableType.HOE, EntityEquipmentSlot.MAINHAND, 1),
+    PICKAXE(CraftableType.PICKAXE, EntityEquipmentSlot.MAINHAND, 1),
+    SHOVEL(CraftableType.SHOVEL, EntityEquipmentSlot.MAINHAND, 1),
+    SWORD(CraftableType.SWORD, EntityEquipmentSlot.MAINHAND, 1),
+    STICK(CraftableType.STICK, EntityEquipmentSlot.MAINHAND, 2),
+    BOOTS(CraftableType.BOOTS, EntityEquipmentSlot.FEET, 1),
+    CHESTPLATE(CraftableType.CHESTPLATE, EntityEquipmentSlot.CHEST, 1),
+    HELMET(CraftableType.HELMET, EntityEquipmentSlot.HEAD, 1),
+    LEGGINGS(CraftableType.LEGGINGS, EntityEquipmentSlot.LEGS, 1),
+    BRICKS(CraftableType.BRICKS, EntityEquipmentSlot.MAINHAND, 4),
+    TORCH(CraftableType.TORCH, EntityEquipmentSlot.MAINHAND, 4),
+    MATERIAL(null, EntityEquipmentSlot.MAINHAND, 1),
+    ORE(null, EntityEquipmentSlot.MAINHAND, 1);
 
     private CraftableType type;
     private EntityEquipmentSlot slot;
+    private int quantity;
 
-    Components(CraftableType type, EntityEquipmentSlot slot) {
+    Components(CraftableType type, EntityEquipmentSlot slot, int quantity) {
         this.type = type;
         this.slot = slot;
+        this.quantity = quantity;
+    }
+
+    public int quantity() {
+        return this.quantity;
+    }
+
+    public static Components fromIndex(int index, boolean block) {
+        if(block) {
+            if(CraftableType.TORCH.contains(index)) {
+                return Components.TORCH;
+            } else if (CraftableType.BRICKS.contains(index)) {
+                return Components.BRICKS;
+            } else if (index < Randores.registeredAmount()) {
+                return Components.ORE;
+            }
+        } else {
+            if(index < Randores.registeredAmount()) {
+                return Components.MATERIAL;
+            } else {
+                for(Components component : Components.values()) {
+                    if(component.isCraftable() && !component.getType().isBlock() && component.getType().contains(index)) {
+                        return component;
+                    }
+                }
+            }
+        }
+
+        throw new IllegalArgumentException("No component for index: " + index);
+    }
+
+    public boolean isBlock() {
+        return (this.isCraftable() && this.getType().isBlock()) || this == Components.ORE;
     }
 
     public static Components fromCraftable(CraftableType type) {

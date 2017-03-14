@@ -41,6 +41,11 @@ public class FlexibleStick extends Item implements FlexibleItem {
     }
 
     @Override
+    public Item getThis() {
+        return this;
+    }
+
+    @Override
     public void addInformation(ItemStack stack, EntityPlayer playerIn, List<String> tooltip, boolean advanced) {
         FlexibleItemHelper.addInformation(this, stack, playerIn, tooltip, advanced);
     }

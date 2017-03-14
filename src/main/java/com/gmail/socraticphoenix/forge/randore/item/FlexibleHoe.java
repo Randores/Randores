@@ -31,6 +31,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemHoe;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumActionResult;
@@ -51,6 +52,11 @@ public class FlexibleHoe extends ItemHoe implements FlexibleItem {
         super(Randores.MATERIAL_DEFAULT);
         this.index = index;
         this.backers = new HashMap<Long, ItemHoe>();
+    }
+
+    @Override
+    public Item getThis() {
+        return this;
     }
 
     @Override

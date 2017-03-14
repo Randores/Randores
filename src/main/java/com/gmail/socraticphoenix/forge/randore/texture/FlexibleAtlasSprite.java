@@ -21,7 +21,6 @@
  */
 package com.gmail.socraticphoenix.forge.randore.texture;
 
-import com.gmail.socraticphoenix.forge.randore.Randores;
 import com.gmail.socraticphoenix.forge.randore.resource.RandoresResourceManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -30,33 +29,38 @@ import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.util.ResourceLocation;
 
-import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 
 public class FlexibleAtlasSprite extends TextureAtlasSprite {
-    private static int[][] test;
-    private String texture;
-    private long seed;
+    public static final int TEST_WIDTH = 32;
 
-    public FlexibleAtlasSprite(String spriteName, String texture) {
+    private static int[][] test;
+    private int[][] texture;
+    private int width;
+    private int height;
+
+    public FlexibleAtlasSprite(String spriteName) {
         super(spriteName);
-        this.texture = texture;
-        this.seed = 0;
+        this.texture = null;
+        this.width = TEST_WIDTH;
+        this.height = TEST_WIDTH;
     }
 
-    public String getTexture() {
+    public int[][] getTexture() {
         return this.texture;
     }
 
-    public long getSeed() {
-        return this.seed;
-    }
-
-    public void setTexture(String texture, long seed) {
-        this.texture = texture;
-        this.seed = seed;
+    public void setTexture(TextureData texture) {
+        if(texture != null) {
+            this.texture = texture.getData();
+            this.width = texture.getWidth();
+            this.height = texture.getHeight();
+        } else {
+            this.texture = null;
+            this.width = TEST_WIDTH;
+            this.height = TEST_WIDTH;
+        }
     }
 
     @Override
@@ -84,38 +88,12 @@ public class FlexibleAtlasSprite extends TextureAtlasSprite {
             }
         } catch (IOException e) {
             Minecraft.getMinecraft().crashed(new CrashReport("\"Fatal error: Unable to load texture \"test\"", e));
-
         }
 
-        String name = this.texture.endsWith(".png") ? this.texture : this.texture + ".png";
-        File texture = new File(Randores.getInstance().getTextureFile(this.seed), name);
-        BufferedImage texImg;
-        try {
-            if (texture.exists()) {
-                texImg = ImageIO.read(texture);
-            } else if (RandoresResourceManager.resourceExists(name)) {
-                texImg = RandoresResourceManager.getImageResource(name);
-            } else {
-                this.framesTextureData.clear();
-                this.framesTextureData.add(test.clone());
-                return false;
-            }
-        } catch (IOException e) {
-            Randores.getInstance().getLogger().error("Fatal Error: Unable to load texture \"" + this.texture + ",\" reverting to test texture.", e);
-            this.framesTextureData.clear();
-            this.framesTextureData.add(test.clone());
-            return false;
-        }
-        this.setIconHeight(texImg.getHeight());
-        this.setIconWidth(texImg.getWidth());
-        int[][] texData = new int[(int) (1 + (Math.log10(texImg.getWidth()) / Math.log10(2)))][];
-        int[] buffer = new int[texImg.getHeight() * texImg.getWidth()];
-        texImg.getRGB(0, 0, texImg.getWidth(), texImg.getHeight(), buffer, 0, texImg.getWidth());
-        for (int i = 0; i < texData.length; i++) {
-            texData[i] = buffer;
-        }
+        this.setIconHeight(this.height);
+        this.setIconWidth(this.width);
         this.framesTextureData.clear();
-        this.framesTextureData.add(texData);
+        this.framesTextureData.add(this.texture != null ? this.texture : FlexibleAtlasSprite.test);
         return false;
     }
 

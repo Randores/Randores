@@ -23,6 +23,7 @@ package com.gmail.socraticphoenix.forge.randore.item;
 
 import com.gmail.socraticphoenix.forge.randore.component.Components;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinition;
+import net.minecraft.item.Item;
 import net.minecraft.world.World;
 
 public interface FlexibleItem {
@@ -36,5 +37,7 @@ public interface FlexibleItem {
     MaterialDefinition getDefinition(World world);
 
     Components getType();
+
+    Item getThis();
 
 }

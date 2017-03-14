@@ -27,12 +27,15 @@ import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinitionRegis
 import com.gmail.socraticphoenix.forge.randore.crafting.CraftingBlocks;
 import com.gmail.socraticphoenix.forge.randore.crafting.CraftingGuiHandler;
 import com.gmail.socraticphoenix.forge.randore.crafting.CraftingItems;
+import com.gmail.socraticphoenix.forge.randore.crafting.CraftiniumForgeUpgradeRecipe;
 import com.gmail.socraticphoenix.forge.randore.crafting.forge.CraftiniumDelegateSmelt;
+import com.gmail.socraticphoenix.forge.randore.crafting.forge.CraftiniumForge;
 import com.gmail.socraticphoenix.forge.randore.crafting.forge.CraftiniumForgeTileEntity;
 import com.gmail.socraticphoenix.forge.randore.crafting.forge.CraftiniumSmeltRegistry;
 import com.gmail.socraticphoenix.forge.randore.crafting.forge.FlexibleSmelt;
 import com.gmail.socraticphoenix.forge.randore.crafting.table.CraftiniumDelegateRecipe;
 import com.gmail.socraticphoenix.forge.randore.crafting.table.CraftiniumRecipeRegistry;
+import com.gmail.socraticphoenix.forge.randore.crafting.table.FlexibleCraftingRecipe;
 import com.gmail.socraticphoenix.forge.randore.crafting.table.FlexibleRecipe;
 import com.gmail.socraticphoenix.forge.randore.item.FlexibleItem;
 import com.gmail.socraticphoenix.forge.randore.item.FlexibleItemRegistry;
@@ -47,6 +50,7 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.FurnaceRecipes;
@@ -89,72 +93,77 @@ public class Randores {
         public Item get() {
             return Item.getItemFromBlock(CraftingBlocks.craftiniumTable);
         }
-    });
+    }, false);
     public static final CreativeTabs TAB_BLOCKS = new RandoresTab("randores_blocks", new Supplier<Item>() {
         @Override
         public Item get() {
             return Item.getItemFromBlock(RandoresTabBlocks.tabOre);
         }
-    });
+    }, true);
     public static final CreativeTabs TAB_MATERIALS = new RandoresTab("randores_materials", new Supplier<Item>() {
         @Override
         public Item get() {
             return RandoresTabItems.tabItem;
         }
-    });
+    }, true);
     public static final CreativeTabs TAB_STICKS = new RandoresTab("randores_sticks", new Supplier<Item>() {
         @Override
         public Item get() {
             return RandoresTabItems.tabStick;
         }
-    });
+    }, true);
     public static final CreativeTabs TAB_HOES = new RandoresTab("randores_hoes", new Supplier<Item>() {
         @Override
         public Item get() {
             return RandoresTabItems.tabHoe;
         }
-    });
+    }, true);
     public static final CreativeTabs TAB_SWORDS = new RandoresTab("randores_swords", new Supplier<Item>() {
         @Override
         public Item get() {
             return RandoresTabItems.tabSword;
         }
-    });
+    }, true);
     public static final CreativeTabs TAB_AXES = new RandoresTab("randores_axes", new Supplier<Item>() {
         @Override
         public Item get() {
             return RandoresTabItems.tabAxe;
         }
-    });
+    }, true);
     public static final CreativeTabs TAB_PICKAXES = new RandoresTab("randores_pickaxes", new Supplier<Item>() {
         @Override
         public Item get() {
             return RandoresTabItems.tabPickaxe;
         }
-    });
+    }, true);
     public static final CreativeTabs TAB_SPADES = new RandoresTab("randores_spades", new Supplier<Item>() {
         @Override
         public Item get() {
             return RandoresTabItems.tabShovel;
         }
-    });
+    }, true);
     public static final CreativeTabs TAB_ARMOR = new RandoresTab("randores_armor", new Supplier<Item>() {
         @Override
         public Item get() {
             return RandoresTabItems.tabHelmet;
         }
-    });
+    }, true);
+    public static final CreativeTabs TAB_TORCHES = new RandoresTab("randores_torches", new Supplier<Item>() {
+        @Override
+        public Item get() {
+            return Item.getItemFromBlock(RandoresTabBlocks.tabTorch);
+        }
+    }, true);
 
     private static Randores instance;
     private static Map<Long, Long> worldSeeds = new HashMap<Long, Long>();
     private static List<String> offensiveWords = new ArrayList<String>();
     @SidedProxy(modId = "randores", clientSide = "com.gmail.socraticphoenix.forge.randore.RandoresClientProxy", serverSide = "com.gmail.socraticphoenix.forge.randore.RandoresProxy")
     private static RandoresProxy proxy;
-
+    private static int registeredamount;
     private Logger logger;
     private File confDir;
     private File conf;
-    private File tex;
     private Configuration configuration;
 
     public Randores() {
@@ -162,8 +171,14 @@ public class Randores {
         this.confDir = new File("config", "randores");
         this.conf = new File(this.confDir, "config.cfg");
         this.configuration = new Configuration(this.conf);
-        this.tex = new File(this.confDir, "textures");
         this.logger = LogManager.getLogger("Randores");
+        ConfigCategory config = this.getConfiguration().getCategory("config");
+        if (!config.containsKey("registeredamount")) {
+            registeredamount = 300;
+            config.put("registeredamount", new Property("registeredamount", "300", Property.Type.INTEGER));
+        } else {
+            registeredamount = config.get("registeredamount").getInt();
+        }
         if (FMLCommonHandler.instance().getSide() == Side.CLIENT) {
             MinecraftForge.EVENT_BUS.register(new RandoresClientSideListener());
         }
@@ -189,6 +204,10 @@ public class Randores {
             Randores.worldSeeds.put(worldSeed, seed);
         }
         return seed;
+    }
+
+    public static int registeredAmount() {
+        return registeredamount;
     }
 
     public static long getRandoresSeed(World world) {
@@ -233,6 +252,10 @@ public class Randores {
                 randores.setLong("seed", seed);
                 stack.setTagInfo("randores", randores);
             }
+        } else if (stack.getItem() instanceof ItemBlock && ((ItemBlock) stack.getItem()).getBlock() instanceof CraftiniumForge) {
+            if (stack.getSubCompound("randores") == null || !stack.getSubCompound("randores").hasKey("furnace_speed")) {
+                stack.getOrCreateSubCompound("randores").setInteger("furnace_speed", 1);
+            }
         }
         return stack;
     }
@@ -262,18 +285,17 @@ public class Randores {
         Configuration config = Randores.getInstance().getConfiguration();
         ConfigCategory category = config.getCategory("config");
         if (!category.containsKey("orecount")) {
-            Property property = new Property("orecount", "300", Property.Type.INTEGER);
-            property.setMinValue(0).setMaxValue(300);
-            property.setComment("The number of ores to generate in each world. Maximum 300, minimum 0.");
+            Property property = new Property("orecount", String.valueOf(Randores.registeredAmount()), Property.Type.INTEGER);
+            property.setComment("The number of ores to generate in each world.");
             category.put("orecount", property);
             config.save();
-            res = 300;
+            res = Randores.registeredAmount();
         } else {
             res = category.get("orecount").getInt();
         }
-        if (res > 300) {
-            res = 300;
-            category.put("orecount", new Property("orecount", "300", Property.Type.INTEGER));
+        if (res > Randores.registeredAmount()) {
+            res = Randores.registeredAmount();
+            category.put("orecount", new Property("orecount", String.valueOf(Randores.registeredAmount()), Property.Type.INTEGER));
             config.save();
         }
         if (FMLCommonHandler.instance().getSide() == Side.CLIENT) {
@@ -290,6 +312,16 @@ public class Randores {
         }
     }
 
+    public static boolean containsOffensiveWord(String string) {
+        for (String s : Randores.offensiveWords) {
+            if (string.toLowerCase().contains(s.toLowerCase())) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public Configuration getConfiguration() {
         return this.configuration;
     }
@@ -299,7 +331,7 @@ public class Randores {
         try {
             Randores.offensiveWords.addAll(RandoresResourceManager.getResourceLines("offensive_words.txt"));
 
-            this.tex.mkdirs();
+            this.confDir.mkdirs();
             if (!this.conf.exists()) {
                 this.conf.createNewFile();
             }
@@ -310,31 +342,31 @@ public class Randores {
 
             Randores.getOreCountConfigProperty();
 
-            ConfigCategory config = this.getConfiguration().getCategory("modules");
-            if(!config.containsKey("mobequip")) {
-                config.put("mobequip", new Property("mobequip", "false", Property.Type.BOOLEAN));
+            ConfigCategory modules = this.getConfiguration().getCategory("modules");
+            if (!modules.containsKey("mobequip")) {
+                modules.put("mobequip", new Property("mobequip", "false", Property.Type.BOOLEAN));
             }
 
-            if(!config.containsKey("dungeonloot")) {
-                config.put("dungeonloot", new Property("dungeonloot", "false", Property.Type.BOOLEAN));
+            if (!modules.containsKey("dungeonloot")) {
+                modules.put("dungeonloot", new Property("dungeonloot", "false", Property.Type.BOOLEAN));
             }
 
-            if(!config.containsKey("dimensionless")) {
-                config.put("dimensionless", new Property("dimensionless", "false", Property.Type.BOOLEAN));
+            if (!modules.containsKey("dimensionless")) {
+                modules.put("dimensionless", new Property("dimensionless", "false", Property.Type.BOOLEAN));
             }
 
-            if(!config.containsKey("starterkit")) {
-                config.put("starterkit", new Property("starterkit", "false", Property.Type.BOOLEAN));
+            if (!modules.containsKey("starterkit")) {
+                modules.put("starterkit", new Property("starterkit", "false", Property.Type.BOOLEAN));
             }
 
-            if(!config.containsKey("altar")) {
-                config.put("altar", new Property("altar", "false", Property.Type.BOOLEAN));
+            if (!modules.containsKey("altar")) {
+                modules.put("altar", new Property("altar", "false", Property.Type.BOOLEAN));
             }
 
-            if(!config.containsKey("youtubemode")) {
-                config.put("youtubemode", new Property("youtubemode", "false", Property.Type.BOOLEAN));
+            if (!modules.containsKey("youtubemode")) {
+                modules.put("youtubemode", new Property("youtubemode", "false", Property.Type.BOOLEAN));
             }
-            
+
             this.getConfiguration().save();
 
             List<String> languages = RandoresResourceManager.getResourceLines("ab_dict.txt");
@@ -346,13 +378,20 @@ public class Randores {
 
             GameRegistry.registerTileEntityWithAlternatives(CraftiniumForgeTileEntity.class, "craftinium_forge", "craftinium_forge_lit");
 
+            ItemStack forge = new ItemStack(CraftingBlocks.craftiniumForge);
+            forge.getOrCreateSubCompound("randores").setInteger("furnace_speed", 1);
             CraftingManager.getInstance().addRecipe(new ItemStack(CraftingBlocks.craftiniumTable), "XX ", "XX ", 'X', CraftingItems.craftiniumLump);
-            CraftingManager.getInstance().addRecipe(new ItemStack(CraftingBlocks.craftiniumForge), "XXX", "X X", "XXX", 'X', CraftingItems.craftiniumLump);
+            CraftingManager.getInstance().addRecipe(forge, "XXX", "X X", "XXX", 'X', CraftingItems.craftiniumLump);
 
-            for (int i = 0; i < 300; i++) {
+            CraftiniumForgeUpgradeRecipe upgradeRecipe = new CraftiniumForgeUpgradeRecipe();
+            upgradeRecipe.u(CraftingItems.craftiniumLump, 1 / 8f);
+            CraftingManager.getInstance().addRecipe(upgradeRecipe);
+
+            for (int i = 0; i < Randores.registeredAmount(); i++) {
                 Item material = FlexibleItemRegistry.getMaterial(i);
                 for (CraftableType type : CraftableType.values()) {
-                    CraftiniumRecipeRegistry.register(new FlexibleRecipe(i, type, 'X', material, 'S', "stickWood"));
+                    CraftiniumRecipeRegistry.register(new FlexibleRecipe(i, type, 'X', material, 'S', "stickWood", 'T', "torch"));
+                    CraftingManager.getInstance().addRecipe(new FlexibleCraftingRecipe(i, type, 'X', material, 'S', "stickWood", 'T', "torch"));
                 }
                 CraftiniumSmeltRegistry.register(new FlexibleSmelt(i));
             }
@@ -374,16 +413,6 @@ public class Randores {
                 e.printStackTrace();
             }
         }
-    }
-
-    public static boolean containsOffensiveWord(String string) {
-        for(String s : Randores.offensiveWords) {
-            if(string.toLowerCase().contains(s.toLowerCase())) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     @Mod.EventHandler
@@ -421,11 +450,4 @@ public class Randores {
         return this.conf;
     }
 
-    public File getTextureFile(long seed) {
-        return new File(this.tex, String.valueOf(seed).replaceAll("-", "_"));
-    }
-
-    public File getTextureDir() {
-        return this.tex;
-    }
 }
