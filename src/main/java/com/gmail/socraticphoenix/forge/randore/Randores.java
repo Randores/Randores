@@ -84,7 +84,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-@Mod(modid = "randores", name = "Socratic_Phoenix's Randores", version = "1.10")
+@Mod(modid = "randores", name = "Socratic_Phoenix's Randores", version = "1.11")
 public class Randores {
     public static final Item.ToolMaterial MATERIAL_DEFAULT = EnumHelper.addToolMaterial("MATERIAL_DEFAULT", 1, 100, 1, 1, 1);
     public static final ItemArmor.ArmorMaterial ARMOR_DEFAULT = EnumHelper.addArmorMaterial("ARMOR_DEFAULT", "no_texture", 100, new int[]{1, 1, 1, 1}, 1, SoundEvents.ITEM_ARMOR_EQUIP_IRON, 1);

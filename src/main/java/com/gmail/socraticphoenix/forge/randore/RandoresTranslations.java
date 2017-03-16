@@ -38,7 +38,7 @@ public class RandoresTranslations {
     }
 
     public static String get(String locale, String key) {
-        if (RandoresTranslations.translations.containsKey(locale.toLowerCase())) {
+        if (RandoresTranslations.translations.containsKey(locale.toLowerCase()) && RandoresTranslations.translations.get(locale).containsKey(key)) {
             return RandoresTranslations.translations.get(locale.toLowerCase()).get(key);
         } else {
             return RandoresTranslations.fallback.get(key);
