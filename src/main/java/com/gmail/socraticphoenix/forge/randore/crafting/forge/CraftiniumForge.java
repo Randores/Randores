@@ -119,7 +119,7 @@ public class CraftiniumForge extends Block {
         super.addInformation(stack, player, tooltip, advanced);
         if (stack.getSubCompound("randores") != null && stack.getSubCompound("randores").hasKey("furnace_speed")) {
             int speed = stack.getSubCompound("randores").getInteger("furnace_speed");
-            tooltip.add(TextFormatting.GRAY + RandoresTranslations.get(RandoresTranslations.Keys.FORGE_POWER, RandoresClientSideRegistry.getCurrentLocale()) + ": " + speed);
+            tooltip.add(TextFormatting.GRAY + RandoresTranslations.get(RandoresClientSideRegistry.getCurrentLocale(), RandoresTranslations.Keys.FORGE_POWER) + ": " + speed);
         }
     }
 

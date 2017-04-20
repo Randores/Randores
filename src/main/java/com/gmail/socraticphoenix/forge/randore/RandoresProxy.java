@@ -23,9 +23,11 @@ package com.gmail.socraticphoenix.forge.randore;
 
 import org.apache.logging.log4j.Logger;
 
+import java.io.IOException;
+
 public class RandoresProxy {
 
-    public void preInitSided() {
+    public void preInitSided() throws IOException, IllegalAccessException {
         Logger logger = Randores.getInstance().getLogger();
         logger.info("Randores is running server-side.");
     }

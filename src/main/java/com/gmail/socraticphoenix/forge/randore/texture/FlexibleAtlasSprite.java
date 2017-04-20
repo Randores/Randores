@@ -21,7 +21,6 @@
  */
 package com.gmail.socraticphoenix.forge.randore.texture;
 
-import com.gmail.socraticphoenix.forge.randore.resource.RandoresResourceManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureUtil;
@@ -29,10 +28,12 @@ import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.util.ResourceLocation;
 
+import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 public class FlexibleAtlasSprite extends TextureAtlasSprite {
+    public static final ResourceLocation TEST_IMAGE = new ResourceLocation("randores:resources/other/test.png");
     public static final int TEST_WIDTH = 32;
 
     private static int[][] test;
@@ -77,7 +78,7 @@ public class FlexibleAtlasSprite extends TextureAtlasSprite {
     public boolean load(IResourceManager manager, ResourceLocation location) {
         try {
             if (test == null) {
-                BufferedImage texImg = RandoresResourceManager.getImageResource("test.png");
+                BufferedImage texImg = ImageIO.read(Minecraft.getMinecraft().getResourceManager().getResource(TEST_IMAGE).getInputStream());
                 int[][] texData = new int[(int) (1 + (Math.log10(texImg.getWidth()) / Math.log10(2)))][];
                 int[] buffer = new int[texImg.getHeight() * texImg.getWidth()];
                 texImg.getRGB(0, 0, texImg.getWidth(), texImg.getHeight(), buffer, 0, texImg.getWidth());
@@ -88,6 +89,7 @@ public class FlexibleAtlasSprite extends TextureAtlasSprite {
             }
         } catch (IOException e) {
             Minecraft.getMinecraft().crashed(new CrashReport("\"Fatal error: Unable to load texture \"test\"", e));
+            return false;
         }
 
         this.setIconHeight(this.height);

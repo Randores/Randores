@@ -21,13 +21,15 @@
  */
 package com.gmail.socraticphoenix.forge.randore.texture;
 
+import com.gmail.socraticphoenix.forge.randore.RandoresClientSideRegistry;
 import com.gmail.socraticphoenix.forge.randore.component.Components;
-import com.gmail.socraticphoenix.forge.randore.resource.RandoresResourceManager;
 import com.google.common.collect.Sets;
 import net.minecraft.client.resources.IResourcePack;
 import net.minecraft.client.resources.data.IMetadataSection;
 import net.minecraft.client.resources.data.MetadataSerializer;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nullable;
 import java.awt.image.BufferedImage;
@@ -174,8 +176,9 @@ public class RandoresLazyResourcePack implements IResourcePack {
     }
 
     @Override
+    @SideOnly(Side.CLIENT)
     public BufferedImage getPackImage() throws IOException {
-        return RandoresResourceManager.getImageResource("pack.png");
+        return RandoresClientSideRegistry.getPackImage();
     }
 
     @Override

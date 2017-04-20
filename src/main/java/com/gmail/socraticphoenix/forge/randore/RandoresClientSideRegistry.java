@@ -21,23 +21,69 @@
  */
 package com.gmail.socraticphoenix.forge.randore;
 
+import com.gmail.socraticphoenix.forge.randore.resource.RandoresResourceManager;
 import com.gmail.socraticphoenix.forge.randore.texture.TextureTemplate;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.IResource;
+import net.minecraft.client.resources.IResourceManager;
+import net.minecraft.client.resources.SimpleReloadableResourceManager;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class RandoresClientSideRegistry {
+    public static final ResourceLocation TEMPLATES_DICT = new ResourceLocation("randores:resources/dictionary/tex_dict.txt");
+    public static final ResourceLocation PACK = new ResourceLocation("randores:resources/others/pack.png");
     private static AtomicLong currentSeed = new AtomicLong();
     private static AtomicInteger oreNumber = new AtomicInteger();
-    private static Map<String, Map<String, TextureTemplate>> templates = new HashMap<String, Map<String, TextureTemplate>>();
+    private static Map<String, TextureTemplate> templates = new HashMap<String, TextureTemplate>();
+    private static BufferedImage pack;
+
+    @SideOnly(Side.CLIENT)
+    public static BufferedImage getPackImage() throws IOException {
+        if (pack == null) {
+            pack = ImageIO.read(Minecraft.getMinecraft().getResourceManager().getResource(PACK).getInputStream());
+        }
+
+        return pack;
+    }
+
+    public static TextureTemplate getTemplate(String key) {
+        return RandoresClientSideRegistry.templates.get(key);
+    }
+
+    public static void registerTemplate(String key, TextureTemplate template) {
+        RandoresClientSideRegistry.templates.put(key, template);
+    }
+
+    @SideOnly(Side.CLIENT)
+    public static void loadTemplates() throws IOException {
+        for (String template : RandoresResourceManager.getLines(Minecraft.getMinecraft().getResourceManager().getResource(TEMPLATES_DICT).getInputStream())) {
+            if(template.contains("_base")) {
+                IResource image = Minecraft.getMinecraft().getResourceManager().getResource(new ResourceLocation("randores:resources/templates/" + template + ".png"));
+                IResource config = Minecraft.getMinecraft().getResourceManager().getResource(new ResourceLocation("randores:resources/templates/" + template + ".txt"));
+                BufferedImage bufferedImage = ImageIO.read(image.getInputStream());
+                image.close();
+
+                List<String> configLines = RandoresResourceManager.getLines(config.getInputStream());
+                TextureTemplate textureTemplate = new TextureTemplate(configLines, bufferedImage);
+                RandoresClientSideRegistry.registerTemplate(template, textureTemplate);
+            }
+        }
+    }
 
     public static int getOreCount() {
         return RandoresClientSideRegistry.oreNumber.get();
@@ -45,26 +91,6 @@ public class RandoresClientSideRegistry {
 
     public static void setOreCount(int count) {
         RandoresClientSideRegistry.oreNumber.set(count);
-    }
-
-    public static boolean containsTemplate(String pack, String name) {
-        return templates.containsKey(pack) && templates.get(pack).containsKey(name);
-    }
-
-    public static TextureTemplate getTemplate(String name) {
-        String pack = Randores.getTexturePack();
-        if(RandoresClientSideRegistry.containsTemplate(pack, name)) {
-            return RandoresClientSideRegistry.templates.get(pack).get(name);
-        } else {
-            return RandoresClientSideRegistry.templates.get("vanilla").get(name);
-        }
-    }
-
-    public static void putTemplate(String pack, String name, TextureTemplate textureTemplate) {
-        if(!RandoresClientSideRegistry.templates.containsKey(pack)) {
-            RandoresClientSideRegistry.templates.put(pack, new HashMap<String, TextureTemplate>());
-        }
-        RandoresClientSideRegistry.templates.get(pack).put(name, textureTemplate);
     }
 
     public static long getCurrentSeed() {
@@ -84,7 +110,6 @@ public class RandoresClientSideRegistry {
         return FMLCommonHandler.instance().getSide() == Side.CLIENT ? RandoresClientSideRegistry.clientSideLocale() : RandoresClientSideRegistry.serverSideLocale();
     }
 
-    @SideOnly(Side.CLIENT)
     private static String clientSideLocale() {
         return Minecraft.getMinecraft().getLanguageManager().getCurrentLanguage().getLanguageCode();
     }

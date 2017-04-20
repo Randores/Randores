@@ -22,6 +22,11 @@
 package com.gmail.socraticphoenix.forge.randore;
 
 import com.gmail.socraticphoenix.forge.randore.resource.RandoresResourceManager;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.IResource;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -29,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 
 public class RandoresTranslations {
+    public static final ResourceLocation LANG_DICT = new ResourceLocation("randores:resources/dictionary/lang_dict.txt");
     private static Map<String, Map<String, String>> translations = new HashMap<String, Map<String, String>>();
     private static Map<String, String> fallback = new HashMap<String, String>();
 
@@ -37,32 +43,41 @@ public class RandoresTranslations {
         RandoresTranslations.translations.get(locale.toLowerCase()).put(key, value);
     }
 
+    public static String get(String key) {
+        return RandoresTranslations.get(RandoresClientSideRegistry.getCurrentLocale(), key);
+    }
+
     public static String get(String locale, String key) {
-        if (RandoresTranslations.translations.containsKey(locale.toLowerCase()) && RandoresTranslations.translations.get(locale).containsKey(key)) {
+        if (RandoresTranslations.translations.containsKey(locale.toLowerCase()) && RandoresTranslations.translations.get(locale.toLowerCase()).containsKey(key)) {
             return RandoresTranslations.translations.get(locale.toLowerCase()).get(key);
         } else {
             return RandoresTranslations.fallback.get(key);
         }
     }
 
-    public static void registerFromResources(String locale, String fileName) throws IOException {
-        if (RandoresResourceManager.resourceExists("lang/" + fileName)) {
-            List<String> lines = RandoresResourceManager.getResourceLines("lang/" + fileName);
-            for (String line : lines) {
-                if (line.contains("=")) {
+    @SideOnly(Side.CLIENT)
+    public static void registerFromResources() throws IOException {
+        for(String langFile : RandoresResourceManager.getLines(Minecraft.getMinecraft().getResourceManager().getResource(LANG_DICT).getInputStream())) {
+            ResourceLocation location = new ResourceLocation("randores:resources/lang/" + langFile + ".lang");
+            IResource resource = Minecraft.getMinecraft().getResourceManager().getResource(location);
+            List<String> lines = RandoresResourceManager.getLines(resource.getInputStream());
+            String lang = RandoresResourceManager.getFileName(resource.getResourceLocation()).replace(".lang", "");
+            for(String line : lines) {
+                if(line.contains("=")) {
                     String[] pieces = line.split("=", 2);
-                    RandoresTranslations.register(locale, pieces[0], pieces[1]);
+                    RandoresTranslations.register(lang, pieces[0], pieces[1]);
                 }
             }
         }
     }
 
     public static void registerFallback() throws IOException {
-        List<String> lines = RandoresResourceManager.getResourceLines("lang/en_US.lang");
+        List<String> lines = RandoresResourceManager.getResourceLines("en_US.lang");
         for (String line : lines) {
             if (line.contains("=")) {
                 String[] pieces = line.split("=", 2);
                 RandoresTranslations.fallback.put(pieces[0], pieces[1]);
+                RandoresTranslations.register("en_US", pieces[0], pieces[1]);
             }
         }
     }

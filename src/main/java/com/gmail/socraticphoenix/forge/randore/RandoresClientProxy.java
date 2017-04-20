@@ -21,26 +21,18 @@
  */
 package com.gmail.socraticphoenix.forge.randore;
 
-import com.gmail.socraticphoenix.forge.randore.resource.RandoresResourceManager;
 import com.gmail.socraticphoenix.forge.randore.texture.RandoresArmorResourcePack;
 import com.gmail.socraticphoenix.forge.randore.texture.RandoresLazyResourcePack;
-import com.gmail.socraticphoenix.forge.randore.texture.TextureTemplate;
-import com.google.common.io.Files;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.IResourcePack;
-import net.minecraft.crash.CrashReport;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.logging.log4j.Logger;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,70 +40,14 @@ public class RandoresClientProxy extends RandoresProxy {
 
     @Override
     @SideOnly(Side.CLIENT)
-    public void preInitSided() {
+    public void preInitSided() throws IOException, IllegalAccessException {
         Logger logger = Randores.getInstance().getLogger();
         logger.info("Randores is running client-side.");
         Configuration configuration = Randores.getInstance().getConfiguration();
         configuration.load();
-        Randores.getTexturePack();
-        logger.info("Loading vanilla texture templates...");
-        try {
-            List<String> dictionary = RandoresResourceManager.getResourceLines("aa_dict.txt");
-            while (dictionary.contains("")) {
-                dictionary.remove("");
-            }
-
-            for (String entry : dictionary) {
-                List<String> config = RandoresResourceManager.getResourceLines(entry + ".txt");
-                BufferedImage texture = RandoresResourceManager.getImageResource(entry + ".png");
-                TextureTemplate template = new TextureTemplate(config, texture);
-                RandoresClientSideRegistry.putTemplate("vanilla", entry, template);
-                logger.info("Successfully loaded texture template \"" + entry + "\"");
-            }
-
-            logger.info("Searching for template packs...");
-            File templates = Randores.getInstance().getPackDir();
-            if (templates.exists()) {
-                File[] packs = templates.listFiles();
-                if (packs != null) {
-                    if(packs.length == 0) {
-                        logger.info("No template packs found.");
-                    } else {
-                        for (File dir : packs) {
-                            logger.info("Attempting to load pack: " + dir.getName());
-                            for (String dict : dictionary) {
-                                File tex = new File(dir, dict + ".png");
-                                File temp = new File(dir, dict + ".txt");
-                                boolean success = true;
-                                if (!tex.exists()) {
-                                    logger.info("No texture for template: " + dict);
-                                    success = false;
-                                }
-
-                                if (!temp.exists()) {
-                                    logger.info("No config for template: " + dict);
-                                    success = false;
-                                }
-
-                                if (success) {
-                                    TextureTemplate textureTemplate = new TextureTemplate(Files.readLines(temp, Charset.forName("UTF8")), ImageIO.read(tex));
-                                    RandoresClientSideRegistry.putTemplate(dir.getName(), dict, textureTemplate);
-                                }
-                            }
-                            logger.info("Finished loading pack: " + dir.getName());
-                        }
-                    }
-                } else {
-                    logger.info("No template packs found.");
-                }
-            } else {
-                logger.info("No template packs found.");
-            }
-        } catch (IOException e) {
-            Minecraft.getMinecraft().crashed(new CrashReport("Unable to load texture templates.", e));
-            return;
-        }
-
+        logger.info("Loading languages...");
+        RandoresTranslations.registerFromResources();
+        logger.info("Loaded languages.");
         logger.info("Hacking resource packs...");
         List<Field> candidates = new ArrayList<Field>();
         for (Field field : Minecraft.class.getDeclaredFields()) {
@@ -135,14 +71,12 @@ public class RandoresClientProxy extends RandoresProxy {
                 Minecraft.getMinecraft().refreshResources();
                 logger.info("Successfully hacked default resource packs.");
             } catch (IllegalAccessException e) {
-                Minecraft.getMinecraft().crashed(new CrashReport("Fatal error, candidate not accessible", e));
-                return;
+                throw e;
             } finally {
                 field.setAccessible(accessible);
             }
-        }  else {
-            Minecraft.getMinecraft().crashed(new CrashReport("Fatal error, expected 1 candidate, but found " + candidates.size(), new IllegalStateException()));
-            return;
+        } else {
+            throw new IllegalStateException("Fatal error, expected 1 candidate, but found " + candidates.size());
         }
     }
 

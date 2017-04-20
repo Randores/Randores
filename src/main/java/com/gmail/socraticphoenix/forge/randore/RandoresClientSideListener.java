@@ -36,7 +36,9 @@ import com.gmail.socraticphoenix.forge.randore.texture.FlexibleAtlasSprite;
 import com.gmail.socraticphoenix.forge.randore.texture.FlexibleTextureRegistry;
 import com.gmail.socraticphoenix.forge.randore.texture.RandoresLazyResourcePack;
 import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.crash.CrashReport;
 import net.minecraft.item.Item;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
@@ -44,7 +46,9 @@ import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.apache.logging.log4j.Logger;
 
+import java.io.IOException;
 import java.util.List;
 
 public class RandoresClientSideListener {
@@ -109,6 +113,16 @@ public class RandoresClientSideListener {
     @SubscribeEvent
     @SideOnly(Side.CLIENT)
     public void onStitch(TextureStitchEvent.Pre ev) {
+        Logger logger = Randores.getInstance().getLogger();
+        logger.info("Loading texture templates...");
+        try {
+            RandoresClientSideRegistry.loadTemplates();
+            logger.info("Loaded templates.");
+        } catch (IOException e) {
+            Minecraft.getMinecraft().crashed(new CrashReport("Failed to load templates", e));
+            return;
+        }
+
         if (FlexibleTextureRegistry.itemQuantity() == 0) {
             int i;
             for (i = 0; i < Randores.registeredAmount() * (CraftableType.BOW.ordinal() + 1); i++) {

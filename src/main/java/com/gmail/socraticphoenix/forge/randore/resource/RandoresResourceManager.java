@@ -22,6 +22,8 @@
  */
 package com.gmail.socraticphoenix.forge.randore.resource;
 
+import net.minecraft.util.ResourceLocation;
+
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
@@ -33,8 +35,24 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 public class RandoresResourceManager {
+
+    public static List<String> getLines(InputStream stream) throws IOException {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
+        List<String> lines = new ArrayList<String>();
+        String line;
+        while ((line = reader.readLine()) != null) {
+            lines.add(line);
+        }
+        return lines;
+    }
+
+    public static String getFileName(ResourceLocation location) {
+        String[] pieces = location.getResourcePath().split(Pattern.quote("/"));
+        return pieces[pieces.length - 1];
+    }
 
     public static BufferedImage getImageResource(String resourceName) throws IOException {
         return ImageIO.read(RandoresResourceManager.class.getResourceAsStream(resourceName));

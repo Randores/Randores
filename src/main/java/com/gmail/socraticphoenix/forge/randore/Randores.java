@@ -322,7 +322,7 @@ public class Randores {
         String pack = "vanilla";
         Configuration config = Randores.getInstance().getConfiguration();
         ConfigCategory category = config.getCategory("config");
-        if(!category.containsKey("pack")) {
+        if (!category.containsKey("pack")) {
             Property property = new Property("pack", pack, Property.Type.STRING);
             category.put("pack", property);
             config.save();
@@ -379,97 +379,82 @@ public class Randores {
     }
 
     @Mod.EventHandler
-    public void onPreInit(FMLPreInitializationEvent ev) {
-        try {
-            Randores.offensiveWords.addAll(RandoresResourceManager.getResourceLines("offensive_words.txt"));
+    public void onPreInit(FMLPreInitializationEvent ev) throws IOException, IllegalAccessException {
+        Randores.offensiveWords.addAll(RandoresResourceManager.getResourceLines("offensive_words.txt"));
 
-            this.confDir.mkdirs();
-            if (!this.conf.exists()) {
-                this.conf.createNewFile();
-            }
-
-            this.getConfiguration().load();
-
-            RandoresTranslations.registerFallback();
-
-            Randores.getOreCountConfigProperty();
-
-            GameRegistry.registerFuelHandler(new RandoresFuelHandler());
-
-            ConfigCategory modules = this.getConfiguration().getCategory("modules");
-            if (!modules.containsKey("mobequip")) {
-                modules.put("mobequip", new Property("mobequip", "true", Property.Type.BOOLEAN));
-            }
-
-            if (!modules.containsKey("dungeonloot")) {
-                modules.put("dungeonloot", new Property("dungeonloot", "true", Property.Type.BOOLEAN));
-            }
-
-            if (!modules.containsKey("dimensionless")) {
-                modules.put("dimensionless", new Property("dimensionless", "true", Property.Type.BOOLEAN));
-            }
-
-            if (!modules.containsKey("starterkit")) {
-                modules.put("starterkit", new Property("starterkit", "false", Property.Type.BOOLEAN));
-            }
-
-            if (!modules.containsKey("altar")) {
-                modules.put("altar", new Property("altar", "true", Property.Type.BOOLEAN));
-            }
-
-            if (!modules.containsKey("youtubemode")) {
-                modules.put("youtubemode", new Property("youtubemode", "false", Property.Type.BOOLEAN));
-            }
-
-            this.getConfiguration().save();
-
-            List<String> languages = RandoresResourceManager.getResourceLines("ab_dict.txt");
-            for (String lang : languages) {
-                this.logger.info("Loading randores translations from file: " + lang);
-                RandoresTranslations.registerFromResources(lang, lang + ".lang");
-
-            }
-
-            GameRegistry.registerTileEntityWithAlternatives(CraftiniumForgeTileEntity.class, "craftinium_forge", "craftinium_forge_lit");
-
-            ItemStack forge = new ItemStack(CraftingBlocks.craftiniumForge);
-            forge.getOrCreateSubCompound("randores").setInteger("furnace_speed", 1);
-            CraftingManager.getInstance().addRecipe(new ItemStack(CraftingBlocks.craftiniumTable), "XX ", "XX ", 'X', CraftingItems.craftiniumLump);
-            CraftingManager.getInstance().addRecipe(forge, "XXX", "X X", "XXX", 'X', CraftingItems.craftiniumLump);
-
-            RecipeSorter.register("randores:forge_upgrade", CraftiniumForgeUpgradeRecipe.class, RecipeSorter.Category.SHAPED, "after:minecraft:shaped");
-            RecipeSorter.register("randores:flexible_recipe", FlexibleCraftingRecipe.class, RecipeSorter.Category.SHAPED, "after:minecraft:shaped");
-
-            CraftiniumForgeUpgradeRecipe upgradeRecipe = new CraftiniumForgeUpgradeRecipe();
-            upgradeRecipe.u(CraftingItems.craftiniumLump, 1 / 8f);
-            CraftingManager.getInstance().addRecipe(upgradeRecipe);
-
-            for (int i = 0; i < Randores.registeredAmount(); i++) {
-                Item material = FlexibleItemRegistry.getMaterial(i);
-                for (CraftableType type : CraftableType.values()) {
-                    CraftiniumRecipeRegistry.register(new FlexibleRecipe(i, type, 'X', material, 'S', "stickWood", 'T', "torch", 'R', "string"));
-                    CraftingManager.getInstance().addRecipe(new FlexibleCraftingRecipe(i, type, 'X', material, 'S', "stickWood", 'T', "torch", 'R', "string"));
-                }
-                CraftiniumSmeltRegistry.register(new FlexibleSmelt(i));
-            }
-
-            this.logger.info("Testing the names algorithm...");
-            Random random = new Random();
-            for (int i = 0; i < 10; i++) {
-                this.logger.info(RandoresNameAlgorithm.name(new Color(random.nextInt(256), random.nextInt(256), random.nextInt(256))));
-            }
-            this.logger.info("Finished testing names algorithm");
-            RandoresNetworking.initNetwork();
-            this.logger.info("Running proxy pre-initialization...");
-            Randores.proxy.preInitSided();
-            this.logger.info("Proxy pre-initialized.");
-        } catch (IOException e) {
-            if (FMLCommonHandler.instance().getSide() == Side.CLIENT) {
-                RandoresClientSideRegistry.crash("Encountered IOException while randores was loading", e);
-            } else {
-                e.printStackTrace();
-            }
+        this.confDir.mkdirs();
+        if (!this.conf.exists()) {
+            this.conf.createNewFile();
         }
+
+        this.getConfiguration().load();
+
+        RandoresTranslations.registerFallback();
+
+        Randores.getOreCountConfigProperty();
+
+        GameRegistry.registerFuelHandler(new RandoresFuelHandler());
+
+        ConfigCategory modules = this.getConfiguration().getCategory("modules");
+        if (!modules.containsKey("mobequip")) {
+            modules.put("mobequip", new Property("mobequip", "true", Property.Type.BOOLEAN));
+        }
+
+        if (!modules.containsKey("dungeonloot")) {
+            modules.put("dungeonloot", new Property("dungeonloot", "true", Property.Type.BOOLEAN));
+        }
+
+        if (!modules.containsKey("dimensionless")) {
+            modules.put("dimensionless", new Property("dimensionless", "true", Property.Type.BOOLEAN));
+        }
+
+        if (!modules.containsKey("starterkit")) {
+            modules.put("starterkit", new Property("starterkit", "false", Property.Type.BOOLEAN));
+        }
+
+        if (!modules.containsKey("altar")) {
+            modules.put("altar", new Property("altar", "true", Property.Type.BOOLEAN));
+        }
+
+        if (!modules.containsKey("youtubemode")) {
+            modules.put("youtubemode", new Property("youtubemode", "false", Property.Type.BOOLEAN));
+        }
+
+        this.getConfiguration().save();
+
+        GameRegistry.registerTileEntityWithAlternatives(CraftiniumForgeTileEntity.class, "craftinium_forge", "craftinium_forge_lit");
+
+        ItemStack forge = new ItemStack(CraftingBlocks.craftiniumForge);
+        forge.getOrCreateSubCompound("randores").setInteger("furnace_speed", 1);
+        CraftingManager.getInstance().addRecipe(new ItemStack(CraftingBlocks.craftiniumTable), "XX ", "XX ", 'X', CraftingItems.craftiniumLump);
+        CraftingManager.getInstance().addRecipe(forge, "XXX", "X X", "XXX", 'X', CraftingItems.craftiniumLump);
+
+        RecipeSorter.register("randores:forge_upgrade", CraftiniumForgeUpgradeRecipe.class, RecipeSorter.Category.SHAPED, "after:minecraft:shaped");
+        RecipeSorter.register("randores:flexible_recipe", FlexibleCraftingRecipe.class, RecipeSorter.Category.SHAPED, "after:minecraft:shaped");
+
+        CraftiniumForgeUpgradeRecipe upgradeRecipe = new CraftiniumForgeUpgradeRecipe();
+        upgradeRecipe.u(CraftingItems.craftiniumLump, 1 / 8f);
+        CraftingManager.getInstance().addRecipe(upgradeRecipe);
+
+        for (int i = 0; i < Randores.registeredAmount(); i++) {
+            Item material = FlexibleItemRegistry.getMaterial(i);
+            for (CraftableType type : CraftableType.values()) {
+                CraftiniumRecipeRegistry.register(new FlexibleRecipe(i, type, 'X', material, 'S', "stickWood", 'T', "torch", 'R', "string"));
+                CraftingManager.getInstance().addRecipe(new FlexibleCraftingRecipe(i, type, 'X', material, 'S', "stickWood", 'T', "torch", 'R', "string"));
+            }
+            CraftiniumSmeltRegistry.register(new FlexibleSmelt(i));
+        }
+
+        this.logger.info("Testing the names algorithm...");
+        Random random = new Random();
+        for (int i = 0; i < 10; i++) {
+            this.logger.info(RandoresNameAlgorithm.name(new Color(random.nextInt(256), random.nextInt(256), random.nextInt(256))));
+        }
+        this.logger.info("Finished testing names algorithm");
+        RandoresNetworking.initNetwork();
+        this.logger.info("Running proxy pre-initialization...");
+        Randores.proxy.preInitSided();
+        this.logger.info("Proxy pre-initialized.");
     }
 
     @Mod.EventHandler
@@ -487,7 +472,7 @@ public class Randores {
     public void onPostInit(FMLPostInitializationEvent ev) {
         this.logger.info("Adding crafting table recipes to craftinium table and furnace recipes to craftinium forge...");
         for (IRecipe recipe : CraftingManager.getInstance().getRecipeList()) {
-            if(!(recipe instanceof FlexibleCraftingRecipe)) {
+            if (!(recipe instanceof FlexibleCraftingRecipe)) {
                 CraftiniumRecipeRegistry.register(new CraftiniumDelegateRecipe(recipe));
             }
         }
