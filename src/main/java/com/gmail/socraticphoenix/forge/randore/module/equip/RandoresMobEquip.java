@@ -22,16 +22,16 @@
 package com.gmail.socraticphoenix.forge.randore.module.equip;
 
 import com.gmail.socraticphoenix.forge.randore.Randores;
-import com.gmail.socraticphoenix.forge.randore.RandoresProbability;
+import com.gmail.socraticphoenix.forge.randore.component.Component;
 import com.gmail.socraticphoenix.forge.randore.component.Components;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinition;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinitionRegistry;
+import com.gmail.socraticphoenix.forge.randore.probability.RandoresProbability;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.monster.AbstractSkeleton;
 import net.minecraft.entity.monster.EntityVindicator;
 import net.minecraft.entity.monster.EntityZombie;
-import net.minecraft.init.Items;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
@@ -39,6 +39,7 @@ import net.minecraftforge.common.config.ConfigCategory;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -60,14 +61,19 @@ public class RandoresMobEquip {
                         List<MaterialDefinition> materials = MaterialDefinitionRegistry.get(Randores.getRandoresSeed(entity.world));
                         MaterialDefinition material = materials.get(random.nextInt(materials.size()));
                         if (entity instanceof AbstractSkeleton) {
-                            if (material.hasComponent(Components.SWORD)) {
+                            List<Component> applicable = new ArrayList<Component>();
+                            applicable.add(material.getComponent(Components.SWORD));
+                            applicable.add(material.getComponent(Components.BATTLEAXE));
+                            applicable.add(material.getComponent(Components.SLEDGEHAMMER));
+                            applicable.add(material.getComponent(Components.AXE));
+
+                            while (applicable.contains(null)) {
+                                applicable.remove(null);
+                            }
+
+                            if(!applicable.isEmpty()) {
                                 entity.setDropChance(EntityEquipmentSlot.MAINHAND, 0.25f);
-                                entity.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, Randores.applyData(new ItemStack(material.getComponent(Components.SWORD).makeItem()), world));
-                            } else if (material.hasComponent(Components.AXE)) {
-                                entity.setDropChance(EntityEquipmentSlot.MAINHAND, 0.25f);
-                                entity.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, Randores.applyData(new ItemStack(material.getComponent(Components.AXE).makeItem()), world));
-                            } else {
-                                entity.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(Items.BOW));
+                                entity.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, Randores.applyData(new ItemStack(applicable.get(random.nextInt(applicable.size())).makeItem()), world));
                             }
 
                             if (material.hasComponent(Components.HELMET)) {
@@ -77,12 +83,19 @@ public class RandoresMobEquip {
                                 }
                             }
                         } else if (entity instanceof EntityZombie) {
-                            if (material.hasComponent(Components.SWORD)) {
+                            List<Component> applicable = new ArrayList<Component>();
+                            applicable.add(material.getComponent(Components.SWORD));
+                            applicable.add(material.getComponent(Components.BATTLEAXE));
+                            applicable.add(material.getComponent(Components.SLEDGEHAMMER));
+                            applicable.add(material.getComponent(Components.AXE));
+
+                            while (applicable.contains(null)) {
+                                applicable.remove(null);
+                            }
+
+                            if(!applicable.isEmpty()) {
                                 entity.setDropChance(EntityEquipmentSlot.MAINHAND, 0.25f);
-                                entity.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, Randores.applyData(new ItemStack(material.getComponent(Components.SWORD).makeItem()), world));
-                            } else if (material.hasComponent(Components.AXE)) {
-                                entity.setDropChance(EntityEquipmentSlot.MAINHAND, 0.25f);
-                                entity.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, Randores.applyData(new ItemStack(material.getComponent(Components.AXE).makeItem()), world));
+                                entity.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, Randores.applyData(new ItemStack(applicable.get(random.nextInt(applicable.size())).makeItem()), world));
                             }
 
                             if (material.hasComponent(Components.HELMET)) {
@@ -92,9 +105,17 @@ public class RandoresMobEquip {
                                 }
                             }
                         } else if (entity instanceof EntityVindicator) {
-                            if (material.hasComponent(Components.AXE)) {
+                            List<Component> applicable = new ArrayList<Component>();
+                            applicable.add(material.getComponent(Components.BATTLEAXE));
+                            applicable.add(material.getComponent(Components.AXE));
+
+                            while (applicable.contains(null)) {
+                                applicable.remove(null);
+                            }
+
+                            if(!applicable.isEmpty()) {
                                 entity.setDropChance(EntityEquipmentSlot.MAINHAND, 0.25f);
-                                entity.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, Randores.applyData(new ItemStack(material.getComponent(Components.AXE).makeItem()), world));
+                                entity.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, Randores.applyData(new ItemStack(applicable.get(random.nextInt(applicable.size())).makeItem()), world));
                             }
                         }
                     }

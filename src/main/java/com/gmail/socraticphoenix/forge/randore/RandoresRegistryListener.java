@@ -27,19 +27,24 @@ import com.gmail.socraticphoenix.forge.randore.block.FlexibleOre;
 import com.gmail.socraticphoenix.forge.randore.block.FlexibleTorch;
 import com.gmail.socraticphoenix.forge.randore.component.Components;
 import com.gmail.socraticphoenix.forge.randore.component.CraftableType;
+import com.gmail.socraticphoenix.forge.randore.component.ability.EmpoweredEnchantment;
 import com.gmail.socraticphoenix.forge.randore.crafting.CraftingBlocks;
 import com.gmail.socraticphoenix.forge.randore.crafting.CraftingItems;
 import com.gmail.socraticphoenix.forge.randore.item.FlexibleAxe;
+import com.gmail.socraticphoenix.forge.randore.item.FlexibleBattleaxe;
+import com.gmail.socraticphoenix.forge.randore.item.FlexibleBow;
 import com.gmail.socraticphoenix.forge.randore.item.FlexibleHoe;
 import com.gmail.socraticphoenix.forge.randore.item.FlexibleItemArmor;
 import com.gmail.socraticphoenix.forge.randore.item.FlexibleItemBlock;
 import com.gmail.socraticphoenix.forge.randore.item.FlexibleItemRegistry;
 import com.gmail.socraticphoenix.forge.randore.item.FlexibleMaterial;
 import com.gmail.socraticphoenix.forge.randore.item.FlexiblePickaxe;
+import com.gmail.socraticphoenix.forge.randore.item.FlexibleSledgehammer;
 import com.gmail.socraticphoenix.forge.randore.item.FlexibleSpade;
 import com.gmail.socraticphoenix.forge.randore.item.FlexibleStick;
 import com.gmail.socraticphoenix.forge.randore.item.FlexibleSword;
 import net.minecraft.block.Block;
+import net.minecraft.enchantment.Enchantment;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraftforge.event.RegistryEvent;
@@ -83,9 +88,13 @@ public class RandoresRegistryListener {
     }
 
     @SubscribeEvent
+    public void onEnchantRegister(RegistryEvent.Register<Enchantment> ev) {
+        ev.getRegistry().register(new EmpoweredEnchantment());
+    }
+
+    @SubscribeEvent
     public void onItemRegister(RegistryEvent.Register<Item> ev) {
         Randores.getInstance().getLogger().info("Initializing Items...");
-        int n = 0;
 
         for (int i = 0; i < Randores.registeredAmount(); i++) {
             FlexibleMaterial material = new FlexibleMaterial(i);
@@ -103,11 +112,9 @@ public class RandoresRegistryListener {
             OreDictionary.registerOre("stickWood", stick);
         }
 
-        n = 0;
-        for(Block torch : FlexibleBlockRegistry.getTorches()) {
-            Item item = new FlexibleItemBlock(torch, n, Components.TORCH).setUnlocalizedName(torch.getUnlocalizedName()).setRegistryName(torch.getRegistryName());
+        for(FlexibleTorch torch : FlexibleBlockRegistry.getTorches()) {
+            Item item = new FlexibleItemBlock(torch, torch.index(), Components.TORCH).setUnlocalizedName(torch.getUnlocalizedName()).setRegistryName(torch.getRegistryName());
             ev.getRegistry().register(item);
-            n++;
             OreDictionary.registerOre("torch", torch);
         }
 
@@ -144,11 +151,34 @@ public class RandoresRegistryListener {
         }
 
         for (int i = 0; i < Randores.registeredAmount(); i++) {
+            FlexibleBow bow = new FlexibleBow(i);
+            bow.setUnlocalizedName(Randores.bowName(i)).setRegistryName(Randores.bowName(i)).setCreativeTab(Randores.TAB_BOW);
+            FlexibleItemRegistry.addBow(bow);
+            ev.getRegistry().register(bow);
+        }
+
+        for (int i = 0; i < Randores.registeredAmount(); i++) {
             FlexiblePickaxe pickaxe = new FlexiblePickaxe(i);
             int loc = CraftableType.PICKAXE.getIndex(i);
             pickaxe.setUnlocalizedName(Randores.itemName(loc)).setRegistryName(Randores.itemName(loc)).setCreativeTab(Randores.TAB_PICKAXES);
             FlexibleItemRegistry.addPickaxe(pickaxe);
             ev.getRegistry().register(pickaxe);
+        }
+
+        for (int i = 0; i < Randores.registeredAmount(); i++) {
+            FlexibleBattleaxe battleaxe = new FlexibleBattleaxe(i);
+            int loc = CraftableType.BATTLEAXE.getIndex(i);
+            battleaxe.setUnlocalizedName(Randores.itemName(loc)).setRegistryName(Randores.itemName(loc)).setCreativeTab(Randores.TAB_BATTLEAXES);
+            FlexibleItemRegistry.addBattleaxe(battleaxe);
+            ev.getRegistry().register(battleaxe);
+        }
+
+        for (int i = 0; i < Randores.registeredAmount(); i++) {
+            FlexibleSledgehammer sledgehammer = new FlexibleSledgehammer(i);
+            int loc = CraftableType.SLEDGEHAMMER.getIndex(i);
+            sledgehammer.setUnlocalizedName(Randores.itemName(loc)).setRegistryName(Randores.itemName(loc)).setCreativeTab(Randores.TAB_SLEDGEHAMMERS);
+            FlexibleItemRegistry.addSledgehammer(sledgehammer);
+            ev.getRegistry().register(sledgehammer);
         }
 
         for (int i = 0; i < Randores.registeredAmount(); i++) {
@@ -177,18 +207,14 @@ public class RandoresRegistryListener {
             ev.getRegistry().register(boots);
         }
 
-        n = 0;
         for (FlexibleOre block : FlexibleBlockRegistry.getOres()) {
-            Item item = new FlexibleItemBlock(block, n, Components.ORE).setUnlocalizedName(block.getUnlocalizedName()).setRegistryName(block.getRegistryName());
+            Item item = new FlexibleItemBlock(block, block.index(), Components.ORE).setUnlocalizedName(block.getUnlocalizedName()).setRegistryName(block.getRegistryName());
             ev.getRegistry().register(item);
-            n++;
         }
 
-        n = 0;
-        for (Block brick : FlexibleBlockRegistry.getBricks()) {
-            Item item = new FlexibleItemBlock(brick, n, Components.BRICKS).setUnlocalizedName(brick.getUnlocalizedName()).setRegistryName(brick.getRegistryName());
+        for (FlexibleBrick brick : FlexibleBlockRegistry.getBricks()) {
+            Item item = new FlexibleItemBlock(brick, brick.index(), Components.BRICKS).setUnlocalizedName(brick.getUnlocalizedName()).setRegistryName(brick.getRegistryName());
             ev.getRegistry().register(item);
-            n++;
         }
 
 
@@ -208,6 +234,9 @@ public class RandoresRegistryListener {
         ev.getRegistry().register(RandoresTabItems.tabHelmet);
         ev.getRegistry().register(RandoresTabItems.tabItem);
         ev.getRegistry().register(RandoresTabItems.tabStick);
+        ev.getRegistry().register(RandoresTabItems.tabBattleaxe);
+        ev.getRegistry().register(RandoresTabItems.tabSledgehammer);
+        ev.getRegistry().register(RandoresTabItems.tabBow);
         ev.getRegistry().register(new ItemBlock(RandoresTabBlocks.tabOre).setUnlocalizedName(RandoresTabBlocks.tabOre.getUnlocalizedName()).setRegistryName(RandoresTabBlocks.tabOre.getRegistryName()));
         ev.getRegistry().register(new ItemBlock(RandoresTabBlocks.tabTorch).setUnlocalizedName(RandoresTabBlocks.tabTorch.getUnlocalizedName()).setRegistryName(RandoresTabBlocks.tabTorch.getRegistryName()));
     }

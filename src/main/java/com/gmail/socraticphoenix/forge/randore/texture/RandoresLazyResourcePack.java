@@ -57,9 +57,26 @@ public class RandoresLazyResourcePack implements IResourcePack {
     }
 
     private static String generateItemModel(String path) {
-        String name = path.replaceFirst(Pattern.quote("models/item/"), "").replace(".json", "");
-        String[] pieces = name.split(Pattern.quote("."));
-        return generateItemModel(Integer.parseInt(pieces[2]), pieces[1].equals("block"));
+        if(path.contains("bow")) {
+            return generateBowModel(path);
+        } else {
+            String name = path.replaceFirst(Pattern.quote("models/item/"), "").replace(".json", "");
+            String[] pieces = name.split(Pattern.quote("."));
+            return generateItemModel(Integer.parseInt(pieces[2]), pieces[1].equals("block"));
+        }
+    }
+
+    private static String generateBowModel(String path) {
+        if(path.contains("pulling")) {
+            String name = path.replaceFirst(Pattern.quote("models/item/"), "").replace(".json", "");
+            String[] pieces = name.replace("_pulling_0", "").replace("_pulling_1", "").replace("_pulling_2", "").split(Pattern.quote("."));
+            String[] pullingPieces = name.split("_");
+            return RandoresModelTemplates.make(RandoresModelTemplates.bowPulling(Integer.parseInt(pullingPieces[pullingPieces.length - 1])), Integer.parseInt(pieces[3]));
+        } else {
+            String name = path.replaceFirst(Pattern.quote("models/item/"), "").replace(".json", "");
+            String[] pieces = name.split(Pattern.quote("."));
+            return RandoresModelTemplates.make(RandoresModelTemplates.bowNormal(), Integer.parseInt(pieces[3]));
+        }
     }
 
     private static String generateBlockModel(String path) {
@@ -89,6 +106,8 @@ public class RandoresLazyResourcePack implements IResourcePack {
             case PICKAXE:
             case SHOVEL:
             case SWORD:
+            case BATTLEAXE:
+            case SLEDGEHAMMER:
                 return RandoresModelTemplates.make(RandoresModelTemplates.toolItem(), index);
             case BOOTS:
             case CHESTPLATE:
@@ -140,7 +159,7 @@ public class RandoresLazyResourcePack implements IResourcePack {
 
     @Override
     public boolean resourceExists(ResourceLocation location) {
-        return location.getResourceDomain().equals(DOMAIN) && location.getResourcePath().contains("randores.") && (location.getResourcePath().contains("blockstates") || location.getResourcePath().contains("models"));
+        return location.getResourceDomain().equals(DOMAIN) && location.getResourcePath().endsWith(".json") && location.getResourcePath().contains("randores.") && (location.getResourcePath().contains("blockstates") || location.getResourcePath().contains("models"));
     }
 
     @Override
@@ -161,7 +180,7 @@ public class RandoresLazyResourcePack implements IResourcePack {
 
     @Override
     public String getPackName() {
-        return "RandoresLazyModels";
+        return "RandoresCustomPack:LazyModels";
     }
 
 }

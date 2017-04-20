@@ -98,6 +98,8 @@ public class JEIRandoresConfig implements IModPlugin {
 
     @Override
     public void register(IModRegistry registry) {
+        registry.addRecipeCategoryCraftingItem(new ItemStack(CraftingBlocks.craftiniumTable), VanillaRecipeCategoryUid.CRAFTING);
+
         if (RandoresClientSideRegistry.isInitialized()) {
             registry.getIngredientRegistry().getIngredients(ItemStack.class);
             IJeiHelpers jeiHelpers = registry.getJeiHelpers();
@@ -140,7 +142,11 @@ public class JEIRandoresConfig implements IModPlugin {
             blacklist.addIngredientToBlacklist(new ItemStack(RandoresTabItems.tabShovel));
             blacklist.addIngredientToBlacklist(new ItemStack(RandoresTabItems.tabStick));
             blacklist.addIngredientToBlacklist(new ItemStack(RandoresTabItems.tabSword));
+            blacklist.addIngredientToBlacklist(new ItemStack(RandoresTabItems.tabBattleaxe));
+            blacklist.addIngredientToBlacklist(new ItemStack(RandoresTabItems.tabSledgehammer));
+            blacklist.addIngredientToBlacklist(new ItemStack(RandoresTabItems.tabBow));
             blacklist.addIngredientToBlacklist(new ItemStack(RandoresTabBlocks.tabOre));
+            blacklist.addIngredientToBlacklist(new ItemStack(RandoresTabBlocks.tabTorch));
 
             for (MaterialDefinition definition : MaterialDefinitionRegistry.get(RandoresClientSideRegistry.getCurrentSeed())) {
                 for (CraftableType type : CraftableType.values()) {

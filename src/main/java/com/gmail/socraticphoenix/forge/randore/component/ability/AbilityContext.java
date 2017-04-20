@@ -19,47 +19,37 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.gmail.socraticphoenix.forge.randore.packet;
+package com.gmail.socraticphoenix.forge.randore.component.ability;
 
-import io.netty.buffer.ByteBuf;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import net.minecraft.entity.EntityLivingBase;
 
-public class RandoresPacket implements IMessage {
-    private long seed;
-    private int oreCount;
+public class AbilityContext {
+    private EntityLivingBase attacker;
+    private EntityLivingBase target;
 
-    public RandoresPacket() {
-        this.seed = 0;
-        this.oreCount = 0;
+    public AbilityContext(EntityLivingBase attacker, EntityLivingBase target) {
+        this.attacker = attacker;
+        this.target = target;
     }
 
-    public int getOreCount() {
-        return this.oreCount;
+    public AbilityContext() {
+        this(null, null);
     }
 
-    public RandoresPacket setOreCount(int oreCount) {
-        this.oreCount = oreCount;
-        return this;
+    public boolean hasTarget() {
+        return this.target != null;
     }
 
-    public long getSeed() {
-        return this.seed;
+    public EntityLivingBase getTarget() {
+        return this.target;
     }
 
-    public RandoresPacket setSeed(long seed) {
-        this.seed = seed;
-        return this;
+    public boolean hasAttacker() {
+        return this.attacker != null;
     }
 
-    @Override
-    public void fromBytes(ByteBuf buf) {
-        this.setSeed(buf.readLong()).setOreCount(buf.readInt());
-    }
-
-    @Override
-    public void toBytes(ByteBuf buf) {
-        buf.writeLong(this.getSeed());
-        buf.writeInt(this.getOreCount());
+    public EntityLivingBase getAttacker() {
+        return this.attacker;
     }
 
 }

@@ -26,6 +26,7 @@ import com.gmail.socraticphoenix.forge.randore.component.Components;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinition;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinitionRegistry;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.config.ConfigCategory;
@@ -57,6 +58,9 @@ public class RandoresStarterKit {
                 while ((!material.hasComponent(Components.HELMET) || !material.hasComponent(Components.PICKAXE)) && times < 500);
                 if (material.hasComponent(Components.SWORD)) {
                     entity.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(material.getComponent(Components.SWORD).makeItem()));
+                } else if (material.hasComponent(Components.BOW)) {
+                    entity.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(material.getComponent(Components.BOW).makeItem()));
+                    entity.inventory.addItemStackToInventory(new ItemStack(Items.ARROW, 16));
                 } else if (material.hasComponent(Components.AXE)) {
                     entity.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(material.getComponent(Components.AXE).makeItem()));
                 }

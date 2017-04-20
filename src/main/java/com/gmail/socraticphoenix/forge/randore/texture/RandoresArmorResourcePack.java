@@ -95,7 +95,7 @@ public class RandoresArmorResourcePack implements IResourcePack {
 
     @Override
     public String getPackName() {
-        return "RandoresAmrorModels";
+        return "RandoresCustomPack:ArmorModels";
     }
 
 }

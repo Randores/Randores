@@ -41,12 +41,12 @@ import org.apache.logging.log4j.Logger;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-public class RandoresPacketHandler implements IMessageHandler<RandoresPacket, IMessage> {
+public class RandoresSeedPacketHandler implements IMessageHandler<RandoresSeedPacket, IMessage> {
     private static int index = 0;
 
     @Override
     @SideOnly(Side.CLIENT)
-    public IMessage onMessage(final RandoresPacket message, final MessageContext ctx) {
+    public IMessage onMessage(final RandoresSeedPacket message, final MessageContext ctx) {
         Runnable runnable = new Runnable() {
             @Override
             @SideOnly(Side.CLIENT)
@@ -89,12 +89,19 @@ public class RandoresPacketHandler implements IMessageHandler<RandoresPacket, IM
                                     } catch (InterruptedException ignore) {
 
                                     }
-
-                                    Minecraft.getMinecraft().scheduleResourcesRefresh();
+                                    Minecraft.getMinecraft().addScheduledTask(new Runnable() {
+                                        @Override
+                                        @SideOnly(Side.CLIENT)
+                                        public void run() {
+                                            RandoresNetworking.INSTANCE.sendToServer(new RandoresTexturePacket().setLoading(true));
+                                            Minecraft.getMinecraft().refreshResources();
+                                            RandoresNetworking.INSTANCE.sendToServer(new RandoresTexturePacket().setLoading(false));
+                                        }
+                                    });
                                 }
                             }).start();
                         } else {
-                            player.sendMessage(new TextComponentString("[Randores] " +  RandoresTranslations.get(RandoresClientSideRegistry.getCurrentLocale(), RandoresTranslations.Keys.RESOURCES_LOADED)));
+                            player.sendMessage(new TextComponentString("[Randores] " + RandoresTranslations.get(RandoresClientSideRegistry.getCurrentLocale(), RandoresTranslations.Keys.RESOURCES_LOADED)));
                         }
                         FlexibleTextureRegistry.setInitialized(true);
                         FlexibleTextureRegistry.setTextureSeed(seed);

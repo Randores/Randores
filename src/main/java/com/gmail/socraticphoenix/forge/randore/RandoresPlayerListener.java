@@ -22,7 +22,7 @@
 package com.gmail.socraticphoenix.forge.randore;
 
 import com.gmail.socraticphoenix.forge.randore.packet.RandoresNetworking;
-import com.gmail.socraticphoenix.forge.randore.packet.RandoresPacket;
+import com.gmail.socraticphoenix.forge.randore.packet.RandoresSeedPacket;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.world.World;
@@ -54,7 +54,7 @@ public class RandoresPlayerListener {
             long seed = Randores.getRandoresSeed(world);
             if (!this.playersSeed.containsKey(id) || this.playersSeed.get(id) != seed) {
                 Randores.getInstance().getConfiguration().load();
-                RandoresNetworking.INSTANCE.sendTo(new RandoresPacket().setSeed(Randores.getRandoresSeed(world)).setOreCount(Randores.getOreCountConfigProperty()), playerMP);
+                RandoresNetworking.INSTANCE.sendTo(new RandoresSeedPacket().setSeed(Randores.getRandoresSeed(world)).setOreCount(Randores.getOreCountConfigProperty()), playerMP);
             }
             this.playersSeed.put(id, seed);
         }
@@ -70,7 +70,7 @@ public class RandoresPlayerListener {
             long seed = Randores.getRandoresSeed(world);
             if (!this.playersSeed.containsKey(id) || this.playersSeed.get(id) != seed) {
                 Randores.getInstance().getConfiguration().load();
-                RandoresNetworking.INSTANCE.sendTo(new RandoresPacket().setSeed(Randores.getRandoresSeed(world)).setOreCount(Randores.getOreCountConfigProperty()), playerMP);
+                RandoresNetworking.INSTANCE.sendTo(new RandoresSeedPacket().setSeed(Randores.getRandoresSeed(world)).setOreCount(Randores.getOreCountConfigProperty()), playerMP);
             }
             this.playersSeed.put(id, seed);
         }

@@ -24,6 +24,7 @@ package com.gmail.socraticphoenix.forge.randore;
 import com.gmail.socraticphoenix.forge.randore.component.CraftableType;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinition;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinitionRegistry;
+import com.gmail.socraticphoenix.forge.randore.component.ability.ScheduleListener;
 import com.gmail.socraticphoenix.forge.randore.crafting.CraftingBlocks;
 import com.gmail.socraticphoenix.forge.randore.crafting.CraftingGuiHandler;
 import com.gmail.socraticphoenix.forge.randore.crafting.CraftingItems;
@@ -39,6 +40,7 @@ import com.gmail.socraticphoenix.forge.randore.crafting.table.FlexibleCraftingRe
 import com.gmail.socraticphoenix.forge.randore.crafting.table.FlexibleRecipe;
 import com.gmail.socraticphoenix.forge.randore.item.FlexibleItem;
 import com.gmail.socraticphoenix.forge.randore.item.FlexibleItemRegistry;
+import com.gmail.socraticphoenix.forge.randore.item.SledgehammerHitListener;
 import com.gmail.socraticphoenix.forge.randore.module.altar.RandoresAltarGenerator;
 import com.gmail.socraticphoenix.forge.randore.module.equip.RandoresMobEquip;
 import com.gmail.socraticphoenix.forge.randore.module.loot.RandoresLoot;
@@ -72,6 +74,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.oredict.RecipeSorter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -142,6 +145,24 @@ public class Randores {
             return RandoresTabItems.tabShovel;
         }
     }, true);
+    public static final CreativeTabs TAB_BOW = new RandoresTab("randores_bows", new Supplier<Item>() {
+        @Override
+        public Item get() {
+            return RandoresTabItems.tabBow;
+        }
+    }, true);
+    public static final CreativeTabs TAB_SLEDGEHAMMERS = new RandoresTab("randores_sledgehammers", new Supplier<Item>() {
+        @Override
+        public Item get() {
+            return RandoresTabItems.tabSledgehammer;
+        }
+    }, true);
+    public static final CreativeTabs TAB_BATTLEAXES = new RandoresTab("randores_battleaxes", new Supplier<Item>() {
+        @Override
+        public Item get() {
+            return RandoresTabItems.tabBattleaxe;
+        }
+    }, true);
     public static final CreativeTabs TAB_ARMOR = new RandoresTab("randores_armor", new Supplier<Item>() {
         @Override
         public Item get() {
@@ -163,6 +184,7 @@ public class Randores {
     private static int registeredamount;
     private Logger logger;
     private File confDir;
+    private File packs;
     private File conf;
     private Configuration configuration;
 
@@ -170,6 +192,7 @@ public class Randores {
         Randores.instance = this;
         this.confDir = new File("config", "randores");
         this.conf = new File(this.confDir, "config.cfg");
+        this.packs = new File(this.confDir, "packs");
         this.configuration = new Configuration(this.conf);
         this.logger = LogManager.getLogger("Randores");
         ConfigCategory config = this.getConfiguration().getCategory("config");
@@ -182,6 +205,9 @@ public class Randores {
         if (FMLCommonHandler.instance().getSide() == Side.CLIENT) {
             MinecraftForge.EVENT_BUS.register(new RandoresClientSideListener());
         }
+
+        MinecraftForge.EVENT_BUS.register(new RandoresInvulnerabilityListener());
+
         MinecraftForge.EVENT_BUS.register(new RandoresRegistryListener());
         MinecraftForge.EVENT_BUS.register(new RandoresPlayerListener());
         MinecraftForge.EVENT_BUS.register(new RandoresLivingUpdate());
@@ -191,6 +217,10 @@ public class Randores {
         MinecraftForge.EVENT_BUS.register(new RandoresMobEquip());
         MinecraftForge.EVENT_BUS.register(new RandoresLoot());
         MinecraftForge.EVENT_BUS.register(new RandoresStarterKit());
+
+        //Items
+        MinecraftForge.EVENT_BUS.register(new SledgehammerHitListener());
+        MinecraftForge.EVENT_BUS.register(new ScheduleListener());
     }
 
     private static long getRandoresSeedFromWorld(long worldSeed) {
@@ -244,6 +274,14 @@ public class Randores {
         return "randores.item." + num;
     }
 
+    public static String bowName(int num) {
+        return "randores.item.bow." + num;
+    }
+
+    public static String bowTexturePre(int num) {
+        return "randores:items/randores.item.bow." + num;
+    }
+
     public static ItemStack applyData(ItemStack stack, long seed) {
         if (stack.getItem() instanceof FlexibleItem) {
             FlexibleItem item = (FlexibleItem) stack.getItem();
@@ -278,6 +316,20 @@ public class Randores {
 
     public static boolean hasRandoresSeed(ItemStack stack) {
         return stack.getSubCompound("randores") != null && stack.getSubCompound("randores").hasKey("seed");
+    }
+
+    public static String getTexturePack() {
+        String pack = "vanilla";
+        Configuration config = Randores.getInstance().getConfiguration();
+        ConfigCategory category = config.getCategory("config");
+        if(!category.containsKey("pack")) {
+            Property property = new Property("pack", pack, Property.Type.STRING);
+            category.put("pack", property);
+            config.save();
+        } else {
+            pack = category.get("pack").getString();
+        }
+        return pack;
     }
 
     public static int getOreCountConfigProperty() {
@@ -342,17 +394,19 @@ public class Randores {
 
             Randores.getOreCountConfigProperty();
 
+            GameRegistry.registerFuelHandler(new RandoresFuelHandler());
+
             ConfigCategory modules = this.getConfiguration().getCategory("modules");
             if (!modules.containsKey("mobequip")) {
-                modules.put("mobequip", new Property("mobequip", "false", Property.Type.BOOLEAN));
+                modules.put("mobequip", new Property("mobequip", "true", Property.Type.BOOLEAN));
             }
 
             if (!modules.containsKey("dungeonloot")) {
-                modules.put("dungeonloot", new Property("dungeonloot", "false", Property.Type.BOOLEAN));
+                modules.put("dungeonloot", new Property("dungeonloot", "true", Property.Type.BOOLEAN));
             }
 
             if (!modules.containsKey("dimensionless")) {
-                modules.put("dimensionless", new Property("dimensionless", "false", Property.Type.BOOLEAN));
+                modules.put("dimensionless", new Property("dimensionless", "true", Property.Type.BOOLEAN));
             }
 
             if (!modules.containsKey("starterkit")) {
@@ -360,7 +414,7 @@ public class Randores {
             }
 
             if (!modules.containsKey("altar")) {
-                modules.put("altar", new Property("altar", "false", Property.Type.BOOLEAN));
+                modules.put("altar", new Property("altar", "true", Property.Type.BOOLEAN));
             }
 
             if (!modules.containsKey("youtubemode")) {
@@ -383,6 +437,9 @@ public class Randores {
             CraftingManager.getInstance().addRecipe(new ItemStack(CraftingBlocks.craftiniumTable), "XX ", "XX ", 'X', CraftingItems.craftiniumLump);
             CraftingManager.getInstance().addRecipe(forge, "XXX", "X X", "XXX", 'X', CraftingItems.craftiniumLump);
 
+            RecipeSorter.register("randores:forge_upgrade", CraftiniumForgeUpgradeRecipe.class, RecipeSorter.Category.SHAPED, "after:minecraft:shaped");
+            RecipeSorter.register("randores:flexible_recipe", FlexibleCraftingRecipe.class, RecipeSorter.Category.SHAPED, "after:minecraft:shaped");
+
             CraftiniumForgeUpgradeRecipe upgradeRecipe = new CraftiniumForgeUpgradeRecipe();
             upgradeRecipe.u(CraftingItems.craftiniumLump, 1 / 8f);
             CraftingManager.getInstance().addRecipe(upgradeRecipe);
@@ -390,8 +447,8 @@ public class Randores {
             for (int i = 0; i < Randores.registeredAmount(); i++) {
                 Item material = FlexibleItemRegistry.getMaterial(i);
                 for (CraftableType type : CraftableType.values()) {
-                    CraftiniumRecipeRegistry.register(new FlexibleRecipe(i, type, 'X', material, 'S', "stickWood", 'T', "torch"));
-                    CraftingManager.getInstance().addRecipe(new FlexibleCraftingRecipe(i, type, 'X', material, 'S', "stickWood", 'T', "torch"));
+                    CraftiniumRecipeRegistry.register(new FlexibleRecipe(i, type, 'X', material, 'S', "stickWood", 'T', "torch", 'R', "string"));
+                    CraftingManager.getInstance().addRecipe(new FlexibleCraftingRecipe(i, type, 'X', material, 'S', "stickWood", 'T', "torch", 'R', "string"));
                 }
                 CraftiniumSmeltRegistry.register(new FlexibleSmelt(i));
             }
@@ -430,7 +487,9 @@ public class Randores {
     public void onPostInit(FMLPostInitializationEvent ev) {
         this.logger.info("Adding crafting table recipes to craftinium table and furnace recipes to craftinium forge...");
         for (IRecipe recipe : CraftingManager.getInstance().getRecipeList()) {
-            CraftiniumRecipeRegistry.register(new CraftiniumDelegateRecipe(recipe));
+            if(!(recipe instanceof FlexibleCraftingRecipe)) {
+                CraftiniumRecipeRegistry.register(new CraftiniumDelegateRecipe(recipe));
+            }
         }
         for (Map.Entry<ItemStack, ItemStack> smelt : FurnaceRecipes.instance().getSmeltingList().entrySet()) {
             CraftiniumSmeltRegistry.register(new CraftiniumDelegateSmelt(smelt.getKey(), smelt.getValue(), FurnaceRecipes.instance().getSmeltingExperience(smelt.getKey())));
@@ -448,6 +507,10 @@ public class Randores {
 
     public File getConf() {
         return this.conf;
+    }
+
+    public File getPackDir() {
+        return this.packs;
     }
 
 }

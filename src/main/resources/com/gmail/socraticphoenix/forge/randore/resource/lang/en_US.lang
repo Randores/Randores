@@ -1,5 +1,5 @@
 randores.texture.reloading=Reloading your resources! Expect a screen freeze for ~30 seconds.
-randores.material.information=Randores Material Information
+randores.material.information=Material Information
 randores.material.name=Name
 randores.material.efficiency=Efficiency
 randores.materials.full_armor=Full Armor
@@ -40,3 +40,13 @@ randores.name.format=${name} ${item}
 randores.texture.loaded=Your resources are already loaded!
 randores.recipes.torch=Torches
 randores.items.torch=Encased Torch
+------------ End of Translations Block 2 ------------
+randores.items.bow=Bow
+randores.recipes.bow=Bow
+randores.crafting.forge_power=Furnace Speed
+randores.items.battleaxe=Battle Axe
+randores.recipes.battleaxe=Battle Axe
+randores.items.sledgehammer=Sledgehammer
+randores.recipes.sledgehammer=Sledgehammer
+randores.materials.properties=Properties
+randores.properties.flammable=Flammable

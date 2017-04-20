@@ -35,8 +35,11 @@ public enum CraftableType {
     CHESTPLATE(0, RandoresTranslations.Keys.CHESTPLATE, "chestplate", "X X", "XXX", "XXX"),
     HELMET(0, RandoresTranslations.Keys.HELMET, "helmet", "XXX", "X X", "   "),
     LEGGINGS(0, RandoresTranslations.Keys.LEGGINGS, "leggings", "XXX", "X X", "X X"),
-    BRICKS(10, RandoresTranslations.Keys.BRICKS, "brick", "XX ", "XX ", "   "),
-    TORCH(10, RandoresTranslations.Keys.TORCH, "torch", "XXX", "XTX", "XXX");
+    BATTLEAXE(0, RandoresTranslations.Keys.BATTLEAXE, "battleaxe", "XXX", "XSX", " S "),
+    SLEDGEHAMMER(0, RandoresTranslations.Keys.SLEDGEHAMMER, "sledgehammer", " XX", " SX", "S  "),
+    BOW(0, RandoresTranslations.Keys.BOW, "bow", " XR", "S R", " XR"),
+    BRICKS(-1, RandoresTranslations.Keys.BRICKS, "brick", "XX ", "XX ", "   "),
+    TORCH(-1, RandoresTranslations.Keys.TORCH, "torch", "XXX", "XTX", "XXX");
 
     private String template;
     private String name;
@@ -51,7 +54,7 @@ public enum CraftableType {
     }
 
     public boolean isBlock() {
-        return this.subtraction == 10;
+        return this.getSubtraction() == BRICKS.ordinal();
     }
 
     public String getName() {
@@ -75,7 +78,14 @@ public enum CraftableType {
     }
 
     public int getIndex(int index) {
-        return index + (Randores.registeredAmount() * (this.ordinal() + 1 - this.subtraction));
+        return index + (Randores.registeredAmount() * (this.ordinal() + 1 - this.getSubtraction()));
+    }
+
+    public int getSubtraction() {
+        if (this.subtraction == -1) {
+            this.subtraction = BRICKS.ordinal();
+        }
+        return this.subtraction;
     }
 
 

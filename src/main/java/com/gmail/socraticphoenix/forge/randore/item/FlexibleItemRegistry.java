@@ -38,6 +38,9 @@ public class FlexibleItemRegistry {
     private static List<FlexibleAxe> axes = Collections.synchronizedList(new ArrayList<FlexibleAxe>());
     private static List<FlexiblePickaxe> pickaxes = Collections.synchronizedList(new ArrayList<FlexiblePickaxe>());
     private static List<FlexibleSpade> spades = Collections.synchronizedList(new ArrayList<FlexibleSpade>());
+    private static List<FlexibleBattleaxe> battleaxes = Collections.synchronizedList(new ArrayList<FlexibleBattleaxe>());
+    private static List<FlexibleSledgehammer> sledgehammers = Collections.synchronizedList(new ArrayList<FlexibleSledgehammer>());
+    private static List<FlexibleBow> bows = Collections.synchronizedList(new ArrayList<FlexibleBow>());
     private static List<FlexibleItemArmor> helmets = Collections.synchronizedList(new ArrayList<FlexibleItemArmor>());
     private static List<FlexibleItemArmor> chestplates = Collections.synchronizedList(new ArrayList<FlexibleItemArmor>());
     private static List<FlexibleItemArmor> leggings = Collections.synchronizedList(new ArrayList<FlexibleItemArmor>());
@@ -78,12 +81,57 @@ public class FlexibleItemRegistry {
                 return FlexibleBlockRegistry.getBricks().get(index);
             case TORCH:
                 return FlexibleBlockRegistry.getTorches().get(index);
+            case BOW:
+                return FlexibleItemRegistry.getBow(index);
+            case BATTLEAXE:
+                return FlexibleItemRegistry.getBattleaxe(index);
+            case SLEDGEHAMMER:
+                return FlexibleItemRegistry.getSledgehammer(index);
         }
         throw new IllegalArgumentException("Unknown component: " + components);
     }
 
     public static Item get(CraftableType type, int index) {
         return FlexibleItemRegistry.get(Components.fromCraftable(type), index).getThis();
+    }
+
+    public static FlexibleSledgehammer getSledgehammer(int index) {
+        return FlexibleItemRegistry.sledgehammers.get(index);
+    }
+
+    public static List<FlexibleSledgehammer> getSledgehammers() {
+        return FlexibleItemRegistry.sledgehammers;
+    }
+
+    public static void addSledgehammer(FlexibleSledgehammer sledgehammer) {
+        FlexibleItemRegistry.sledgehammers.add(sledgehammer);
+        FlexibleItemRegistry.all.add(sledgehammer);
+    }
+
+    public static FlexibleBattleaxe getBattleaxe(int index) {
+        return FlexibleItemRegistry.battleaxes.get(index);
+    }
+
+    public static List<FlexibleBattleaxe> getBattleaxes() {
+        return FlexibleItemRegistry.battleaxes;
+    }
+
+    public static void addBattleaxe(FlexibleBattleaxe battleaxe) {
+        FlexibleItemRegistry.battleaxes.add(battleaxe);
+        FlexibleItemRegistry.all.add(battleaxe);
+    }
+
+    public static FlexibleBow getBow(int index) {
+        return FlexibleItemRegistry.bows.get(index);
+    }
+
+    public static List<FlexibleBow> getBows() {
+        return FlexibleItemRegistry.bows;
+    }
+
+    public static void addBow(FlexibleBow bow) {
+        FlexibleItemRegistry.bows.add(bow);
+        FlexibleItemRegistry.all.add(bow);
     }
 
     public static FlexibleItemArmor getBoots(int index) {

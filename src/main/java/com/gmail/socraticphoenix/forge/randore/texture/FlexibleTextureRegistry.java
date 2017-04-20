@@ -30,6 +30,7 @@ import java.util.concurrent.atomic.AtomicLong;
 public class FlexibleTextureRegistry {
     private static List<FlexibleAtlasSprite> block = Collections.synchronizedList(new ArrayList<FlexibleAtlasSprite>());
     private static List<FlexibleAtlasSprite> item = Collections.synchronizedList(new ArrayList<FlexibleAtlasSprite>());
+    private static List<FlexibleAtlasSprite> bow = Collections.synchronizedList(new ArrayList<FlexibleAtlasSprite>());
     private static AtomicLong textureSeed = new AtomicLong(0);
     private static AtomicBoolean initialized = new AtomicBoolean(false);
 
@@ -47,6 +48,18 @@ public class FlexibleTextureRegistry {
 
     public static void setInitialized(boolean initialized) {
         FlexibleTextureRegistry.initialized.set(initialized);
+    }
+
+    public static void registerBow(FlexibleAtlasSprite sprite) {
+        FlexibleTextureRegistry.bow.add(sprite);
+    }
+
+    public static FlexibleAtlasSprite getBow(int index) {
+        return FlexibleTextureRegistry.bow.get(index);
+    }
+
+    public static List<FlexibleAtlasSprite> getBowSprites() {
+        return FlexibleTextureRegistry.bow;
     }
 
     public static void registerBlock(FlexibleAtlasSprite sprite) {
@@ -81,4 +94,7 @@ public class FlexibleTextureRegistry {
         return FlexibleTextureRegistry.item;
     }
 
+    public static int bowQuantity() {
+        return FlexibleTextureRegistry.bow.size();
+    }
 }

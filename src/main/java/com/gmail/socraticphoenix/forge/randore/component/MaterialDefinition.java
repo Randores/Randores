@@ -23,8 +23,9 @@ package com.gmail.socraticphoenix.forge.randore.component;
 
 import com.gmail.socraticphoenix.forge.randore.RandoresClientSideRegistry;
 import com.gmail.socraticphoenix.forge.randore.RandoresNameAlgorithm;
-import com.gmail.socraticphoenix.forge.randore.RandoresProbability;
 import com.gmail.socraticphoenix.forge.randore.RandoresTranslations;
+import com.gmail.socraticphoenix.forge.randore.component.property.MaterialProperty;
+import com.gmail.socraticphoenix.forge.randore.probability.RandoresProbability;
 import com.gmail.socraticphoenix.forge.randore.texture.RandoresArmorResourcePack;
 import com.gmail.socraticphoenix.forge.randore.texture.TextureData;
 import com.google.common.base.Function;
@@ -39,6 +40,7 @@ import net.minecraftforge.common.util.EnumHelper;
 import javax.annotation.Nullable;
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -75,6 +77,8 @@ public class MaterialDefinition {
     private List<CraftableComponent> craftables;
     private List<Component> components;
 
+    private Map<String, MaterialProperty> properties;
+
     private Item.ToolMaterial toolMaterial;
     private ItemArmor.ArmorMaterial armorMaterial;
 
@@ -83,7 +87,7 @@ public class MaterialDefinition {
 
     private int index;
 
-    public MaterialDefinition(Color color, OreComponent ore, List<CraftableComponent> craftables, long seed, int index) {
+    public MaterialDefinition(Color color, OreComponent ore, List<CraftableComponent> craftables, List<MaterialProperty> properties, long seed, int index) {
         this.color = color;
         this.ore = ore;
         this.material = ore.getMaterial();
@@ -101,6 +105,23 @@ public class MaterialDefinition {
         this.components.addAll(this.craftables);
         this.components.add(this.ore);
         this.components.add(this.material);
+
+        this.properties = new HashMap<String, MaterialProperty>();
+        for(MaterialProperty property : properties) {
+            this.properties.put(property.name(), property);
+        }
+    }
+
+    public MaterialProperty getProperty(String name) {
+        return this.properties.get(name);
+    }
+
+    public Collection<MaterialProperty> getProperties() {
+        return this.properties.values();
+    }
+
+    public boolean hasProperty(String name) {
+        return this.properties.containsKey(name);
     }
 
     public int getIndex() {
@@ -125,6 +146,12 @@ public class MaterialDefinition {
         if (this.hasComponent(Components.SWORD)) {
             recipes += t(RandoresTranslations.Keys.SWORD_RECIPE, locale) + ", ";
         }
+        if(this.hasComponent(Components.BATTLEAXE)) {
+            recipes += t(RandoresTranslations.Keys.BATTLEAXE_RECIPE, locale) + ", ";
+        }
+        if(this.hasComponent(Components.BOW)) {
+            recipes += t(RandoresTranslations.Keys.BOW_RECIPE, locale) + ", ";
+        }
         if (this.hasComponent(Components.STICK)) {
             recipes += t(RandoresTranslations.Keys.STICK_RECIPE, locale) + ", ";
         }
@@ -136,6 +163,16 @@ public class MaterialDefinition {
         }
         recipes = recipes.substring(0, recipes.length() - 2);
         list.add(recipes);
+
+        if(!this.properties.isEmpty()) {
+            String properties = TextFormatting.GREEN + "  " + t(RandoresTranslations.Keys.PROPERTIES, locale) + ": ";
+            for(MaterialProperty property : this.getProperties()) {
+                properties += property.getLocalName(locale) + ", ";
+            }
+            properties = properties.substring(0, properties.length() - 2);
+            list.add(properties);
+        }
+
         return list;
     }
 
@@ -146,13 +183,13 @@ public class MaterialDefinition {
             list.add(TextFormatting.GREEN + "  " + t(RandoresTranslations.Keys.EFFICIENCY, locale) + ": " + this.material.getEfficiency());
             list.add(TextFormatting.GREEN + "  " + t(RandoresTranslations.Keys.HARVEST_LEVEL, locale) + ": " + this.material.getHarvestLevel());
         }
-        if(this.hasComponent(Components.HELMET)) {
+        if (this.hasComponent(Components.HELMET)) {
             list.add(TextFormatting.GREEN + "  " + t(RandoresTranslations.Keys.FULL_ARMOR, locale) + ": " + this.totalArmor);
         }
-        if(this.hasComponent(Components.PICKAXE) || this.hasComponent(Components.SWORD)) {
+        if (this.hasComponent(Components.PICKAXE) || this.hasComponent(Components.SWORD)) {
             list.add(TextFormatting.GREEN + "  " + t(RandoresTranslations.Keys.DAMAGE, locale) + ": " + this.toolMaterial.getDamageVsEntity());
         }
-        if(this.hasComponent(Components.PICKAXE) || this.hasComponent(Components.SWORD) || this.hasComponent(Components.HELMET)) {
+        if (this.hasComponent(Components.PICKAXE) || this.hasComponent(Components.SWORD) || this.hasComponent(Components.HELMET)) {
             list.add(TextFormatting.GREEN + "  " + t(RandoresTranslations.Keys.DURABILITY, locale) + ": " + this.material.getMaxUses());
             list.add(TextFormatting.GREEN + "  " + t(RandoresTranslations.Keys.ENCHANTABILITY, locale) + ": " + this.material.getEnchantability());
         }
@@ -166,6 +203,12 @@ public class MaterialDefinition {
         if (this.hasComponent(Components.SWORD)) {
             recipes += t(RandoresTranslations.Keys.SWORD_RECIPE, locale) + ", ";
         }
+        if(this.hasComponent(Components.BATTLEAXE)) {
+            recipes += t(RandoresTranslations.Keys.BATTLEAXE_RECIPE, locale) + ", ";
+        }
+        if(this.hasComponent(Components.BOW)) {
+            recipes += t(RandoresTranslations.Keys.BOW_RECIPE, locale) + ", ";
+        }
         if (this.hasComponent(Components.STICK)) {
             recipes += t(RandoresTranslations.Keys.STICK_RECIPE, locale) + ", ";
         }
@@ -177,6 +220,16 @@ public class MaterialDefinition {
         }
         recipes = recipes.substring(0, recipes.length() - 2);
         list.add(recipes);
+
+        if(!this.properties.isEmpty()) {
+            String properties = TextFormatting.GREEN + "  " + t(RandoresTranslations.Keys.PROPERTIES, locale) + ": ";
+            for(MaterialProperty property : this.getProperties()) {
+                properties += property.getLocalName(locale) + ", ";
+            }
+            properties = properties.substring(0, properties.length() - 2);
+            list.add(properties);
+        }
+
         return list;
     }
 
@@ -224,18 +277,25 @@ public class MaterialDefinition {
         textures.put(ore.template(), RandoresClientSideRegistry.getTemplate(ore.template()).applyWith(this.color, MaterialDefinition.DEFAULT_HUE_CHOICE));
         textures.put(material.template(), RandoresClientSideRegistry.getTemplate(material.template()).applyWith(this.color, MaterialDefinition.DEFAULT_HUE_CHOICE));
         for (CraftableComponent component : this.craftables) {
-            if (component.getType() == CraftableType.HELMET) {
-                textures.put("armor_1", RandoresClientSideRegistry.getTemplate("armor_over_base").applyWith(this.color, MaterialDefinition.ARMOR_HUE_CHOICE));
-                textures.put("armor_2", RandoresClientSideRegistry.getTemplate("armor_under_base").applyWith(this.color, MaterialDefinition.ARMOR_HUE_CHOICE));
-            }
-
-            Function<Random, Boolean> hueChoice;
-            if(component.getType() == CraftableType.BRICKS) {
-                hueChoice = MaterialDefinition.BRICK_HUE_CHOICE;
+            if (component.getType() == CraftableType.BOW) {
+                textures.put("bow_standby", RandoresClientSideRegistry.getTemplate("bow_standby_base").applyWith(this.color, MaterialDefinition.DEFAULT_HUE_CHOICE));
+                textures.put("bow_pulling_0", RandoresClientSideRegistry.getTemplate("bow_pulling_0_base").applyWith(this.color, MaterialDefinition.DEFAULT_HUE_CHOICE));
+                textures.put("bow_pulling_1", RandoresClientSideRegistry.getTemplate("bow_pulling_1_base").applyWith(this.color, MaterialDefinition.DEFAULT_HUE_CHOICE));
+                textures.put("bow_pulling_2", RandoresClientSideRegistry.getTemplate("bow_pulling_2_base").applyWith(this.color, MaterialDefinition.DEFAULT_HUE_CHOICE));
             } else {
-                hueChoice = MaterialDefinition.DEFAULT_HUE_CHOICE;
+                if (component.getType() == CraftableType.HELMET) {
+                    textures.put("armor_1", RandoresClientSideRegistry.getTemplate("armor_over_base").applyWith(this.color, MaterialDefinition.ARMOR_HUE_CHOICE));
+                    textures.put("armor_2", RandoresClientSideRegistry.getTemplate("armor_under_base").applyWith(this.color, MaterialDefinition.ARMOR_HUE_CHOICE));
+                }
+
+                Function<Random, Boolean> hueChoice;
+                if (component.getType() == CraftableType.BRICKS) {
+                    hueChoice = MaterialDefinition.BRICK_HUE_CHOICE;
+                } else {
+                    hueChoice = MaterialDefinition.DEFAULT_HUE_CHOICE;
+                }
+                textures.put(component.template(), RandoresClientSideRegistry.getTemplate(component.template()).applyWith(this.color, hueChoice));
             }
-            textures.put(component.template(), RandoresClientSideRegistry.getTemplate(component.template()).applyWith(this.color, hueChoice));
         }
         return textures;
     }
@@ -262,8 +322,8 @@ public class MaterialDefinition {
 
     public List<CraftableComponent> getCraftables(Predicate<CraftableType> filter) {
         List<CraftableComponent> components = new ArrayList<CraftableComponent>();
-        for(CraftableComponent component : this.craftables) {
-            if(filter.apply(component.getType())) {
+        for (CraftableComponent component : this.craftables) {
+            if (filter.apply(component.getType())) {
                 components.add(component);
             }
         }
@@ -276,8 +336,8 @@ public class MaterialDefinition {
 
     public List<Component> getComponents(Predicate<Components> filter) {
         List<Component> components = new ArrayList<Component>();
-        for(Component component : this.components) {
-            if(filter.apply(component.type())) {
+        for (Component component : this.components) {
+            if (filter.apply(component.type())) {
                 components.add(component);
             }
         }

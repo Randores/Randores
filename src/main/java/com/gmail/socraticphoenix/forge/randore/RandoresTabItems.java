@@ -33,6 +33,9 @@ public class RandoresTabItems {
     public static Item tabHelmet;
     public static Item tabItem;
     public static Item tabStick;
+    public static Item tabBow;
+    public static Item tabBattleaxe;
+    public static Item tabSledgehammer;
 
     public static void init() {
         tabAxe = new Item().setUnlocalizedName("tab_axe").setRegistryName("tab_axe");
@@ -43,7 +46,9 @@ public class RandoresTabItems {
         tabHelmet = new Item().setUnlocalizedName("tab_helmet").setRegistryName("tab_helmet");
         tabItem = new Item().setUnlocalizedName("tab_item").setRegistryName("tab_item");
         tabStick = new Item().setUnlocalizedName("tab_stick").setRegistryName("tab_stick");
-
+        tabBow = new Item().setUnlocalizedName("tab_bow").setRegistryName("tab_bow");
+        tabBattleaxe = new Item().setUnlocalizedName("tab_battleaxe").setRegistryName("tab_battleaxe");
+        tabSledgehammer = new Item().setUnlocalizedName("tab_sledgehammer").setRegistryName("tab_sledgehammer");
     }
 
 }

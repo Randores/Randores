@@ -22,7 +22,7 @@
 package com.gmail.socraticphoenix.forge.randore.module.altar;
 
 import com.gmail.socraticphoenix.forge.randore.Randores;
-import com.gmail.socraticphoenix.forge.randore.RandoresProbability;
+import com.gmail.socraticphoenix.forge.randore.probability.RandoresProbability;
 import com.gmail.socraticphoenix.forge.randore.component.Component;
 import com.gmail.socraticphoenix.forge.randore.component.Components;
 import com.gmail.socraticphoenix.forge.randore.component.Dimension;

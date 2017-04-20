@@ -53,44 +53,53 @@ public class RandoresClientProxy extends RandoresProxy {
         logger.info("Randores is running client-side.");
         Configuration configuration = Randores.getInstance().getConfiguration();
         configuration.load();
-        logger.info("Loading texture templates...");
+        Randores.getTexturePack();
+        logger.info("Loading vanilla texture templates...");
         try {
             List<String> dictionary = RandoresResourceManager.getResourceLines("aa_dict.txt");
+            while (dictionary.contains("")) {
+                dictionary.remove("");
+            }
+
             for (String entry : dictionary) {
                 List<String> config = RandoresResourceManager.getResourceLines(entry + ".txt");
                 BufferedImage texture = RandoresResourceManager.getImageResource(entry + ".png");
                 TextureTemplate template = new TextureTemplate(config, texture);
-                RandoresClientSideRegistry.putTemplate(entry, template);
+                RandoresClientSideRegistry.putTemplate("vanilla", entry, template);
                 logger.info("Successfully loaded texture template \"" + entry + "\"");
             }
 
             logger.info("Searching for template packs...");
-            File templates = new File(Randores.getInstance().getConfDir(), "templates");
+            File templates = Randores.getInstance().getPackDir();
             if (templates.exists()) {
                 File[] packs = templates.listFiles();
                 if (packs != null) {
-                    for (File dir : packs) {
-                        logger.info("Attempting to load pack: " + dir.getName());
-                        for (String dict : dictionary) {
-                            File tex = new File(dir, dict + ".png");
-                            File temp = new File(dir, dict + ".txt");
-                            boolean success = true;
-                            if (!tex.exists()) {
-                                logger.info("No texture for template: " + dict);
-                                success = false;
-                            }
+                    if(packs.length == 0) {
+                        logger.info("No template packs found.");
+                    } else {
+                        for (File dir : packs) {
+                            logger.info("Attempting to load pack: " + dir.getName());
+                            for (String dict : dictionary) {
+                                File tex = new File(dir, dict + ".png");
+                                File temp = new File(dir, dict + ".txt");
+                                boolean success = true;
+                                if (!tex.exists()) {
+                                    logger.info("No texture for template: " + dict);
+                                    success = false;
+                                }
 
-                            if (!temp.exists()) {
-                                logger.info("No config for template: " + dict);
-                                success = false;
-                            }
+                                if (!temp.exists()) {
+                                    logger.info("No config for template: " + dict);
+                                    success = false;
+                                }
 
-                            if (success) {
-                                TextureTemplate textureTemplate = new TextureTemplate(Files.readLines(temp, Charset.forName("UTF8")), ImageIO.read(tex));
-                                RandoresClientSideRegistry.putTemplate(dir.getName() + ":" + dict, textureTemplate);
+                                if (success) {
+                                    TextureTemplate textureTemplate = new TextureTemplate(Files.readLines(temp, Charset.forName("UTF8")), ImageIO.read(tex));
+                                    RandoresClientSideRegistry.putTemplate(dir.getName(), dict, textureTemplate);
+                                }
                             }
+                            logger.info("Finished loading pack: " + dir.getName());
                         }
-                        logger.info("Finished loading pack: " + dir.getName());
                     }
                 } else {
                     logger.info("No template packs found.");

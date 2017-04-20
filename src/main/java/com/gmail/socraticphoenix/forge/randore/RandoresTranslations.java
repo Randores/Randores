@@ -86,12 +86,15 @@ public class RandoresTranslations {
         String ORE_HARVEST_LEVEL = "randores.materials.ore_harvest";
         String CAN_HARVEST = "randores.materials.can_harvest";
         String RECIPES = "randores.materials.recipes";
+        String PROPERTIES = "randores.materials.properties";
         String TOOLS_RECIPE = "randores.recipes.tools";
         String ARMOR_RECIPE = "randores.recipes.armor";
         String SWORD_RECIPE = "randores.recipes.sword";
         String BRICKS_RECIPE = "randores.recipes.bricks";
         String STICK_RECIPE = "randores.recipes.stick";
         String TORCH_RECIPE = "randores.recipes.torch";
+        String BOW_RECIPE = "randores.recipes.bow";
+        String FORGE_POWER = "randores.crafting.forge_power";
         String CRAFTINIUM_FORGE = "randores.blocks.forge";
         String CRAFTINIUM_TABLE = "randores.blocks.table";
         String ORE = "randores.items.ore";
@@ -105,6 +108,7 @@ public class RandoresTranslations {
         String HELMET = "randores.items.helmet";
         String CHESTPLATE = "randores.items.chestplate";
         String LEGGINGS = "randores.items.leggings";
+        String BOW = "randores.items.bow";
         String BOOTS = "randores.items.boots";
         String INGOT = "randores.items.ingot";
         String DUST = "randores.items.dust";
@@ -114,6 +118,12 @@ public class RandoresTranslations {
         String SHARD = "randores.items.shard";
         String TORCH = "randores.items.torch";
         String FORMAT = "randores.name.format";
+        String BATTLEAXE = "randores.items.battleaxe";
+        String BATTLEAXE_RECIPE = "randores.recipes.battleaxe";
+        String SLEDGEHAMMER = "randores.items.sledgehammer";
+        String SLEDGEHAMMER_RECIPE = "randores.recipes.sledgehammer";
+
+
     }
 
 }

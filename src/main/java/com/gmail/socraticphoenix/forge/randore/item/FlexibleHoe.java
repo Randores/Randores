@@ -25,11 +25,13 @@ import com.gmail.socraticphoenix.forge.randore.Randores;
 import com.gmail.socraticphoenix.forge.randore.component.Components;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinition;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinitionRegistry;
+import com.gmail.socraticphoenix.forge.randore.component.ability.EmpoweredEnchantment;
 import com.google.common.collect.Multimap;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemHoe;
@@ -52,6 +54,20 @@ public class FlexibleHoe extends ItemHoe implements FlexibleItem {
         super(Randores.MATERIAL_DEFAULT);
         this.index = index;
         this.backers = new HashMap<Long, ItemHoe>();
+    }
+
+    @Override
+    public boolean canApplyAtEnchantingTable(ItemStack stack, net.minecraft.enchantment.Enchantment enchantment) {
+        return enchantment instanceof EmpoweredEnchantment || enchantment.type.canEnchantItem(Items.DIAMOND_SHOVEL);
+    }
+
+    @Override
+    public int getItemEnchantability(ItemStack stack) {
+        if(Randores.hasRandoresSeed(stack) && this.hasDefinition(Randores.getRandoresSeed(stack))) {
+            return this.getDefinition(Randores.getRandoresSeed(stack)).getToolMaterial().getEnchantability();
+        }
+
+        return super.getItemEnchantability(stack);
     }
 
     @Override
@@ -159,11 +175,6 @@ public class FlexibleHoe extends ItemHoe implements FlexibleItem {
     @Override
     public boolean isFull3D() {
         return true;
-    }
-
-    @Override
-    public String getMaterialName() {
-        return super.getMaterialName();
     }
 
     @Override

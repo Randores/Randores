@@ -27,6 +27,7 @@ import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinition;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinitionRegistry;
 import com.gmail.socraticphoenix.forge.randore.component.OreComponent;
 import com.gmail.socraticphoenix.forge.randore.crafting.CraftingBlocks;
+import com.gmail.socraticphoenix.forge.randore.probability.RandoresProbability;
 import com.gmail.socraticphoenix.forge.randore.util.IntRange;
 import com.google.common.base.Predicate;
 import net.minecraft.block.Block;

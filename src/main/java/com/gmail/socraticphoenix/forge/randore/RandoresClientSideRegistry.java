@@ -27,6 +27,7 @@ import net.minecraft.crash.CrashReport;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -36,7 +37,7 @@ import java.util.concurrent.atomic.AtomicLong;
 public class RandoresClientSideRegistry {
     private static AtomicLong currentSeed = new AtomicLong();
     private static AtomicInteger oreNumber = new AtomicInteger();
-    private static Map<String, TextureTemplate> templates = new HashMap<String, TextureTemplate>();
+    private static Map<String, Map<String, TextureTemplate>> templates = new HashMap<String, Map<String, TextureTemplate>>();
 
     public static int getOreCount() {
         return RandoresClientSideRegistry.oreNumber.get();
@@ -46,12 +47,24 @@ public class RandoresClientSideRegistry {
         RandoresClientSideRegistry.oreNumber.set(count);
     }
 
-    public static TextureTemplate getTemplate(String name) {
-        return RandoresClientSideRegistry.templates.get(name);
+    public static boolean containsTemplate(String pack, String name) {
+        return templates.containsKey(pack) && templates.get(pack).containsKey(name);
     }
 
-    public static void putTemplate(String name, TextureTemplate textureTemplate) {
-        RandoresClientSideRegistry.templates.put(name, textureTemplate);
+    public static TextureTemplate getTemplate(String name) {
+        String pack = Randores.getTexturePack();
+        if(RandoresClientSideRegistry.containsTemplate(pack, name)) {
+            return RandoresClientSideRegistry.templates.get(pack).get(name);
+        } else {
+            return RandoresClientSideRegistry.templates.get("vanilla").get(name);
+        }
+    }
+
+    public static void putTemplate(String pack, String name, TextureTemplate textureTemplate) {
+        if(!RandoresClientSideRegistry.templates.containsKey(pack)) {
+            RandoresClientSideRegistry.templates.put(pack, new HashMap<String, TextureTemplate>());
+        }
+        RandoresClientSideRegistry.templates.get(pack).put(name, textureTemplate);
     }
 
     public static long getCurrentSeed() {
@@ -62,6 +75,7 @@ public class RandoresClientSideRegistry {
         RandoresClientSideRegistry.currentSeed.set(currentSeed);
     }
 
+    @SideOnly(Side.CLIENT)
     public static EntityPlayer getClientPlayer() {
         return Minecraft.getMinecraft().player;
     }
@@ -70,6 +84,7 @@ public class RandoresClientSideRegistry {
         return FMLCommonHandler.instance().getSide() == Side.CLIENT ? RandoresClientSideRegistry.clientSideLocale() : RandoresClientSideRegistry.serverSideLocale();
     }
 
+    @SideOnly(Side.CLIENT)
     private static String clientSideLocale() {
         return Minecraft.getMinecraft().getLanguageManager().getCurrentLanguage().getLanguageCode();
     }

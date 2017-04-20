@@ -30,7 +30,8 @@ public class RandoresNetworking {
     public static final SimpleNetworkWrapper INSTANCE = NetworkRegistry.INSTANCE.newSimpleChannel("randores");
 
     public static void initNetwork() {
-        RandoresNetworking.INSTANCE.registerMessage(RandoresPacketHandler.class, RandoresPacket.class, netId++, Side.CLIENT);
+        RandoresNetworking.INSTANCE.registerMessage(RandoresSeedPacketHandler.class, RandoresSeedPacket.class, netId++, Side.CLIENT);
+        RandoresNetworking.INSTANCE.registerMessage(RandoresTexturePacketHandler.class, RandoresTexturePacket.class, netId++, Side.SERVER);
     }
 
 }

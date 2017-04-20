@@ -23,6 +23,68 @@ package com.gmail.socraticphoenix.forge.randore.texture;
 
 public class RandoresModelTemplates {
 
+    public static String bowPulling(int pull) {
+        return "{\n" +
+                "    \"parent\": \"randores:item/randores.item.bow.{#}\",\n" +
+                "    \"textures\": {\n" +
+                "        \"layer0\": \"randores:items/randores.item.bow.{#}_pulling_" + pull + "\"\n" +
+                "    }\n" +
+                "}\n";
+    }
+
+    public static String bowNormal() {
+        return "{\n" +
+                "    \"parent\": \"item/generated\",\n" +
+                "    \"textures\": {\n" +
+                "        \"layer0\": \"randores:items/randores.item.bow.{#}_standby\"\n" +
+                "    },\n" +
+                "    \"display\": {\n" +
+                "        \"thirdperson_righthand\": {\n" +
+                "            \"rotation\": [ -80, 260, -40 ],\n" +
+                "            \"translation\": [ -1, -2, 2.5 ],\n" +
+                "            \"scale\": [ 0.9, 0.9, 0.9 ]\n" +
+                "        },\n" +
+                "        \"thirdperson_lefthand\": {\n" +
+                "            \"rotation\": [ -80, -280, 40 ],\n" +
+                "            \"translation\": [ -1, -2, 2.5 ],\n" +
+                "            \"scale\": [ 0.9, 0.9, 0.9 ]\n" +
+                "        },\n" +
+                "        \"firstperson_righthand\": {\n" +
+                "            \"rotation\": [ 0, -90, 25 ],\n" +
+                "            \"translation\": [ 1.13, 3.2, 1.13],\n" +
+                "            \"scale\": [ 0.68, 0.68, 0.68 ]\n" +
+                "        },\n" +
+                "        \"firstperson_lefthand\": {\n" +
+                "            \"rotation\": [ 0, 90, -25 ],\n" +
+                "            \"translation\": [ 1.13, 3.2, 1.13],\n" +
+                "            \"scale\": [ 0.68, 0.68, 0.68 ]\n" +
+                "        }\n" +
+                "    },\n" +
+                "    \"overrides\": [\n" +
+                "        {\n" +
+                "            \"predicate\": {\n" +
+                "                \"pulling\": 1\n" +
+                "            },\n" +
+                "            \"model\": \"randores:item/randores.item.bow.{#}_pulling_0\"\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"predicate\": {\n" +
+                "                \"pulling\": 1,\n" +
+                "                \"pull\": 0.65\n" +
+                "            },\n" +
+                "            \"model\": \"randores:item/randores.item.bow.{#}_pulling_1\"\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"predicate\": {\n" +
+                "                \"pulling\": 1,\n" +
+                "                \"pull\": 0.9\n" +
+                "            },\n" +
+                "            \"model\": \"randores:item/randores.item.bow.{#}_pulling_2\"\n" +
+                "        }\n" +
+                "    ]\n" +
+                "}\n";
+    }
+
     public static String materialItem() {
         return "{\n" +
                 "    \"parent\": \"item/generated\",\n" +
@@ -40,7 +102,7 @@ public class RandoresModelTemplates {
                 "    }\n" +
                 "}\n";
     }
-    
+
     public static String armorItem() {
         return "{\n" +
                 "    \"parent\": \"item/generated\",\n" +
@@ -49,7 +111,7 @@ public class RandoresModelTemplates {
                 "    }\n" +
                 "}\n";
     }
-    
+
     public static String stickItem() {
         return "{\n" +
                 "    \"parent\": \"item/handheld\",\n" +
@@ -58,7 +120,7 @@ public class RandoresModelTemplates {
                 "    }\n" +
                 "}\n";
     }
-    
+
     public static String torchItem() {
         return "{\n" +
                 "    \"parent\": \"item/generated\",\n" +
@@ -67,7 +129,7 @@ public class RandoresModelTemplates {
                 "    }\n" +
                 "}\n";
     }
-    
+
     public static String blockItem() {
         return "{\n" +
                 "    \"parent\": \"" + RandoresLazyResourcePack.DOMAIN + ":block/randores.block.{#}\",\n" +
@@ -108,7 +170,7 @@ public class RandoresModelTemplates {
                         "}";
         return oreContent;
     }
-    
+
     public static String torchBlockState() {
         return "{\n" +
                 "    \"variants\": {\n" +
@@ -120,7 +182,7 @@ public class RandoresModelTemplates {
                 "    }\n" +
                 "}\n";
     }
-    
+
     public static String blockModel() {
         return "{\n" +
                 "    \"parent\": \"block/cube_all\",\n" +
@@ -151,5 +213,5 @@ public class RandoresModelTemplates {
     public static String make(String template, int index) {
         return template.replace("{#}", String.valueOf(index));
     }
-    
+
 }
