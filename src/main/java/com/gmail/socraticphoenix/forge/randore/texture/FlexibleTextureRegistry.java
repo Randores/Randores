@@ -21,6 +21,9 @@
  */
 package com.gmail.socraticphoenix.forge.randore.texture;
 
+import com.gmail.socraticphoenix.forge.randore.Randores;
+import net.minecraftforge.common.config.Property;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -40,6 +43,7 @@ public class FlexibleTextureRegistry {
 
     public static void setTextureSeed(long textureSeed) {
         FlexibleTextureRegistry.textureSeed.set(textureSeed);
+        Randores.getInstance().getConfiguration().getCategory("config").put("previousSeed", new Property("previousSeed", String.valueOf(textureSeed), Property.Type.STRING));
     }
 
     public static boolean isInitialized() {

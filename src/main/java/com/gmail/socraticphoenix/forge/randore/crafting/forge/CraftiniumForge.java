@@ -25,7 +25,7 @@ import com.gmail.socraticphoenix.forge.randore.Randores;
 import com.gmail.socraticphoenix.forge.randore.RandoresClientSideRegistry;
 import com.gmail.socraticphoenix.forge.randore.RandoresTranslations;
 import com.gmail.socraticphoenix.forge.randore.crafting.CraftingBlocks;
-import com.gmail.socraticphoenix.forge.randore.crafting.CraftingGuiType;
+import com.gmail.socraticphoenix.forge.randore.RandoresGuiType;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.SoundType;
@@ -137,7 +137,7 @@ public class CraftiniumForge extends Block {
     @Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         if (!worldIn.isRemote) {
-            playerIn.openGui(Randores.getInstance(), CraftingGuiType.FORGE.ordinal(), worldIn, pos.getX(), pos.getY(), pos.getZ());
+            playerIn.openGui(Randores.getInstance(), RandoresGuiType.FORGE.ordinal(), worldIn, pos.getX(), pos.getY(), pos.getZ());
         }
         return true;
     }
@@ -150,7 +150,7 @@ public class CraftiniumForge extends Block {
         if (entity instanceof CraftiniumForgeTileEntity) {
             speed = ((CraftiniumForgeTileEntity) entity).getDivisor();
         }
-        ItemStack stack = new ItemStack(this);
+        ItemStack stack = new ItemStack(CraftingBlocks.craftiniumForge);
         stack.getOrCreateSubCompound("randores").setInteger("furnace_speed", speed);
         drops.add(stack);
         return drops;

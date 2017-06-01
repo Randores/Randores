@@ -25,6 +25,7 @@ import com.gmail.socraticphoenix.forge.randore.Randores;
 import com.gmail.socraticphoenix.forge.randore.component.Components;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinition;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinitionRegistry;
+import com.gmail.socraticphoenix.forge.randore.component.ability.AbilityType;
 import com.gmail.socraticphoenix.forge.randore.component.ability.EmpoweredEnchantment;
 import com.google.common.collect.Multimap;
 import net.minecraft.entity.Entity;
@@ -42,6 +43,7 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,6 +56,11 @@ public class FlexibleHoe extends ItemHoe implements FlexibleItem {
         super(Randores.MATERIAL_DEFAULT);
         this.index = index;
         this.backers = new HashMap<Long, ItemHoe>();
+    }
+
+    @Override
+    public List<AbilityType> types() {
+        return Arrays.asList(AbilityType.MELEE);
     }
 
     @Override

@@ -55,7 +55,7 @@ public class RandoresWorldGenerator implements IWorldGenerator {
                     this.generateOre(component.makeBlock().getDefaultState().withProperty(FlexibleOre.HARVEST_LEVEL, definition.getOre().getHarvestLevel()), world, random, chunkX * 16, chunkZ * 16, component.getMaxVein(), component.getMinVein(), component.getMaxY(), component.getMinY(), component.getMaxOccurences(), component.getMinOccurences(), component.getDimension().getGenerateIn());
                 }
 
-                if (RandoresProbability.percentChance(50, random) && Dimension.OVERWORLD.getId() == world.provider.getDimension() || Randores.getInstance().getConfiguration().getCategory("modules").get("dimensionless").getBoolean()) {
+                if (RandoresProbability.percentChance(50, random) && (Dimension.OVERWORLD.getId() == world.provider.getDimension() || Randores.getInstance().getConfiguration().getCategory("modules").get("dimensionless").getBoolean())) {
                     this.generateOre(CraftingBlocks.craftiniumOre.getDefaultState(), world, random, chunkX * 16, chunkZ * 16, 3, 1, 100, 0, 1, 1, Dimension.OVERWORLD.getGenerateIn());
                 }
             }

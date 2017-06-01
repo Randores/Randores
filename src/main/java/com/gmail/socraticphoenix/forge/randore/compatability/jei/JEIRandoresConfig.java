@@ -99,6 +99,8 @@ public class JEIRandoresConfig implements IModPlugin {
     @Override
     public void register(IModRegistry registry) {
         registry.addRecipeCategoryCraftingItem(new ItemStack(CraftingBlocks.craftiniumTable), VanillaRecipeCategoryUid.CRAFTING);
+        registry.addRecipeCategoryCraftingItem(new ItemStack(CraftingBlocks.craftiniumForge), VanillaRecipeCategoryUid.SMELTING);
+        registry.addRecipeCategoryCraftingItem(new ItemStack(CraftingBlocks.craftiniumForge), VanillaRecipeCategoryUid.FUEL);
 
         if (RandoresClientSideRegistry.isInitialized()) {
             registry.getIngredientRegistry().getIngredients(ItemStack.class);

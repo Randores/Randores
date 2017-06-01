@@ -39,7 +39,7 @@ public enum CraftableType {
     SLEDGEHAMMER(0, RandoresTranslations.Keys.SLEDGEHAMMER, "sledgehammer", " XX", " SX", "S  "),
     BOW(0, RandoresTranslations.Keys.BOW, "bow", " XR", "S R", " XR"),
     BRICKS(-1, RandoresTranslations.Keys.BRICKS, "brick", "XX ", "XX ", "   "),
-    TORCH(-1, RandoresTranslations.Keys.TORCH, "torch", "XXX", "XTX", "XXX");
+    TORCH(-1, RandoresTranslations.Keys.TORCH, "torch", " X ", "XTX", " X ");
 
     private String template;
     private String name;

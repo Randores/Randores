@@ -25,7 +25,6 @@ import com.google.common.base.Supplier;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.math.Vec3d;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class AbilitySeries {
@@ -34,32 +33,39 @@ public class AbilitySeries {
     private List<Ability> projectile;
     private List<Ability> melee;
 
-    public AbilitySeries(List<Ability> armorPassive, List<Ability> armorActive, List<Ability> weapon) {
+    public AbilitySeries(List<Ability> armorPassive, List<Ability> armorActive, List<Ability> melee, List<Ability> projectile) {
         this.armorActive = armorActive;
         this.armorPassive = armorPassive;
-        this.projectile = new ArrayList<Ability>();
-        this.melee = new ArrayList<Ability>();
-        for (Ability ability : weapon) {
-            if (ability.applicableContext(AbilityType.MELEE)) {
-                this.melee.add(ability);
-            }
+        this.projectile = projectile;
+        this.melee = melee;
+    }
 
-            if (ability.applicableContext(AbilityType.PROJECTILE)) {
-                this.projectile.add(ability);
-            }
-        }
+    public List<Ability> getArmorPassive() {
+        return this.armorPassive;
+    }
+
+    public List<Ability> getArmorActive() {
+        return this.armorActive;
+    }
+
+    public List<Ability> getProjectile() {
+        return this.projectile;
+    }
+
+    public List<Ability> getMelee() {
+        return this.melee;
     }
 
     public void onArmorUpdate(EntityLivingBase entity) {
         for (Ability ability : this.armorPassive) {
-            ability.apply(entity.getPositionVector(), entity, new AbilityContext());
+            ability.apply(entity.getPositionVector(), entity, new AbilityContext(AbilityType.ARMOR_PASSIVE));
         }
     }
 
     public void onArmorHit(EntityLivingBase entity, final EntityLivingBase source) {
         if (!this.armorActive.isEmpty()) {
             Ability first = this.armorActive.get(0);
-            AbilityContext context = new AbilityContext(source, entity);
+            AbilityContext context = new AbilityContext(source, entity, AbilityType.ARMOR_ACTIVE);
             first.apply(source.getPositionVector(), entity, context);
             if (1 < this.armorActive.size()) {
                 RunNextAbility nextAbility = new RunNextAbility(this.armorActive, 1, entity, context, new Supplier<Vec3d>() {
@@ -76,7 +82,7 @@ public class AbilitySeries {
     public void onProjectileHitEntity(EntityLivingBase attacker, final EntityLivingBase target) {
         if (!this.projectile.isEmpty()) {
             Ability first = this.projectile.get(0);
-            AbilityContext context = new AbilityContext(attacker, target);
+            AbilityContext context = new AbilityContext(attacker, target, AbilityType.PROJECTILE);
             first.apply(target.getPositionVector(), attacker, context);
             if (1 < this.projectile.size()) {
                 RunNextAbility nextAbility = new RunNextAbility(this.projectile, 1, attacker, context, new Supplier<Vec3d>() {
@@ -93,7 +99,7 @@ public class AbilitySeries {
     public void onProjectileHit(EntityLivingBase attacker, final Vec3d location) {
         if (!this.projectile.isEmpty()) {
             Ability first = this.projectile.get(0);
-            AbilityContext context = new AbilityContext(attacker, null);
+            AbilityContext context = new AbilityContext(attacker, null, AbilityType.PROJECTILE);
             first.apply(location, attacker, context);
             if (1 < this.projectile.size()) {
                 RunNextAbility nextAbility = new RunNextAbility(this.projectile, 1, attacker, context, new Supplier<Vec3d>() {
@@ -110,7 +116,7 @@ public class AbilitySeries {
     public void onMeleeHit(EntityLivingBase attacker, final EntityLivingBase target) {
         if (!this.melee.isEmpty()) {
             Ability first = this.melee.get(0);
-            AbilityContext context = new AbilityContext(attacker, target);
+            AbilityContext context = new AbilityContext(attacker, target, AbilityType.MELEE);
             first.apply(target.getPositionVector(), attacker, context);
             if (1 < this.melee.size()) {
                 RunNextAbility nextAbility = new RunNextAbility(this.melee, 1, attacker, context, new Supplier<Vec3d>() {

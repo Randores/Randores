@@ -22,17 +22,18 @@
 package com.gmail.socraticphoenix.forge.randore.module.starter;
 
 import com.gmail.socraticphoenix.forge.randore.Randores;
+import com.gmail.socraticphoenix.forge.randore.component.Component;
 import com.gmail.socraticphoenix.forge.randore.component.Components;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinition;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinitionRegistry;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
-import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.config.ConfigCategory;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -44,9 +45,8 @@ public class RandoresStarterKit {
     @SubscribeEvent
     public void onMobSpawn(PlayerEvent.PlayerLoggedInEvent ev) {
         EntityPlayer entity = ev.player;
-        if (!entity.world.isRemote&& !entity.getEntityData().getBoolean("randores_applied_kit")) {
+        if (!entity.world.isRemote && !entity.getEntityData().getBoolean("randores_applied_kit")) {
             ConfigCategory config = Randores.getInstance().getConfiguration().getCategory("modules");
-            entity.getEntityData().setBoolean("randores_applied_kit", true);
             if (config.get("starterkit").getBoolean()) {
                 List<MaterialDefinition> definitions = MaterialDefinitionRegistry.get(Randores.getRandoresSeed(entity.world));
                 MaterialDefinition material;
@@ -56,13 +56,23 @@ public class RandoresStarterKit {
                     times++;
                 }
                 while ((!material.hasComponent(Components.HELMET) || !material.hasComponent(Components.PICKAXE)) && times < 500);
-                if (material.hasComponent(Components.SWORD)) {
-                    entity.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(material.getComponent(Components.SWORD).makeItem()));
-                } else if (material.hasComponent(Components.BOW)) {
-                    entity.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(material.getComponent(Components.BOW).makeItem()));
-                    entity.inventory.addItemStackToInventory(new ItemStack(Items.ARROW, 16));
-                } else if (material.hasComponent(Components.AXE)) {
-                    entity.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(material.getComponent(Components.AXE).makeItem()));
+
+                List<Component> components = new ArrayList<Component>();
+                components.add(material.getComponent(Components.BATTLEAXE));
+                components.add(material.getComponent(Components.SWORD));
+                components.add(material.getComponent(Components.SLEDGEHAMMER));
+                components.add(material.getComponent(Components.BOW));
+
+                while (components.contains(null)) {
+                    components.remove(null);
+                }
+
+                if (!components.isEmpty()) {
+                    Component component = components.get(random.nextInt(components.size()));
+                    entity.inventory.addItemStackToInventory(new ItemStack(component.makeItem()));
+                    if (component.type() == Components.BOW) {
+                        entity.inventory.addItemStackToInventory(new ItemStack(Items.ARROW, 16));
+                    }
                 }
 
                 if (material.hasComponent(Components.AXE)) {
@@ -77,6 +87,10 @@ public class RandoresStarterKit {
                     }
                 }
             }
+        }
+
+        if(!entity.world.isRemote) {
+            entity.getEntityData().setBoolean("randores_applied_kit", true);
         }
     }
 

@@ -25,11 +25,11 @@ import com.gmail.socraticphoenix.forge.randore.resource.RandoresResourceManager;
 import com.gmail.socraticphoenix.forge.randore.texture.TextureTemplate;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.IResource;
-import net.minecraft.client.resources.IResourceManager;
-import net.minecraft.client.resources.SimpleReloadableResourceManager;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.World;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -37,7 +37,6 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,12 +52,23 @@ public class RandoresClientSideRegistry {
     private static BufferedImage pack;
 
     @SideOnly(Side.CLIENT)
+    public static void openTomeGui(World world) {
+        Minecraft.getMinecraft().player.openGui(Randores.getInstance(), RandoresGuiType.TOME.ordinal(), world, 0, 0, 0);
+    }
+
+    @SideOnly(Side.CLIENT)
     public static BufferedImage getPackImage() throws IOException {
         if (pack == null) {
             pack = ImageIO.read(Minecraft.getMinecraft().getResourceManager().getResource(PACK).getInputStream());
         }
 
         return pack;
+    }
+
+    @SideOnly(Side.CLIENT)
+    public static IResource getResource(ResourceLocation location) throws IOException {
+        IResource resource = Minecraft.getMinecraft().getResourceManager().getResource(location);
+        return resource;
     }
 
     public static TextureTemplate getTemplate(String key) {
@@ -72,9 +82,9 @@ public class RandoresClientSideRegistry {
     @SideOnly(Side.CLIENT)
     public static void loadTemplates() throws IOException {
         for (String template : RandoresResourceManager.getLines(Minecraft.getMinecraft().getResourceManager().getResource(TEMPLATES_DICT).getInputStream())) {
-            if(template.contains("_base")) {
-                IResource image = Minecraft.getMinecraft().getResourceManager().getResource(new ResourceLocation("randores:resources/templates/" + template + ".png"));
-                IResource config = Minecraft.getMinecraft().getResourceManager().getResource(new ResourceLocation("randores:resources/templates/" + template + ".txt"));
+            if (template.contains("_base")) {
+                IResource image = RandoresClientSideRegistry.getResource(new ResourceLocation("randores:resources/templates/" + template + ".png"));
+                IResource config = RandoresClientSideRegistry.getResource(new ResourceLocation("randores:resources/templates/" + template + ".txt"));
                 BufferedImage bufferedImage = ImageIO.read(image.getInputStream());
                 image.close();
 

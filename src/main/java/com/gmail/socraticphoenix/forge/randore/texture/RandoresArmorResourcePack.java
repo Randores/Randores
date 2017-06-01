@@ -23,6 +23,7 @@ package com.gmail.socraticphoenix.forge.randore.texture;
 
 import com.gmail.socraticphoenix.forge.randore.RandoresClientSideRegistry;
 import com.google.common.collect.Sets;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.IResourcePack;
 import net.minecraft.client.resources.data.IMetadataSection;
 import net.minecraft.client.resources.data.MetadataSerializer;
@@ -44,11 +45,18 @@ import java.util.Map;
 import java.util.Set;
 
 public class RandoresArmorResourcePack implements IResourcePack {
+    public static final ResourceLocation TEST = new ResourceLocation("randores:resources/other/armor_test.png");
     public static final String DOMAIN = "randores_armor";
     private static Map<String, BufferedImage> textures;
+    private static BufferedImage test;
 
     public RandoresArmorResourcePack() {
         textures = new HashMap<String, BufferedImage>();
+    }
+
+    @SideOnly(Side.CLIENT)
+    public static void setupTest() throws IOException {
+        RandoresArmorResourcePack.test = ImageIO.read(Minecraft.getMinecraft().getResourceManager().getResource(TEST).getInputStream());
     }
 
     public static void setTexture(String name, TextureData data) {
@@ -67,16 +75,20 @@ public class RandoresArmorResourcePack implements IResourcePack {
 
     @Override
     public InputStream getInputStream(ResourceLocation location) throws IOException {
-        BufferedImage image = this.textures.get(location.getResourcePath());
+        BufferedImage image;
+        if (textures.containsKey(location.getResourcePath())) {
+            image = textures.get(location.getResourcePath());
+        } else {
+            image = test;
+        }
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        ImageIO.write(image,"png", os);
+        ImageIO.write(image, "png", os);
         return new ByteArrayInputStream(os.toByteArray());
-
     }
 
     @Override
     public boolean resourceExists(ResourceLocation location) {
-        return location.getResourceDomain().equals(DOMAIN) && textures.containsKey(location.getResourcePath());
+        return location.getResourceDomain().equals(DOMAIN) && location.getResourcePath().endsWith(".png") && location.getResourcePath().contains("randores.armor.");
     }
 
     @Override

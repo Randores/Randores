@@ -45,8 +45,8 @@ public class ScheduleListener {
             Map.Entry<Runnable, Integer> entry = iterator.next();
             int val = entry.getValue() - 1;
             if(val <= 0) {
-                iterator.remove();
                 queued.add(entry.getKey());
+                iterator.remove();
             } else {
                 entry.setValue(val);
             }

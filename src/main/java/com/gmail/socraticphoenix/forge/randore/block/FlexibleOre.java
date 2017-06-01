@@ -26,6 +26,7 @@ import com.gmail.socraticphoenix.forge.randore.component.Components;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinition;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinitionRegistry;
 import com.gmail.socraticphoenix.forge.randore.component.OreComponent;
+import com.gmail.socraticphoenix.forge.randore.component.ability.AbilityType;
 import com.gmail.socraticphoenix.forge.randore.item.FlexibleItem;
 import com.gmail.socraticphoenix.forge.randore.util.IntRange;
 import net.minecraft.block.Block;
@@ -66,6 +67,11 @@ public class FlexibleOre extends Block implements FlexibleItem {
     }
 
     @Override
+    public List<AbilityType> types() {
+        return new ArrayList<AbilityType>();
+    }
+
+    @Override
     public boolean hasDefinition(long seed) {
         return MaterialDefinitionRegistry.contains(seed, this.index);
     }
@@ -89,6 +95,8 @@ public class FlexibleOre extends Block implements FlexibleItem {
     public Item getThis() {
         return Item.getItemFromBlock(this);
     }
+
+
 
     public OreComponent getComponent(long seed) {
         return this.getDefinition(seed).getOre();

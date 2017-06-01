@@ -32,7 +32,7 @@ public class RandoresProxy {
         logger.info("Randores is running server-side.");
     }
 
-    public void initSided() {
+    public void initSided() throws IOException {
 
     }
 

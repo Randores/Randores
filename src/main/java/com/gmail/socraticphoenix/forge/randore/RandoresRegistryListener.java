@@ -224,6 +224,7 @@ public class RandoresRegistryListener {
         ev.getRegistry().register(new ItemBlock(CraftingBlocks.craftiniumOre).setUnlocalizedName(CraftingBlocks.craftiniumOre.getUnlocalizedName()).setRegistryName(CraftingBlocks.craftiniumOre.getRegistryName()));
         CraftingItems.init();
         ev.getRegistry().register(CraftingItems.craftiniumLump);
+        ev.getRegistry().register(CraftingItems.tome);
 
         RandoresTabItems.init();
         ev.getRegistry().register(RandoresTabItems.tabAxe);

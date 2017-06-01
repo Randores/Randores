@@ -19,10 +19,13 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.gmail.socraticphoenix.forge.randore.component.ability;
+package com.gmail.socraticphoenix.forge.randore.component.plugin;
 
-public enum AbilityStage {
-    FIRST,
-    MIDDLE,
-    LAST
+import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinition;
+import com.gmail.socraticphoenix.forge.randore.probability.RandomNumberBuilder;
+
+public interface RandoresPlugin {
+
+    void modify(MaterialDefinition definition, RandomNumberBuilder builder);
+
 }

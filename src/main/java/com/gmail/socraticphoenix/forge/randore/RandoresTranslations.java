@@ -59,7 +59,7 @@ public class RandoresTranslations {
     public static void registerFromResources() throws IOException {
         for(String langFile : RandoresResourceManager.getLines(Minecraft.getMinecraft().getResourceManager().getResource(LANG_DICT).getInputStream())) {
             ResourceLocation location = new ResourceLocation("randores:resources/lang/" + langFile + ".lang");
-            IResource resource = Minecraft.getMinecraft().getResourceManager().getResource(location);
+            IResource resource = RandoresClientSideRegistry.getResource(location);
             List<String> lines = RandoresResourceManager.getLines(resource.getInputStream());
             String lang = RandoresResourceManager.getFileName(resource.getResourceLocation()).replace(".lang", "");
             for(String line : lines) {

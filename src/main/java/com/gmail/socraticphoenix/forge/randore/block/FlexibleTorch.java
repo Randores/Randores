@@ -25,6 +25,7 @@ import com.gmail.socraticphoenix.forge.randore.Randores;
 import com.gmail.socraticphoenix.forge.randore.component.Components;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinition;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinitionRegistry;
+import com.gmail.socraticphoenix.forge.randore.component.ability.AbilityType;
 import com.gmail.socraticphoenix.forge.randore.item.FlexibleItem;
 import net.minecraft.block.BlockTorch;
 import net.minecraft.block.SoundType;
@@ -51,6 +52,11 @@ public class FlexibleTorch extends BlockTorch implements FlexibleItem {
         this.index = index;
         this.setLightLevel(0.9375F);
         this.setSoundType(SoundType.WOOD);
+    }
+
+    @Override
+    public List<AbilityType> types() {
+        return new ArrayList<AbilityType>();
     }
 
     @Override

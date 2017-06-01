@@ -26,14 +26,20 @@ import net.minecraft.entity.EntityLivingBase;
 public class AbilityContext {
     private EntityLivingBase attacker;
     private EntityLivingBase target;
+    private AbilityType type;
 
-    public AbilityContext(EntityLivingBase attacker, EntityLivingBase target) {
+    public AbilityContext(EntityLivingBase attacker, EntityLivingBase target, AbilityType type) {
         this.attacker = attacker;
         this.target = target;
+        this.type = type;
     }
 
-    public AbilityContext() {
-        this(null, null);
+    public AbilityContext(AbilityType type) {
+        this(null, null, type);
+    }
+
+    public AbilityType getType() {
+        return this.type;
     }
 
     public boolean hasTarget() {

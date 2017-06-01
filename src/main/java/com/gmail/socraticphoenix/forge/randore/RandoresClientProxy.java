@@ -21,6 +21,8 @@
  */
 package com.gmail.socraticphoenix.forge.randore;
 
+import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinitionGenerator;
+import com.gmail.socraticphoenix.forge.randore.texture.FlexibleTextureRegistry;
 import com.gmail.socraticphoenix.forge.randore.texture.RandoresArmorResourcePack;
 import com.gmail.socraticphoenix.forge.randore.texture.RandoresLazyResourcePack;
 import net.minecraft.client.Minecraft;
@@ -41,6 +43,7 @@ public class RandoresClientProxy extends RandoresProxy {
     @Override
     @SideOnly(Side.CLIENT)
     public void preInitSided() throws IOException, IllegalAccessException {
+        FlexibleTextureRegistry.setTextureSeed(Randores.getInstance().getPreviousSeed());
         Logger logger = Randores.getInstance().getLogger();
         logger.info("Randores is running client-side.");
         Configuration configuration = Randores.getInstance().getConfiguration();
@@ -65,8 +68,8 @@ public class RandoresClientProxy extends RandoresProxy {
             field.setAccessible(true);
             try {
                 List<IResourcePack> packs = (List<IResourcePack>) field.get(Minecraft.getMinecraft());
-                packs.add(1, new RandoresArmorResourcePack());
-                packs.add(1, new RandoresLazyResourcePack());
+                packs.add(new RandoresLazyResourcePack());
+                packs.add(new RandoresArmorResourcePack());
                 logger.info("Successfully added packs to list, refreshing list");
                 Minecraft.getMinecraft().refreshResources();
                 logger.info("Successfully hacked default resource packs.");
@@ -81,8 +84,13 @@ public class RandoresClientProxy extends RandoresProxy {
     }
 
     @Override
-    public void initSided() {
-
+    @SideOnly(Side.CLIENT)
+    public void initSided() throws IOException {
+        Logger logger = Randores.getInstance().getLogger();
+        logger.info("Setting up armor textures...");
+        RandoresArmorResourcePack.setupTest();
+        MaterialDefinitionGenerator.bindAllArmor();
+        logger.info("Setup armor textures.");
     }
 
 

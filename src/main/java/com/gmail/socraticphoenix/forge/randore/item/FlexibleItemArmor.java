@@ -22,10 +22,12 @@
 package com.gmail.socraticphoenix.forge.randore.item;
 
 import com.gmail.socraticphoenix.forge.randore.Randores;
-import com.gmail.socraticphoenix.forge.randore.texture.RandoresArmorResourcePack;
 import com.gmail.socraticphoenix.forge.randore.component.Components;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinition;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinitionRegistry;
+import com.gmail.socraticphoenix.forge.randore.component.ability.AbilityType;
+import com.gmail.socraticphoenix.forge.randore.component.ability.EmpoweredEnchantment;
+import com.gmail.socraticphoenix.forge.randore.texture.RandoresArmorResourcePack;
 import com.google.common.collect.Multimap;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -43,6 +45,7 @@ import net.minecraftforge.common.ISpecialArmor;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -69,6 +72,20 @@ public class FlexibleItemArmor extends ItemArmor implements FlexibleItem, ISpeci
         } else {
             return 1;
         }
+    }
+
+    @Override
+    public void onArmorTick(World world, EntityPlayer player, ItemStack itemStack) {
+        super.onArmorTick(world, player, itemStack);
+        if(EmpoweredEnchantment.appliedTo(itemStack) && Randores.hasRandoresSeed(itemStack) && MaterialDefinitionRegistry.contains(Randores.getRandoresSeed(itemStack), this.index)) {
+            MaterialDefinition definition = MaterialDefinitionRegistry.get(Randores.getRandoresSeed(itemStack)).get(this.index);
+            definition.getAbilitySeries().onArmorUpdate(player);
+        }
+    }
+
+    @Override
+    public List<AbilityType> types() {
+        return Arrays.asList(AbilityType.ARMOR_ACTIVE, AbilityType.ARMOR_PASSIVE);
     }
 
     @Override
@@ -212,7 +229,7 @@ public class FlexibleItemArmor extends ItemArmor implements FlexibleItem, ISpeci
     @Nullable
     @Override
     public String getArmorTexture(ItemStack stack, Entity entity, EntityEquipmentSlot slot, String type) {
-        return RandoresArmorResourcePack.DOMAIN + ":armor." + this.index + "_" + this.renderIndex + ".png";
+        return RandoresArmorResourcePack.DOMAIN + ":randores.armor." + this.index + "_" + this.renderIndex + ".png";
     }
 
     @Override

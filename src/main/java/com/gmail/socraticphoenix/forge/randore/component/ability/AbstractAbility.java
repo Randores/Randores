@@ -21,8 +21,32 @@
  */
 package com.gmail.socraticphoenix.forge.randore.component.ability;
 
-public enum AbilityStage {
-    FIRST,
-    MIDDLE,
-    LAST
+import java.util.List;
+
+public abstract class AbstractAbility implements Ability {
+    private List<AbilityStage> stages;
+    private List<AbilityType> contexts;
+    private int delay;
+
+    public AbstractAbility(List<AbilityStage> stages, List<AbilityType> contexts, int delay) {
+        this.stages = stages;
+        this.contexts = contexts;
+        this.delay = delay;
+    }
+
+    @Override
+    public boolean applicableStage(AbilityStage stage) {
+        return this.stages.contains(stage);
+    }
+
+    @Override
+    public boolean applicableContext(AbilityType context) {
+        return this.contexts.contains(context);
+    }
+
+    @Override
+    public int delayAfter() {
+        return this.delay;
+    }
+
 }

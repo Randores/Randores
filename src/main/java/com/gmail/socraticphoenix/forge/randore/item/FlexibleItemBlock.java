@@ -25,6 +25,7 @@ import com.gmail.socraticphoenix.forge.randore.Randores;
 import com.gmail.socraticphoenix.forge.randore.component.Components;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinition;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinitionRegistry;
+import com.gmail.socraticphoenix.forge.randore.component.ability.AbilityType;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -33,6 +34,7 @@ import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class FlexibleItemBlock extends ItemBlock implements FlexibleItem {
@@ -48,6 +50,11 @@ public class FlexibleItemBlock extends ItemBlock implements FlexibleItem {
     @Override
     public Item getThis() {
         return this;
+    }
+
+    @Override
+    public List<AbilityType> types() {
+        return new ArrayList<AbilityType>();
     }
 
     @Override

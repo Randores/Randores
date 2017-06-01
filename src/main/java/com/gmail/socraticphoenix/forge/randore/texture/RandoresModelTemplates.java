@@ -25,9 +25,9 @@ public class RandoresModelTemplates {
 
     public static String bowPulling(int pull) {
         return "{\n" +
-                "    \"parent\": \"randores:item/randores.item.bow.{#}\",\n" +
+                "    \"parent\": \"" + RandoresLazyResourcePack.DOMAIN + ":item/randores.item.bow.{#}\",\n" +
                 "    \"textures\": {\n" +
-                "        \"layer0\": \"randores:items/randores.item.bow.{#}_pulling_" + pull + "\"\n" +
+                "        \"layer0\": \"" + RandoresLazyResourcePack.DOMAIN + ":items/randores.item.bow.{#}_pulling_" + pull + "\"\n" +
                 "    }\n" +
                 "}\n";
     }
@@ -36,7 +36,7 @@ public class RandoresModelTemplates {
         return "{\n" +
                 "    \"parent\": \"item/generated\",\n" +
                 "    \"textures\": {\n" +
-                "        \"layer0\": \"randores:items/randores.item.bow.{#}_standby\"\n" +
+                "        \"layer0\": \"" + RandoresLazyResourcePack.DOMAIN + ":items/randores.item.bow.{#}_standby\"\n" +
                 "    },\n" +
                 "    \"display\": {\n" +
                 "        \"thirdperson_righthand\": {\n" +
@@ -65,21 +65,21 @@ public class RandoresModelTemplates {
                 "            \"predicate\": {\n" +
                 "                \"pulling\": 1\n" +
                 "            },\n" +
-                "            \"model\": \"randores:item/randores.item.bow.{#}_pulling_0\"\n" +
+                "            \"model\": \"" + RandoresLazyResourcePack.DOMAIN + ":item/randores.item.bow.{#}_pulling_0\"\n" +
                 "        },\n" +
                 "        {\n" +
                 "            \"predicate\": {\n" +
                 "                \"pulling\": 1,\n" +
                 "                \"pull\": 0.65\n" +
                 "            },\n" +
-                "            \"model\": \"randores:item/randores.item.bow.{#}_pulling_1\"\n" +
+                "            \"model\": \"" + RandoresLazyResourcePack.DOMAIN + ":item/randores.item.bow.{#}_pulling_1\"\n" +
                 "        },\n" +
                 "        {\n" +
                 "            \"predicate\": {\n" +
                 "                \"pulling\": 1,\n" +
                 "                \"pull\": 0.9\n" +
                 "            },\n" +
-                "            \"model\": \"randores:item/randores.item.bow.{#}_pulling_2\"\n" +
+                "            \"model\": \"" + RandoresLazyResourcePack.DOMAIN + ":item/randores.item.bow.{#}_pulling_2\"\n" +
                 "        }\n" +
                 "    ]\n" +
                 "}\n";
@@ -89,7 +89,7 @@ public class RandoresModelTemplates {
         return "{\n" +
                 "    \"parent\": \"item/generated\",\n" +
                 "    \"textures\": {\n" +
-                "        \"layer0\": \"randores:items/randores.item.{#}\"\n" +
+                "        \"layer0\": \"" + RandoresLazyResourcePack.DOMAIN + ":items/randores.item.{#}\"\n" +
                 "    }\n" +
                 "}\n";
     }
@@ -98,7 +98,7 @@ public class RandoresModelTemplates {
         return "{\n" +
                 "    \"parent\": \"item/handheld\",\n" +
                 "    \"textures\": {\n" +
-                "        \"layer0\": \"randores:items/randores.item.{#}\"\n" +
+                "        \"layer0\": \"" + RandoresLazyResourcePack.DOMAIN + ":items/randores.item.{#}\"\n" +
                 "    }\n" +
                 "}\n";
     }
@@ -107,7 +107,7 @@ public class RandoresModelTemplates {
         return "{\n" +
                 "    \"parent\": \"item/generated\",\n" +
                 "    \"textures\": {\n" +
-                "        \"layer0\": \"randores:items/randores.item.{#}\"\n" +
+                "        \"layer0\": \"" + RandoresLazyResourcePack.DOMAIN + ":items/randores.item.{#}\"\n" +
                 "    }\n" +
                 "}\n";
     }
@@ -116,7 +116,7 @@ public class RandoresModelTemplates {
         return "{\n" +
                 "    \"parent\": \"item/handheld\",\n" +
                 "    \"textures\": {\n" +
-                "        \"layer0\": \"randores:items/randores.item.{#}\"\n" +
+                "        \"layer0\": \"" + RandoresLazyResourcePack.DOMAIN + ":items/randores.item.{#}\"\n" +
                 "    }\n" +
                 "}\n";
     }
@@ -125,7 +125,7 @@ public class RandoresModelTemplates {
         return "{\n" +
                 "    \"parent\": \"item/generated\",\n" +
                 "    \"textures\": {\n" +
-                "        \"layer0\": \"randores:blocks/randores.block.{#}\"\n" +
+                "        \"layer0\": \"" + RandoresLazyResourcePack.DOMAIN + ":blocks/randores.block.{#}\"\n" +
                 "    }\n" +
                 "}\n";
     }
@@ -187,7 +187,7 @@ public class RandoresModelTemplates {
         return "{\n" +
                 "    \"parent\": \"block/cube_all\",\n" +
                 "    \"textures\": {\n" +
-                "        \"all\": \"randores:blocks/randores.block.{#}\"\n" +
+                "        \"all\": \"" + RandoresLazyResourcePack.DOMAIN + ":blocks/randores.block.{#}\"\n" +
                 "    }\n" +
                 "}";
     }
@@ -196,7 +196,7 @@ public class RandoresModelTemplates {
         return "{\n" +
                 "    \"parent\": \"block/torch\",\n" +
                 "    \"textures\": {\n" +
-                "        \"torch\": \"randores:blocks/randores.block.{#}\"\n" +
+                "        \"torch\": \"" + RandoresLazyResourcePack.DOMAIN + ":blocks/randores.block.{#}\"\n" +
                 "    }\n" +
                 "}\n";
     }
@@ -205,7 +205,7 @@ public class RandoresModelTemplates {
         return "{\n" +
                 "    \"parent\": \"block/torch_wall\",\n" +
                 "    \"textures\": {\n" +
-                "        \"torch\": \"randores:blocks/randores.block.{#}\"\n" +
+                "        \"torch\": \"" + RandoresLazyResourcePack.DOMAIN + ":blocks/randores.block.{#}\"\n" +
                 "    }\n" +
                 "}\n";
     }

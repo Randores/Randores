@@ -25,6 +25,7 @@ import com.gmail.socraticphoenix.forge.randore.Randores;
 import com.gmail.socraticphoenix.forge.randore.component.Components;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinition;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinitionRegistry;
+import com.gmail.socraticphoenix.forge.randore.component.ability.AbilityType;
 import com.gmail.socraticphoenix.forge.randore.item.FlexibleItem;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
@@ -52,6 +53,11 @@ public class FlexibleBrick extends Block implements FlexibleItem {
     @Override
     public int index() {
         return this.index;
+    }
+
+    @Override
+    public List<AbilityType> types() {
+        return new ArrayList<AbilityType>();
     }
 
     @Override

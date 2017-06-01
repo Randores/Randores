@@ -25,6 +25,7 @@ import com.gmail.socraticphoenix.forge.randore.Randores;
 import com.gmail.socraticphoenix.forge.randore.component.Components;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinition;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinitionRegistry;
+import com.gmail.socraticphoenix.forge.randore.component.ability.AbilityType;
 import com.gmail.socraticphoenix.forge.randore.component.ability.EmpoweredEnchantment;
 import com.gmail.socraticphoenix.forge.randore.item.constructable.ConstructableAxe;
 import com.google.common.collect.Multimap;
@@ -43,6 +44,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -60,6 +62,11 @@ public class FlexibleBattleaxe extends ItemAxe implements FlexibleItem {
     @Override
     public Item getThis() {
         return this;
+    }
+
+    @Override
+    public List<AbilityType> types() {
+        return Arrays.asList(AbilityType.MELEE);
     }
 
     @Override

@@ -27,9 +27,11 @@ import net.minecraft.item.Item;
 public class CraftingItems {
 
     public static Item craftiniumLump;
+    public static Item tome;
 
     public static void init() {
         craftiniumLump = new Item().setUnlocalizedName("craftinium_lump").setCreativeTab(Randores.TAB_CRAFTING).setRegistryName("craftinium_lump");
+        tome = new Item().setUnlocalizedName("material_tome").setCreativeTab(Randores.TAB_CRAFTING).setRegistryName("material_tome");
     }
 
 }

@@ -43,7 +43,7 @@ public class RandomNumberBuilder {
 
     public Number getNumber(String key) {
         Object obj = this.results.get(key);
-        if(obj instanceof Number) {
+        if (obj instanceof Number) {
             return (Number) obj;
         } else if (obj instanceof Boolean) {
             return (Boolean) obj ? 1 : 0;
@@ -54,7 +54,7 @@ public class RandomNumberBuilder {
 
     public boolean getBoolean(String key) {
         Object obj = this.results.get(key);
-        if(obj instanceof Boolean) {
+        if (obj instanceof Boolean) {
             return (Boolean) obj;
         } else if (obj instanceof Number) {
             return ((Number) obj).doubleValue() != 0;
@@ -63,16 +63,59 @@ public class RandomNumberBuilder {
         }
     }
 
+    public boolean[] getBooleanArr(String key) {
+        return (boolean[]) this.results.get(key);
+    }
+
     public int getInt(String key) {
         return this.getNumber(key).intValue();
+    }
+
+    public int[] getIntArr(String key) {
+        return (int[]) this.results.get(key);
     }
 
     public double getDouble(String key) {
         return this.getNumber(key).doubleValue();
     }
 
+    public double[] getDoubleArr(String key) {
+        return (double[]) this.results.get(key);
+    }
+
+    public long getLong(String key) {
+        return this.getNumber(key).longValue();
+    }
+
+    public long[] getLongArr(String key) {
+        return (long[]) this.results.get(key);
+    }
+
     public RandomNumberBuilder percentChance(String key, double chance) {
         put(key, RandoresProbability.percentChance(chance, this.random));
+        return this;
+    }
+
+    public RandomNumberBuilder percentChance(String key, double chance, int size) {
+        boolean[] arr = new boolean[size];
+        for (int i = 0; i < size; i++) {
+            arr[i] = RandoresProbability.percentChance(chance, this.random);
+        }
+        put(key, arr);
+        return this;
+    }
+
+    public RandomNumberBuilder randLong(String key) {
+        put(key, this.random.nextLong());
+        return this;
+    }
+
+    public RandomNumberBuilder randLong(String key, int size) {
+        long[] arr = new long[size];
+        for (int i = 0; i < arr.length; i++) {
+            arr[i] = this.random.nextLong();
+        }
+        put(key, arr);
         return this;
     }
 
@@ -81,8 +124,26 @@ public class RandomNumberBuilder {
         return this;
     }
 
+    public RandomNumberBuilder rand(String key, int upper, int size) {
+        int[] arr = new int[size];
+        for (int i = 0; i < size; i++) {
+            arr[i] = this.random.nextInt(upper);
+        }
+        put(key, arr);
+        return this;
+    }
+
     public RandomNumberBuilder rand(String key, double min, double max) {
         put(key, RandoresProbability.rand(min, max, this.random));
+        return this;
+    }
+
+    public RandomNumberBuilder rand(String key, double min, double max, int size) {
+        double[] arr = new double[size];
+        for (int i = 0; i < size; i++) {
+            arr[i] = RandoresProbability.rand(min, max, this.random);
+        }
+        put(key, arr);
         return this;
     }
 
@@ -91,8 +152,26 @@ public class RandomNumberBuilder {
         return this;
     }
 
+    public RandomNumberBuilder expRand(String key, double b, double min, double max, int size) {
+        double[] arr = new double[size];
+        for (int i = 0; i < size; i++) {
+            arr[i] = RandoresProbability.expRand(b, min, max, this.random);
+        }
+        put(key, arr);
+        return this;
+    }
+
     public RandomNumberBuilder oneSidedNormalRand(String key, double min, double stdev) {
         put(key, RandoresProbability.oneSidedNormalRand(min, stdev, this.random));
+        return this;
+    }
+
+    public RandomNumberBuilder oneSideNormalRand(String key, double mean, double stdev, int size) {
+        double[] arr = new double[size];
+        for (int i = 0; i < size; i++) {
+            arr[i] = RandoresProbability.oneSidedNormalRand(mean, stdev, this.random);
+        }
+        put(key, arr);
         return this;
     }
 
@@ -101,13 +180,40 @@ public class RandomNumberBuilder {
         return this;
     }
 
+    public RandomNumberBuilder normalRand(String key, double mean, double stdev, int size) {
+        double[] arr = new double[size];
+        for (int i = 0; i < size; i++) {
+            arr[i] = RandoresProbability.normalRand(mean, stdev, this.random);
+        }
+        put(key, arr);
+        return this;
+    }
+
     public RandomNumberBuilder oneSidedInflectedNormalRand(String key, double min, double max, double stdev) {
         put(key, RandoresProbability.oneSidedInflectedNormalRand(min, max, stdev, this.random));
         return this;
     }
 
+    public RandomNumberBuilder oneSideInflectedNormalRand(String key, double min, double max, double stdev, int size) {
+        double[] arr = new double[size];
+        for (int i = 0; i < size; i++) {
+            arr[i] = RandoresProbability.oneSidedInflectedNormalRand(min, max, stdev, this.random);
+        }
+        put(key, arr);
+        return this;
+    }
+
     public RandomNumberBuilder inflectedNormalRand(String key, double min, double max, double mean, double stdev) {
         put(key, RandoresProbability.inflectedNormalRand(min, max, mean, stdev, this.random));
+        return this;
+    }
+
+    public RandomNumberBuilder inflectedNormalRand(String key, double min, double max, double mean, double stdev, int size) {
+        double[] arr = new double[size];
+        for (int i = 0; i < size; i++) {
+            arr[i] = RandoresProbability.inflectedNormalRand(min, max, mean, stdev, this.random);
+        }
+        put(key, arr);
         return this;
     }
 

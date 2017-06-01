@@ -23,6 +23,9 @@ package com.gmail.socraticphoenix.forge.randore.component;
 
 import com.gmail.socraticphoenix.forge.randore.Randores;
 import com.gmail.socraticphoenix.forge.randore.block.FlexibleBlockRegistry;
+import com.gmail.socraticphoenix.forge.randore.component.ability.AbilityRegistry;
+import com.gmail.socraticphoenix.forge.randore.component.plugin.RandoresPlugin;
+import com.gmail.socraticphoenix.forge.randore.component.plugin.RandoresPluginRegistry;
 import com.gmail.socraticphoenix.forge.randore.component.property.MaterialProperty;
 import com.gmail.socraticphoenix.forge.randore.component.property.properties.FlammableProperty;
 import com.gmail.socraticphoenix.forge.randore.item.FlexibleItemRegistry;
@@ -133,27 +136,21 @@ public class MaterialDefinitionGenerator {
                     })
                     .oneSidedInflectedNormalRand("minDrops", 0, b.getInt("maxDrops"), 1)
                     .clamp(1, b.getInt("maxDrops"))
-                    .put("manVein", (int) (b.getDouble("commonality") / 8) + 2)
-                    .expRand("minVein", 1.2, 2, b.getInt("maxVein"))
-                    .op(new Function<Number, Number>() {
-                        @Nullable
-                        @Override
-                        public Number apply(@Nullable Number input) {
-                            return (int) Math.ceil(input.doubleValue());
-                        }
-                    })
+                    .put("maxVein", (int) (b.getDouble("commonality") / 8) + 2)
+                    .rand("minVein", b.getInt("maxVein"))
                     .clamp(1, b.getInt("maxVein") - 1)
                     .inflectedNormalRand("smeltingXp", 0, 1.25, 0.75, 0.25)
                     .percentChance("stick", 30)
                     .percentChance("armor", 60)
                     .percentChance("tools", 60)
                     .percentChance("sword", 60)
-                    .percentChance("bow", 40)
+                    .percentChance("bow", 30)
                     .percentChance("flammable", 10)
                     .rand("flammability", 1200)
                     .clamp(200, 1200)
                     .percentChance("battleaxe", 30)
                     .percentChance("sledgehammer", 30)
+                    .randLong("abilitySeed")
             ;
 
             MaterialType type = MaterialType.values()[b.getInt("material")];
@@ -217,20 +214,23 @@ public class MaterialDefinitionGenerator {
             if (b.getBoolean("sword")) {
                 components.add(new CraftableComponent(CraftableType.SWORD, FlexibleItemRegistry.getSword(c)));
             }
-            if(b.getBoolean("battleaxe")) {
+            if (b.getBoolean("battleaxe")) {
                 components.add(new CraftableComponent(CraftableType.BATTLEAXE, FlexibleItemRegistry.getBattleaxe(c)));
             }
-            if(b.getBoolean("sledgehammer")) {
+            if (b.getBoolean("sledgehammer")) {
                 components.add(new CraftableComponent(CraftableType.SLEDGEHAMMER, FlexibleItemRegistry.getSledgehammer(c)));
             }
 
             List<MaterialProperty> properties = new ArrayList<MaterialProperty>();
-            if(b.getBoolean("flammable")) {
+            if (b.getBoolean("flammable")) {
                 properties.add(new FlammableProperty(b.getInt("flammability")));
             }
 
 
-            MaterialDefinition definition = new MaterialDefinition(color, ore, components, properties, seed, c);
+            MaterialDefinition definition = new MaterialDefinition(color, ore, components, properties, AbilityRegistry.buildSeries(new Random(b.getLong("abilitySeed"))), seed, c);
+            for(RandoresPlugin plugin : RandoresPluginRegistry.get()) {
+                plugin.modify(definition, b);
+            }
             definitions.add(definition);
         }
         return definitions;
@@ -320,8 +320,8 @@ public class MaterialDefinitionGenerator {
                     FlexibleTextureRegistry.getBow(k + 3).setTexture(textures.get("bow_pulling_2"));
                 } else {
                     if (component.getType() == CraftableType.HELMET) {
-                        RandoresArmorResourcePack.setTexture("armor." + i + "_1.png", textures.get("armor_1"));
-                        RandoresArmorResourcePack.setTexture("armor." + i + "_2.png", textures.get("armor_2"));
+                        RandoresArmorResourcePack.setTexture("randores.armor." + i + "_1.png", textures.get("armor_1"));
+                        RandoresArmorResourcePack.setTexture("randores.armor." + i + "_2.png", textures.get("armor_2"));
                     }
 
                     if (component.getType().isBlock()) {
@@ -336,22 +336,22 @@ public class MaterialDefinitionGenerator {
     }
 
     @SideOnly(Side.CLIENT)
-    public static void setupArmorTextures(List<MaterialDefinition> definitions) {
-        for (int i = 0; i < definitions.size(); i++) {
-            MaterialDefinition def = definitions.get(i);
-            Minecraft.getMinecraft().getTextureManager().deleteTexture(new ResourceLocation(RandoresArmorResourcePack.DOMAIN + ":armor." + i + "_1.png"));
-            Minecraft.getMinecraft().getTextureManager().deleteTexture(new ResourceLocation(RandoresArmorResourcePack.DOMAIN + ":armor." + i + "_2.png"));
+    public static void rebindArmorTextures() {
+        for (int i = 0; i < Randores.registeredAmount(); i++) {
+            Minecraft.getMinecraft().getTextureManager().deleteTexture(new ResourceLocation(RandoresArmorResourcePack.DOMAIN + ":randores.armor." + i + "_1.png"));
+            Minecraft.getMinecraft().getTextureManager().deleteTexture(new ResourceLocation(RandoresArmorResourcePack.DOMAIN + ":randores.armor." + i + "_2.png"));
 
-            if (def.hasComponent(Components.HELMET)) {
-                Minecraft.getMinecraft().getTextureManager().bindTexture(new ResourceLocation(RandoresArmorResourcePack.DOMAIN + ":armor." + i + "_1.png"));
-                Minecraft.getMinecraft().getTextureManager().bindTexture(new ResourceLocation(RandoresArmorResourcePack.DOMAIN + ":armor." + i + "_2.png"));
-            }
+            Minecraft.getMinecraft().getTextureManager().bindTexture(new ResourceLocation(RandoresArmorResourcePack.DOMAIN + ":randores.armor." + i + "_1.png"));
+            Minecraft.getMinecraft().getTextureManager().bindTexture(new ResourceLocation(RandoresArmorResourcePack.DOMAIN + ":randores.armor." + i + "_2.png"));
         }
 
-        for (int i = definitions.size(); i < Randores.registeredAmount(); i++) {
-            Minecraft.getMinecraft().getTextureManager().deleteTexture(new ResourceLocation(RandoresArmorResourcePack.DOMAIN + ":armor." + i + "_1.png"));
-            Minecraft.getMinecraft().getTextureManager().deleteTexture(new ResourceLocation(RandoresArmorResourcePack.DOMAIN + ":armor." + i + "_2.png"));
+    }
 
+    @SideOnly(Side.CLIENT)
+    public static void bindAllArmor() {
+        for (int i = 0; i < Randores.registeredAmount(); i++) {
+            Minecraft.getMinecraft().getTextureManager().bindTexture(new ResourceLocation(RandoresArmorResourcePack.DOMAIN + ":randores.armor." + i + "_1.png"));
+            Minecraft.getMinecraft().getTextureManager().bindTexture(new ResourceLocation(RandoresArmorResourcePack.DOMAIN + ":randores.armor." + i + "_2.png"));
         }
     }
 

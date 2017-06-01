@@ -25,21 +25,32 @@ import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 
 public enum  Dimension {
-    OVERWORLD(0, Blocks.STONE),
-    END(1, Blocks.END_STONE),
-    NETHER(-1, Blocks.NETHERRACK);
+    OVERWORLD(0) {
+        @Override
+        public Block[] getGenerateIn() {
+            return new Block[] {Blocks.STONE};
+        }
+    },
+    END(1) {
+        @Override
+        public Block[] getGenerateIn() {
+            return new Block[] {Blocks.END_STONE};
+        }
+    },
+    NETHER(-1) {
+        @Override
+        public Block[] getGenerateIn() {
+            return new Block[] {Blocks.NETHERRACK};
+        }
+    };
 
     private int id;
-    private Block[] generateIn;
 
-    Dimension(int id, Block... generateIn) {
+    Dimension(int id) {
         this.id = id;
-        this.generateIn = generateIn;
     }
 
-    public Block[] getGenerateIn() {
-        return this.generateIn;
-    }
+    public abstract Block[] getGenerateIn();
 
     public int getId() {
         return this.id;

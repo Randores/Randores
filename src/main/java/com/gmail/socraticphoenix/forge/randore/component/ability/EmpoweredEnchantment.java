@@ -24,11 +24,15 @@ package com.gmail.socraticphoenix.forge.randore.component.ability;
 import com.gmail.socraticphoenix.forge.randore.component.Components;
 import com.gmail.socraticphoenix.forge.randore.item.FlexibleItem;
 import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.EnumEnchantmentType;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 
 public class EmpoweredEnchantment extends Enchantment {
+
+    private static EntityEquipmentSlot[] slots = {EntityEquipmentSlot.CHEST, EntityEquipmentSlot.LEGS, EntityEquipmentSlot.HEAD, EntityEquipmentSlot.FEET};
 
     public EmpoweredEnchantment() {
         super(Rarity.COMMON, EnumEnchantmentType.ALL, EntityEquipmentSlot.values());
@@ -36,11 +40,39 @@ public class EmpoweredEnchantment extends Enchantment {
         this.setRegistryName("randores.empowered");
     }
 
+    public static boolean appliedTo(ItemStack stack) {
+        for (Enchantment en : EnchantmentHelper.getEnchantments(stack).keySet()) {
+            if (en instanceof EmpoweredEnchantment) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public static boolean appliedTo(EntityLivingBase entity) {
+        for (EntityEquipmentSlot slot : slots) {
+            if (entity.getItemStackFromSlot(slot) != null && EmpoweredEnchantment.appliedTo(entity.getItemStackFromSlot(slot))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static ItemStack isolate(EntityLivingBase entity) {
+        for (EntityEquipmentSlot slot : slots) {
+            if (entity.getItemStackFromSlot(slot) != null && EmpoweredEnchantment.appliedTo(entity.getItemStackFromSlot(slot))) {
+                return entity.getItemStackFromSlot(slot);
+            }
+        }
+        return ItemStack.EMPTY;
+    }
+
     @Override
     public boolean canApply(ItemStack stack) {
-        if(stack.getItem() instanceof FlexibleItem) {
+        if (stack.getItem() instanceof FlexibleItem) {
             Components type = ((FlexibleItem) stack.getItem()).getType();
-            if(!type.isBlock() && type.isCraftable()) {
+            if (!type.isBlock() && type.isCraftable()) {
                 return true;
             }
         }
@@ -52,4 +84,5 @@ public class EmpoweredEnchantment extends Enchantment {
     public boolean canApplyAtEnchantingTable(ItemStack stack) {
         return this.canApply(stack);
     }
+
 }

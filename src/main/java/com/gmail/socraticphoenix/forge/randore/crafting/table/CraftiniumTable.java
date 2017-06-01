@@ -22,7 +22,7 @@
 package com.gmail.socraticphoenix.forge.randore.crafting.table;
 
 import com.gmail.socraticphoenix.forge.randore.Randores;
-import com.gmail.socraticphoenix.forge.randore.crafting.CraftingGuiType;
+import com.gmail.socraticphoenix.forge.randore.RandoresGuiType;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
@@ -43,7 +43,7 @@ public class CraftiniumTable extends Block {
     @Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         if(!worldIn.isRemote) {
-            playerIn.openGui(Randores.getInstance(), CraftingGuiType.TABLE.ordinal(), worldIn, pos.getX(), pos.getY(), pos.getZ());
+            playerIn.openGui(Randores.getInstance(), RandoresGuiType.TABLE.ordinal(), worldIn, pos.getX(), pos.getY(), pos.getZ());
         }
         return true;
     }

@@ -24,9 +24,10 @@ package com.gmail.socraticphoenix.forge.randore;
 import com.gmail.socraticphoenix.forge.randore.component.CraftableType;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinition;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinitionRegistry;
+import com.gmail.socraticphoenix.forge.randore.component.ability.AbilityRegistry;
 import com.gmail.socraticphoenix.forge.randore.component.ability.ScheduleListener;
+import com.gmail.socraticphoenix.forge.randore.component.ability.abilities.PotionEffectAbility;
 import com.gmail.socraticphoenix.forge.randore.crafting.CraftingBlocks;
-import com.gmail.socraticphoenix.forge.randore.crafting.CraftingGuiHandler;
 import com.gmail.socraticphoenix.forge.randore.crafting.CraftingItems;
 import com.gmail.socraticphoenix.forge.randore.crafting.CraftiniumForgeUpgradeRecipe;
 import com.gmail.socraticphoenix.forge.randore.crafting.forge.CraftiniumDelegateSmelt;
@@ -38,6 +39,7 @@ import com.gmail.socraticphoenix.forge.randore.crafting.table.CraftiniumDelegate
 import com.gmail.socraticphoenix.forge.randore.crafting.table.CraftiniumRecipeRegistry;
 import com.gmail.socraticphoenix.forge.randore.crafting.table.FlexibleCraftingRecipe;
 import com.gmail.socraticphoenix.forge.randore.crafting.table.FlexibleRecipe;
+import com.gmail.socraticphoenix.forge.randore.component.ability.EmpoweredHitListener;
 import com.gmail.socraticphoenix.forge.randore.item.FlexibleItem;
 import com.gmail.socraticphoenix.forge.randore.item.FlexibleItemRegistry;
 import com.gmail.socraticphoenix.forge.randore.item.SledgehammerHitListener;
@@ -47,6 +49,7 @@ import com.gmail.socraticphoenix.forge.randore.module.loot.RandoresLoot;
 import com.gmail.socraticphoenix.forge.randore.module.starter.RandoresStarterKit;
 import com.gmail.socraticphoenix.forge.randore.packet.RandoresNetworking;
 import com.gmail.socraticphoenix.forge.randore.resource.RandoresResourceManager;
+import com.gmail.socraticphoenix.forge.randore.texture.RandoresLazyResourcePack;
 import com.google.common.base.Supplier;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.SoundEvents;
@@ -58,6 +61,7 @@ import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.potion.Potion;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.ConfigCategory;
@@ -83,11 +87,12 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-@Mod(modid = "randores", name = "Socratic_Phoenix's Randores", version = "1.11")
+@Mod(modid = "randores", name = "Socratic_Phoenix's Randores", version = "1.12")
 public class Randores {
     public static final Item.ToolMaterial MATERIAL_DEFAULT = EnumHelper.addToolMaterial("MATERIAL_DEFAULT", 1, 100, 1, 1, 1);
     public static final ItemArmor.ArmorMaterial ARMOR_DEFAULT = EnumHelper.addArmorMaterial("ARMOR_DEFAULT", "no_texture", 100, new int[]{1, 1, 1, 1}, 1, SoundEvents.ITEM_ARMOR_EQUIP_IRON, 1);
@@ -221,6 +226,7 @@ public class Randores {
         //Items
         MinecraftForge.EVENT_BUS.register(new SledgehammerHitListener());
         MinecraftForge.EVENT_BUS.register(new ScheduleListener());
+        MinecraftForge.EVENT_BUS.register(new EmpoweredHitListener());
     }
 
     private static long getRandoresSeedFromWorld(long worldSeed) {
@@ -241,7 +247,9 @@ public class Randores {
     }
 
     public static long getRandoresSeed(World world) {
-        if (!world.isRemote) {
+        if (world == null) {
+            return 0;
+        } else if (!world.isRemote) {
             return Randores.getRandoresSeedFromWorld(world.getSeed());
         } else if (FMLCommonHandler.instance().getSide() == Side.CLIENT) {
             return RandoresClientSideRegistry.getCurrentSeed();
@@ -259,7 +267,7 @@ public class Randores {
     }
 
     public static String textureName(int num) {
-        return "randores:blocks/randores.block." + num;
+        return RandoresLazyResourcePack.DOMAIN + ":blocks/randores.block." + num;
     }
 
     public static String blockName(int num) {
@@ -267,7 +275,7 @@ public class Randores {
     }
 
     public static String itemTextureName(int num) {
-        return "randores:items/randores.item." + num;
+        return RandoresLazyResourcePack.DOMAIN + ":items/randores.item." + num;
     }
 
     public static String itemName(int num) {
@@ -279,7 +287,7 @@ public class Randores {
     }
 
     public static String bowTexturePre(int num) {
-        return "randores:items/randores.item.bow." + num;
+        return RandoresLazyResourcePack.DOMAIN + ":items/randores.item.bow." + num;
     }
 
     public static ItemStack applyData(ItemStack stack, long seed) {
@@ -308,6 +316,30 @@ public class Randores {
         } else {
             return 0;
         }
+    }
+
+    public static long getRandoresSeed(NBTTagCompound baseData) {
+        return baseData.getCompoundTag("randores").getLong("seed");
+    }
+
+    public static boolean hasRandoresSeed(NBTTagCompound baseData) {
+        return baseData.hasKey("randores") && baseData.getCompoundTag("randores").hasKey("seed");
+    }
+
+    public static void applyRandoresSeed(NBTTagCompound baseData, long seed) {
+        baseData.getCompoundTag("randores").setLong("seed", seed);
+    }
+
+    public static int getRandoresIndex(NBTTagCompound baseData) {
+        return baseData.getCompoundTag("randores").getInteger("index");
+    }
+
+    public static boolean hasRandoresIndex(NBTTagCompound baseData) {
+        return baseData.hasKey("randores") && baseData.getCompoundTag("randores").hasKey("index");
+    }
+
+    public static void applyRandoresIndex(NBTTagCompound baseData, int index) {
+        baseData.getCompoundTag("randores").setInteger("index", index);
     }
 
     public static MaterialDefinition getDefinition(int index, ItemStack stack) {
@@ -374,6 +406,23 @@ public class Randores {
         return false;
     }
 
+    public static boolean hasRandoresIndex(ItemStack stack) {
+        return Randores.hasRandoresIndex(stack.getTagCompound());
+    }
+
+    public static int getRandoresIndex(ItemStack stack) {
+        return Randores.getRandoresIndex(stack.getTagCompound());
+    }
+
+    public long getPreviousSeed() {
+        ConfigCategory config = this.getConfiguration().getCategory("config");
+        if (config.containsKey("previousSeed")) {
+            return config.get("previousSeed").getLong();
+        }
+
+        return 0;
+    }
+
     public Configuration getConfiguration() {
         return this.configuration;
     }
@@ -409,7 +458,7 @@ public class Randores {
         }
 
         if (!modules.containsKey("starterkit")) {
-            modules.put("starterkit", new Property("starterkit", "false", Property.Type.BOOLEAN));
+            modules.put("starterkit", new Property("starterkit", "true", Property.Type.BOOLEAN));
         }
 
         if (!modules.containsKey("altar")) {
@@ -458,9 +507,9 @@ public class Randores {
     }
 
     @Mod.EventHandler
-    public void onInit(FMLInitializationEvent ev) {
+    public void onInit(FMLInitializationEvent ev) throws IOException {
         FMLInterModComms.sendMessage("waila", "register", "com.gmail.socraticphoenix.forge.randore.compatability.waila.RandoresWailaHandler.callbackRegister");
-        NetworkRegistry.INSTANCE.registerGuiHandler(this, new CraftingGuiHandler());
+        NetworkRegistry.INSTANCE.registerGuiHandler(this, new RandoresGuiHandler());
         GameRegistry.registerWorldGenerator(new RandoresWorldGenerator(), 10);
         GameRegistry.registerWorldGenerator(new RandoresAltarGenerator(), 0);
         this.logger.info("Running proxy initialization...");
@@ -480,6 +529,15 @@ public class Randores {
             CraftiniumSmeltRegistry.register(new CraftiniumDelegateSmelt(smelt.getKey(), smelt.getValue(), FurnaceRecipes.instance().getSmeltingExperience(smelt.getKey())));
         }
         this.logger.info("Recipes added.");
+
+        this.logger.info("Registering abilities.");
+        Iterator<Potion> iterator = Potion.REGISTRY.iterator();
+        while (iterator.hasNext()) {
+            Potion next = iterator.next();
+            AbilityRegistry.register(new PotionEffectAbility(next, false));
+            AbilityRegistry.register(new PotionEffectAbility(next, true));
+        }
+        this.logger.info("Finished registering.");
     }
 
     public Logger getLogger() {

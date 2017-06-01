@@ -36,9 +36,7 @@ import com.gmail.socraticphoenix.forge.randore.texture.FlexibleAtlasSprite;
 import com.gmail.socraticphoenix.forge.randore.texture.FlexibleTextureRegistry;
 import com.gmail.socraticphoenix.forge.randore.texture.RandoresLazyResourcePack;
 import net.minecraft.block.Block;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraft.crash.CrashReport;
 import net.minecraft.item.Item;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
@@ -57,6 +55,7 @@ public class RandoresClientSideListener {
     @SideOnly(Side.CLIENT)
     public void onModelLoad(ModelRegistryEvent ev) {
         ModelLoader.setCustomModelResourceLocation(CraftingItems.craftiniumLump, 0, new ModelResourceLocation("randores:" + CraftingItems.craftiniumLump.getUnlocalizedName().substring(5), "inventory"));
+        ModelLoader.setCustomModelResourceLocation(CraftingItems.tome, 0, new ModelResourceLocation("randores:" + CraftingItems.tome.getUnlocalizedName().substring(5), "inventory"));
         ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(CraftingBlocks.craftiniumOre), 0, new ModelResourceLocation("randores:" + Item.getItemFromBlock(CraftingBlocks.craftiniumOre).getUnlocalizedName().substring(5)));
         ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(CraftingBlocks.craftiniumTable), 0, new ModelResourceLocation("randores:" + Item.getItemFromBlock(CraftingBlocks.craftiniumTable).getUnlocalizedName().substring(5)));
         ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(CraftingBlocks.craftiniumForge), 0, new ModelResourceLocation("randores:" + Item.getItemFromBlock(CraftingBlocks.craftiniumForge).getUnlocalizedName().substring(5)));
@@ -77,7 +76,7 @@ public class RandoresClientSideListener {
         ModelLoader.setCustomModelResourceLocation(RandoresTabItems.tabSledgehammer, 0, new ModelResourceLocation("randores:" + RandoresTabItems.tabSledgehammer.getUnlocalizedName().substring(5), "inventory"));
 
         for (FlexibleItem item : FlexibleItemRegistry.getAll()) {
-            if(item instanceof FlexibleBow) {
+            if (item instanceof FlexibleBow) {
                 ModelLoader.setCustomModelResourceLocation(item.getThis(), 0, new ModelResourceLocation(RandoresLazyResourcePack.DOMAIN + ":" + Randores.bowName(item.index()), "inventory"));
             } else {
                 ModelLoader.setCustomModelResourceLocation(item.getThis(), 0, new ModelResourceLocation(RandoresLazyResourcePack.DOMAIN + ":" + item.getThis().getUnlocalizedName().substring(5), "inventory"));
@@ -86,42 +85,35 @@ public class RandoresClientSideListener {
 
         for (FlexibleOre block : FlexibleBlockRegistry.getOres()) {
             Item item = Item.getItemFromBlock(block);
-            ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation(RandoresLazyResourcePack.DOMAIN + ":" + item.getUnlocalizedName().substring(5)));
+            ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation(RandoresLazyResourcePack.DOMAIN + ":" + item.getUnlocalizedName().substring(5), "inventory"));
         }
 
         for (Block brick : FlexibleBlockRegistry.getBricks()) {
             Item item = Item.getItemFromBlock(brick);
-            ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation(RandoresLazyResourcePack.DOMAIN + ":" + item.getUnlocalizedName().substring(5)));
+            ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation(RandoresLazyResourcePack.DOMAIN + ":" + item.getUnlocalizedName().substring(5), "inventory"));
         }
 
         for (Block torch : FlexibleBlockRegistry.getTorches()) {
             Item item = Item.getItemFromBlock(torch);
-            ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation(RandoresLazyResourcePack.DOMAIN + ":" + item.getUnlocalizedName().substring(5)));
+            ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation(RandoresLazyResourcePack.DOMAIN + ":" + item.getUnlocalizedName().substring(5), "inventory"));
         }
     }
 
     @SubscribeEvent
     @SideOnly(Side.CLIENT)
     public void onPostStitch(TextureStitchEvent.Post ev) {
-        if (RandoresClientSideRegistry.isInitialized() && MaterialDefinitionRegistry.contains(RandoresClientSideRegistry.getCurrentSeed())) {
-            long seed = RandoresClientSideRegistry.getCurrentSeed();
-            List<MaterialDefinition> definitions = MaterialDefinitionRegistry.get(seed);
-            MaterialDefinitionGenerator.setupArmorTextures(definitions);
+        if (RandoresClientSideRegistry.isInitialized()) {
+            MaterialDefinitionGenerator.rebindArmorTextures();
         }
     }
 
     @SubscribeEvent
     @SideOnly(Side.CLIENT)
-    public void onStitch(TextureStitchEvent.Pre ev) {
+    public void onStitch(TextureStitchEvent.Pre ev) throws IOException {
         Logger logger = Randores.getInstance().getLogger();
         logger.info("Loading texture templates...");
-        try {
-            RandoresClientSideRegistry.loadTemplates();
-            logger.info("Loaded templates.");
-        } catch (IOException e) {
-            Minecraft.getMinecraft().crashed(new CrashReport("Failed to load templates", e));
-            return;
-        }
+        RandoresClientSideRegistry.loadTemplates();
+        logger.info("Loaded templates.");
 
         if (FlexibleTextureRegistry.itemQuantity() == 0) {
             int i;

@@ -24,6 +24,7 @@ package com.gmail.socraticphoenix.forge.randore.component;
 import com.gmail.socraticphoenix.forge.randore.RandoresClientSideRegistry;
 import com.gmail.socraticphoenix.forge.randore.RandoresNameAlgorithm;
 import com.gmail.socraticphoenix.forge.randore.RandoresTranslations;
+import com.gmail.socraticphoenix.forge.randore.component.ability.AbilitySeries;
 import com.gmail.socraticphoenix.forge.randore.component.property.MaterialProperty;
 import com.gmail.socraticphoenix.forge.randore.probability.RandoresProbability;
 import com.gmail.socraticphoenix.forge.randore.texture.RandoresArmorResourcePack;
@@ -69,6 +70,8 @@ public class MaterialDefinition {
         }
     };
 
+    private AbilitySeries abilitySeries;
+
     private Color color;
     private String name;
 
@@ -87,7 +90,8 @@ public class MaterialDefinition {
 
     private int index;
 
-    public MaterialDefinition(Color color, OreComponent ore, List<CraftableComponent> craftables, List<MaterialProperty> properties, long seed, int index) {
+    public MaterialDefinition(Color color, OreComponent ore, List<CraftableComponent> craftables, List<MaterialProperty> properties, AbilitySeries series, long seed, int index) {
+        this.abilitySeries = series;
         this.color = color;
         this.ore = ore;
         this.material = ore.getMaterial();
@@ -96,7 +100,7 @@ public class MaterialDefinition {
         this.toolMaterial = EnumHelper.addToolMaterial(this.name, this.material.getHarvestLevel(), this.material.getMaxUses(), this.material.getEfficiency(), this.material.getDamage(), this.material.getEnchantability());
         this.toolMaterial.setRepairItem(new ItemStack(this.material.makeItem()));
         this.totalArmor = sum(this.material.getArmorReduction());
-        this.armorMaterial = EnumHelper.addArmorMaterial(this.name, RandoresArmorResourcePack.DOMAIN + ":armor." + index, this.material.getMaxUses() / 10, this.material.getArmorReduction(), this.material.getEnchantability(), SoundEvents.ITEM_ARMOR_EQUIP_IRON, this.material.getToughness());
+        this.armorMaterial = EnumHelper.addArmorMaterial(this.name, RandoresArmorResourcePack.DOMAIN + ":randores.armor." + index, this.material.getMaxUses() / 10, this.material.getArmorReduction(), this.material.getEnchantability(), SoundEvents.ITEM_ARMOR_EQUIP_IRON, this.material.getToughness());
         this.armorMaterial.setRepairItem(new ItemStack(this.material.makeItem()));
         this.seed = seed;
         this.index = index;
@@ -110,6 +114,79 @@ public class MaterialDefinition {
         for(MaterialProperty property : properties) {
             this.properties.put(property.name(), property);
         }
+    }
+
+    public List<String> buildPages() {
+        return new ArrayList<String>();
+    }
+
+    public MaterialDefinition setAbilitySeries(AbilitySeries abilitySeries) {
+        this.abilitySeries = abilitySeries;
+        return this;
+    }
+
+    public MaterialDefinition setColor(Color color) {
+        this.color = color;
+        return this;
+    }
+
+    public MaterialDefinition setName(String name) {
+        this.name = name;
+        return this;
+    }
+
+    public MaterialDefinition setOre(OreComponent ore) {
+        this.ore = ore;
+        return this;
+    }
+
+    public MaterialDefinition setMaterial(MaterialComponent material) {
+        this.material = material;
+        return this;
+    }
+
+    public MaterialDefinition setCraftables(List<CraftableComponent> craftables) {
+        this.craftables = craftables;
+        return this;
+    }
+
+    public MaterialDefinition setComponents(List<Component> components) {
+        this.components = components;
+        return this;
+    }
+
+    public MaterialDefinition setProperties(Map<String, MaterialProperty> properties) {
+        this.properties = properties;
+        return this;
+    }
+
+    public MaterialDefinition setToolMaterial(Item.ToolMaterial toolMaterial) {
+        this.toolMaterial = toolMaterial;
+        return this;
+    }
+
+    public MaterialDefinition setArmorMaterial(ItemArmor.ArmorMaterial armorMaterial) {
+        this.armorMaterial = armorMaterial;
+        return this;
+    }
+
+    public MaterialDefinition setSeed(long seed) {
+        this.seed = seed;
+        return this;
+    }
+
+    public MaterialDefinition setTotalArmor(int totalArmor) {
+        this.totalArmor = totalArmor;
+        return this;
+    }
+
+    public MaterialDefinition setIndex(int index) {
+        this.index = index;
+        return this;
+    }
+
+    public AbilitySeries getAbilitySeries() {
+        return this.abilitySeries;
     }
 
     public MaterialProperty getProperty(String name) {
@@ -149,6 +226,9 @@ public class MaterialDefinition {
         if(this.hasComponent(Components.BATTLEAXE)) {
             recipes += t(RandoresTranslations.Keys.BATTLEAXE_RECIPE, locale) + ", ";
         }
+        if(this.hasComponent(Components.SLEDGEHAMMER)) {
+            recipes += t(RandoresTranslations.Keys.SLEDGEHAMMER_RECIPE, locale) + ", ";
+        }
         if(this.hasComponent(Components.BOW)) {
             recipes += t(RandoresTranslations.Keys.BOW_RECIPE, locale) + ", ";
         }
@@ -179,17 +259,17 @@ public class MaterialDefinition {
     public List<String> generateLore(String locale) {
         List<String> list = new ArrayList<String>();
         list.add(TextFormatting.GREEN + t(RandoresTranslations.Keys.INFORMATION, locale) + ":");
-        if (this.hasComponent(Components.PICKAXE)) {
+        if (this.hasComponent(Components.PICKAXE) || this.hasComponent(Components.BATTLEAXE)) {
             list.add(TextFormatting.GREEN + "  " + t(RandoresTranslations.Keys.EFFICIENCY, locale) + ": " + this.material.getEfficiency());
             list.add(TextFormatting.GREEN + "  " + t(RandoresTranslations.Keys.HARVEST_LEVEL, locale) + ": " + this.material.getHarvestLevel());
         }
         if (this.hasComponent(Components.HELMET)) {
             list.add(TextFormatting.GREEN + "  " + t(RandoresTranslations.Keys.FULL_ARMOR, locale) + ": " + this.totalArmor);
         }
-        if (this.hasComponent(Components.PICKAXE) || this.hasComponent(Components.SWORD)) {
+        if (this.hasComponent(Components.PICKAXE) || this.hasComponent(Components.SWORD) || this.hasComponent(Components.HELMET) || this.hasComponent(Components.BATTLEAXE) || this.hasComponent(Components.SLEDGEHAMMER)) {
             list.add(TextFormatting.GREEN + "  " + t(RandoresTranslations.Keys.DAMAGE, locale) + ": " + this.toolMaterial.getDamageVsEntity());
         }
-        if (this.hasComponent(Components.PICKAXE) || this.hasComponent(Components.SWORD) || this.hasComponent(Components.HELMET)) {
+        if (this.hasComponent(Components.PICKAXE) || this.hasComponent(Components.SWORD) || this.hasComponent(Components.HELMET) || this.hasComponent(Components.BOW) || this.hasComponent(Components.BATTLEAXE) || this.hasComponent(Components.SLEDGEHAMMER)) {
             list.add(TextFormatting.GREEN + "  " + t(RandoresTranslations.Keys.DURABILITY, locale) + ": " + this.material.getMaxUses());
             list.add(TextFormatting.GREEN + "  " + t(RandoresTranslations.Keys.ENCHANTABILITY, locale) + ": " + this.material.getEnchantability());
         }
@@ -205,6 +285,9 @@ public class MaterialDefinition {
         }
         if(this.hasComponent(Components.BATTLEAXE)) {
             recipes += t(RandoresTranslations.Keys.BATTLEAXE_RECIPE, locale) + ", ";
+        }
+        if(this.hasComponent(Components.SLEDGEHAMMER)) {
+            recipes += t(RandoresTranslations.Keys.SLEDGEHAMMER_RECIPE, locale) + ", ";
         }
         if(this.hasComponent(Components.BOW)) {
             recipes += t(RandoresTranslations.Keys.BOW_RECIPE, locale) + ", ";

@@ -25,6 +25,7 @@ import com.gmail.socraticphoenix.forge.randore.Randores;
 import com.gmail.socraticphoenix.forge.randore.component.Components;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinition;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinitionRegistry;
+import com.gmail.socraticphoenix.forge.randore.component.ability.AbilityType;
 import com.gmail.socraticphoenix.forge.randore.component.ability.EmpoweredEnchantment;
 import com.google.common.collect.Multimap;
 import net.minecraft.enchantment.EnchantmentSweepingEdge;
@@ -39,6 +40,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class FlexibleSledgehammer extends Item implements FlexibleItem {
@@ -53,6 +55,11 @@ public class FlexibleSledgehammer extends Item implements FlexibleItem {
     @Override
     public boolean isDamageable() {
         return true;
+    }
+
+    @Override
+    public List<AbilityType> types() {
+        return Arrays.asList(AbilityType.MELEE);
     }
 
     @Override

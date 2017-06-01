@@ -19,10 +19,20 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.gmail.socraticphoenix.forge.randore.component.ability;
+package com.gmail.socraticphoenix.forge.randore.component.plugin;
 
-public enum AbilityStage {
-    FIRST,
-    MIDDLE,
-    LAST
+import java.util.ArrayList;
+import java.util.List;
+
+public class RandoresPluginRegistry {
+    private static List<RandoresPlugin> plugins = new ArrayList<RandoresPlugin>();
+
+    public static void register(RandoresPlugin plugin) {
+        plugins.add(plugin);
+    }
+
+    public static List<RandoresPlugin> get() {
+        return plugins;
+    }
+
 }
