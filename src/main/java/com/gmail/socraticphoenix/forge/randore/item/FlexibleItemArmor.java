@@ -100,11 +100,6 @@ public class FlexibleItemArmor extends ItemArmor implements FlexibleItem, ISpeci
     }
 
     @Override
-    public void onUpdate(ItemStack stack, World worldIn, Entity entityIn, int itemSlot, boolean isSelected) {
-        FlexibleItemHelper.onUpdate(stack, worldIn, entityIn, itemSlot, isSelected);
-    }
-
-    @Override
     public boolean isFull3D() {
         return true;
     }

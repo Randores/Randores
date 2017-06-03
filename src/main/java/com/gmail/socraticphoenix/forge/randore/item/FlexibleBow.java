@@ -26,6 +26,7 @@ import com.gmail.socraticphoenix.forge.randore.component.Components;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinition;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinitionRegistry;
 import com.gmail.socraticphoenix.forge.randore.component.ability.AbilityType;
+import com.gmail.socraticphoenix.forge.randore.component.ability.EmpoweredEnchantment;
 import com.gmail.socraticphoenix.forge.randore.entity.RandoresArrow;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
@@ -120,6 +121,7 @@ public class FlexibleBow extends ItemBow implements FlexibleItem {
                         RandoresArrow entityarrow = new RandoresArrow(worldIn, entityplayer);
                         entityarrow.seed = Randores.getRandoresSeed(worldIn);
                         entityarrow.index = this.index;
+                        entityarrow.hasEffect = EmpoweredEnchantment.appliedTo(stack);
                         entityarrow.setPotionEffect(itemstack);
                         entityarrow.setAim(entityplayer, entityplayer.rotationPitch, entityplayer.rotationYaw, 0.0F, f * 3.0F, 1.0F);
 

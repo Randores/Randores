@@ -21,12 +21,8 @@
  */
 package com.gmail.socraticphoenix.forge.randore.component.ability;
 
-import com.gmail.socraticphoenix.forge.randore.Randores;
-import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinition;
-import com.gmail.socraticphoenix.forge.randore.item.FlexibleItemArmor;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -41,11 +37,7 @@ public class EmpoweredArmorListener {
             EntityLivingBase cause = (EntityLivingBase) root;
             EntityLivingBase hurt = ev.getEntityLiving();
             if (EmpoweredEnchantment.appliedTo(hurt)) {
-                ItemStack armor = EmpoweredEnchantment.isolate(hurt);
-                if (!armor.isEmpty() && armor.getItem() instanceof FlexibleItemArmor) {
-                    MaterialDefinition definition = ((FlexibleItemArmor) armor.getItem()).getDefinition(Randores.getRandoresSeed(hurt.world));
-                    definition.getAbilitySeries().onArmorHit(hurt, cause);
-                }
+                EmpoweredEnchantment.doArmor(hurt, cause);
             }
         }
     }

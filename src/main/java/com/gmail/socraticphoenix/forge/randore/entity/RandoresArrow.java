@@ -31,6 +31,7 @@ import net.minecraft.world.World;
 public class RandoresArrow extends EntityTippedArrow {
     public long seed;
     public int index;
+    public boolean hasEffect;
     private boolean hadEffect;
 
     public RandoresArrow(World worldIn) {
@@ -45,7 +46,7 @@ public class RandoresArrow extends EntityTippedArrow {
     public void onUpdate() {
         super.onUpdate();
 
-        if(this.inGround && !this.hadEffect) {
+        if(this.inGround && !this.hadEffect && this.hasEffect) {
             this.hadEffect = true;
             AbilitySeries series = this.get();
             if(series != null) {
@@ -61,6 +62,7 @@ public class RandoresArrow extends EntityTippedArrow {
         sub.setLong("seed", this.seed);
         sub.setInteger("index", this.index);
         sub.setBoolean("hadEffect", this.hadEffect);
+        sub.setBoolean("hasEffect", this.hasEffect);
         compound.setTag("randores", sub);
     }
 
@@ -71,13 +73,14 @@ public class RandoresArrow extends EntityTippedArrow {
         this.seed = sub.getLong("seed");
         this.index = sub.getInteger("index");
         this.hadEffect = sub.getBoolean("hadEffect");
+        this.hasEffect = sub.getBoolean("hasEffect");
     }
 
     @Override
     protected void arrowHit(EntityLivingBase living) {
         super.arrowHit(living);
 
-        if(!this.hadEffect) {
+        if(!this.hadEffect && this.hasEffect) {
             this.hadEffect = true;
             AbilitySeries series = this.get();
             if(series != null) {

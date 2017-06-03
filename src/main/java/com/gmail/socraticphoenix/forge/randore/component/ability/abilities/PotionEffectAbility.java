@@ -58,10 +58,12 @@ public class PotionEffectAbility implements Ability {
     @Override
     public boolean apply(Vec3d location, EntityLivingBase activator, AbilityContext context) {
         if (context.getType() == AbilityType.ARMOR_PASSIVE) {
-            this.addEffect(activator);
+            if (activator.getActivePotionEffect(this.potion) == null || activator.getActivePotionEffect(this.potion).getDuration() <= 11 * 20) {
+                activator.removePotionEffect(this.potion);
+                activator.addPotionEffect(new PotionEffect(this.potion, 20 * 15, 1, true, false));
+            }
         } else if (context.getType() == AbilityType.ARMOR_ACTIVE) {
-            EntityLivingBase entity = context.getAttacker();
-            entity.addPotionEffect(new PotionEffect(this.potion, 1, 1, true, false));
+            this.addEffect(context.getAttacker());
         } else if (context.hasTarget()) {
             this.addEffect(context.getTarget());
         }
@@ -71,7 +73,7 @@ public class PotionEffectAbility implements Ability {
 
     private void addEffect(EntityLivingBase entity) {
         if (entity.getActivePotionEffect(this.potion) == null) {
-            entity.addPotionEffect(new PotionEffect(this.potion, 1, 1));
+            entity.addPotionEffect(new PotionEffect(this.potion, this.potion.isInstant() ? 1 : 20 * 5, 1));
         }
     }
 

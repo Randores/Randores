@@ -21,8 +21,11 @@
  */
 package com.gmail.socraticphoenix.forge.randore.component.ability;
 
+import com.gmail.socraticphoenix.forge.randore.Randores;
 import com.gmail.socraticphoenix.forge.randore.component.Components;
+import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinition;
 import com.gmail.socraticphoenix.forge.randore.item.FlexibleItem;
+import com.gmail.socraticphoenix.forge.randore.item.FlexibleItemArmor;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.EnumEnchantmentType;
@@ -59,15 +62,6 @@ public class EmpoweredEnchantment extends Enchantment {
         return false;
     }
 
-    public static ItemStack isolate(EntityLivingBase entity) {
-        for (EntityEquipmentSlot slot : slots) {
-            if (entity.getItemStackFromSlot(slot) != null && EmpoweredEnchantment.appliedTo(entity.getItemStackFromSlot(slot))) {
-                return entity.getItemStackFromSlot(slot);
-            }
-        }
-        return ItemStack.EMPTY;
-    }
-
     @Override
     public boolean canApply(ItemStack stack) {
         if (stack.getItem() instanceof FlexibleItem) {
@@ -83,6 +77,18 @@ public class EmpoweredEnchantment extends Enchantment {
     @Override
     public boolean canApplyAtEnchantingTable(ItemStack stack) {
         return this.canApply(stack);
+    }
+
+    public static void doArmor(EntityLivingBase hurt, EntityLivingBase cause) {
+        for (EntityEquipmentSlot slot : slots) {
+            if (!hurt.getItemStackFromSlot(slot).isEmpty() && EmpoweredEnchantment.appliedTo(hurt.getItemStackFromSlot(slot))) {
+                ItemStack stack = hurt.getItemStackFromSlot(slot);
+                if(stack.getItem() instanceof FlexibleItemArmor) {
+                    MaterialDefinition definition = ((FlexibleItemArmor) stack.getItem()).getDefinition(Randores.getRandoresSeed(hurt.world));
+                    definition.getAbilitySeries().onArmorHit(hurt, cause);
+                }
+            }
+        }
     }
 
 }

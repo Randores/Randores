@@ -518,7 +518,7 @@ public class Randores {
         this.logger.info("Finished testing names algorithm");
         RandoresNetworking.initNetwork();
         this.logger.info("Registering entities...");
-        EntityRegistry.registerModEntity(new ResourceLocation("randores:randores_arrow"), RandoresArrow.class, "randores:randores_arrow", 0, this, 20, 20, true);
+        EntityRegistry.registerModEntity(new ResourceLocation("randores:randores_arrow"), RandoresArrow.class, "randores:randores_arrow", 0, this, 20, 1, true);
         this.logger.info("Finished registering entities.");
         this.logger.info("Running proxy pre-initialization...");
         Randores.PROXY.preInit(ev);
