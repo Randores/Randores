@@ -94,11 +94,6 @@ public class FlexibleItemArmor extends ItemArmor implements FlexibleItem, ISpeci
     }
 
     @Override
-    public void addInformation(ItemStack stack, EntityPlayer playerIn, List<String> tooltip, boolean advanced) {
-        FlexibleItemHelper.addInformation(this, stack, playerIn, tooltip, advanced);
-    }
-
-    @Override
     public String getItemStackDisplayName(ItemStack stack) {
         String name = FlexibleItemHelper.getItemStackDisplayName(this, stack);
         return name == null ? super.getItemStackDisplayName(stack) : name;

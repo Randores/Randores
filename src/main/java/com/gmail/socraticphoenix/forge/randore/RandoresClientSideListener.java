@@ -103,7 +103,7 @@ public class RandoresClientSideListener {
     @SideOnly(Side.CLIENT)
     public void onPostStitch(TextureStitchEvent.Post ev) {
         if (RandoresClientSideRegistry.isInitialized()) {
-            MaterialDefinitionGenerator.rebindArmorTextures();
+            RandoresClientSideRegistry.rebindArmorTextures();
         }
     }
 
@@ -158,7 +158,7 @@ public class RandoresClientSideListener {
         if (RandoresClientSideRegistry.isInitialized() && MaterialDefinitionRegistry.contains(RandoresClientSideRegistry.getCurrentSeed())) {
             long seed = RandoresClientSideRegistry.getCurrentSeed();
             List<MaterialDefinition> definitions = MaterialDefinitionRegistry.get(seed);
-            MaterialDefinitionGenerator.generateAndSetupTextures(definitions, seed);
+            RandoresClientSideRegistry.generateAndSetupTextures(definitions, seed);
         }
 
     }

@@ -19,20 +19,54 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.gmail.socraticphoenix.forge.randore.crafting;
+package com.gmail.socraticphoenix.forge.randore.proxy;
 
 import com.gmail.socraticphoenix.forge.randore.Randores;
-import com.gmail.socraticphoenix.forge.randore.tome.ItemTome;
-import net.minecraft.item.Item;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import org.apache.logging.log4j.Logger;
 
-public class CraftingItems {
+import java.io.IOException;
+import java.util.concurrent.atomic.AtomicInteger;
 
-    public static Item craftiniumLump;
-    public static Item tome;
+public class RandoresServerProxy implements RandoresProxy {
+    private AtomicInteger oreCount = new AtomicInteger();
 
-    public static void init() {
-        craftiniumLump = new Item().setUnlocalizedName("craftinium_lump").setCreativeTab(Randores.TAB_CRAFTING).setRegistryName("craftinium_lump");
-        tome = new ItemTome().setUnlocalizedName("material_tome").setCreativeTab(Randores.TAB_TOMES).setRegistryName("material_tome").setMaxStackSize(1);
+    @Override
+    public void preInit(FMLPreInitializationEvent ev) throws IOException, IllegalAccessException {
+        Logger logger = Randores.getInstance().getLogger();
+        logger.info("Randores is running server-side.");
+    }
+
+    @Override
+    public void init(FMLInitializationEvent ev) throws IOException {
+
+    }
+
+    @Override
+    public void postInit(FMLPostInitializationEvent ev) {
+
+    }
+
+    @Override
+    public String getCurrentLocale() {
+        return "en_us";
+    }
+
+    @Override
+    public int oreCount() {
+        return this.oreCount.get();
+    }
+
+    @Override
+    public void setOreCount(int count) {
+        this.oreCount.set(count);
+    }
+
+    @Override
+    public long seed() {
+        return 0;
     }
 
 }

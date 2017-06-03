@@ -21,9 +21,26 @@
  */
 package com.gmail.socraticphoenix.forge.randore.component.ability;
 
+import com.gmail.socraticphoenix.forge.randore.RandoresTranslations;
+
 public enum AbilityType {
-    ARMOR_PASSIVE,
-    ARMOR_ACTIVE,
-    PROJECTILE,
-    MELEE
+    MELEE(RandoresTranslations.Keys.MELEE),
+    PROJECTILE(RandoresTranslations.Keys.PROJECTILE),
+    ARMOR_ACTIVE(RandoresTranslations.Keys.ARMOR_ACTIVE),
+    ARMOR_PASSIVE(RandoresTranslations.Keys.ARMOR_PASSIVE);
+
+    String name;
+
+    AbilityType(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public String getLocalName() {
+        return RandoresTranslations.get(this.getName());
+    }
+
 }

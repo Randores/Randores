@@ -19,21 +19,28 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.gmail.socraticphoenix.forge.randore;
+package com.gmail.socraticphoenix.forge.randore.proxy;
 
-import org.apache.logging.log4j.Logger;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 import java.io.IOException;
 
-public class RandoresProxy {
+public interface RandoresProxy {
 
-    public void preInitSided() throws IOException, IllegalAccessException {
-        Logger logger = Randores.getInstance().getLogger();
-        logger.info("Randores is running server-side.");
-    }
+    void preInit(FMLPreInitializationEvent ev) throws IOException, IllegalAccessException;
 
-    public void initSided() throws IOException {
+    void init(FMLInitializationEvent ev) throws IOException;
 
-    }
+    void postInit(FMLPostInitializationEvent ev);
+
+    String getCurrentLocale();
+
+    int oreCount();
+
+    void setOreCount(int count);
+
+    long seed();
 
 }

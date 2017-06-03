@@ -21,13 +21,18 @@
  */
 package com.gmail.socraticphoenix.forge.randore;
 
+import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinitionRegistry;
 import com.gmail.socraticphoenix.forge.randore.crafting.forge.CraftiniumForgeContainer;
 import com.gmail.socraticphoenix.forge.randore.crafting.forge.CraftiniumForgeGui;
 import com.gmail.socraticphoenix.forge.randore.crafting.forge.CraftiniumForgeTileEntity;
 import com.gmail.socraticphoenix.forge.randore.crafting.table.CraftiniumTableContainer;
 import com.gmail.socraticphoenix.forge.randore.crafting.table.CraftiniumTableGui;
+import com.gmail.socraticphoenix.forge.randore.tome.ItemTome;
 import com.gmail.socraticphoenix.forge.randore.tome.TomeGui;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
@@ -69,13 +74,7 @@ public class RandoresGuiHandler implements IGuiHandler {
         } else if (ID == RandoresGuiType.TABLE.ordinal()) {
             return new CraftiniumTableGui(player.inventory, world, new BlockPos(x, y, z));
         } else if (ID == RandoresGuiType.TOME.ordinal()) {
-            return new TomeGui(Arrays.asList(new String[]{
-                    "This is a page",
-                    "this is another page",
-                    "this is a " + TextFormatting.RED + "red" + TextFormatting.RESET + " page",
-                    "this is a very long page that is long and probably takes too long to draw, it exists for the purpose of testing the algorithm that splits the text up onto multiple pages and hopefully this test is long enough. Let's see just how well this thing works, let's just go ahead and test it you know."
-            }));
-            /*ItemStack[] stacks = new ItemStack[] {player.getHeldItemMainhand(), player.getHeldItemOffhand()};
+            ItemStack[] stacks = new ItemStack[] {player.getHeldItemMainhand(), player.getHeldItemOffhand()};
             for(ItemStack stack : stacks) {
                 if(stack.getItem() instanceof ItemTome && Randores.hasRandoresSeed(stack) && Randores.hasRandoresIndex(stack)) {
                     int index = Randores.getRandoresIndex(stack);
@@ -84,7 +83,17 @@ public class RandoresGuiHandler implements IGuiHandler {
                         return new TomeGui(MaterialDefinitionRegistry.get(seed).get(index).buildPages());
                     }
                 }
-            }*/
+            }
+
+            return new TomeGui(Arrays.asList(new TomeGui.Element[]{
+                    new TomeGui.StringElement("An example text page: \n" + TextFormatting.RED + "This tome has no data associated with it, so it instead displays examples of the different kinds of pages in a tome.", "Example"),
+                 new TomeGui.CraftingElement("An example crafting recipe page: ", new ItemStack[][]{
+                            {new ItemStack(Items.IRON_INGOT), new ItemStack(Items.IRON_INGOT), new ItemStack(Items.IRON_INGOT)},
+                            {null, new ItemStack(Items.STICK), null},
+                            {null, new ItemStack(Items.STICK), null}
+                    }, new ItemStack(Items.IRON_PICKAXE), "Example"),
+                    new TomeGui.FurnaceElement("An example furnace recipe page: ", new ItemStack(Items.STICK), new ItemStack(Blocks.IRON_ORE), new ItemStack(Items.IRON_INGOT), "Example")
+            }));
         }
         return null;
     }

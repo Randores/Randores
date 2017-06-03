@@ -33,11 +33,11 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 import java.util.Arrays;
@@ -77,11 +77,6 @@ public class FlexibleSledgehammer extends Item implements FlexibleItem {
     }
 
     @Override
-    public void addInformation(ItemStack stack, EntityPlayer playerIn, List<String> tooltip, boolean advanced) {
-        FlexibleItemHelper.addInformation(this, stack, playerIn, tooltip, advanced);
-    }
-
-    @Override
     public String getItemStackDisplayName(ItemStack stack) {
         String name = FlexibleItemHelper.getItemStackDisplayName(this, stack);
         return name == null ? super.getItemStackDisplayName(stack) : name;
@@ -103,6 +98,9 @@ public class FlexibleSledgehammer extends Item implements FlexibleItem {
     @Override
     public boolean hitEntity(ItemStack stack, EntityLivingBase target, EntityLivingBase attacker) {
         stack.damageItem(1, attacker);
+        Vec3d vector = target.getPositionVector().subtract(attacker.getPositionVector()).normalize().scale(2);
+        target.addVelocity(vector.xCoord, 0.5, vector.zCoord);
+        FlexibleItemHelper.doEmpowered(stack, target, attacker);
         return true;
     }
 

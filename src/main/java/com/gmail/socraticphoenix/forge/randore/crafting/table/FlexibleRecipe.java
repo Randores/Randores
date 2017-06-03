@@ -36,6 +36,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.oredict.OreDictionary;
 
 import java.util.ArrayList;
@@ -207,6 +209,7 @@ public class FlexibleRecipe implements CraftiniumRecipe {
         return NonNullList.withSize(inv.getSizeInventory(), ItemStack.EMPTY);
     }
 
+    @SideOnly(Side.CLIENT)
     public boolean tryClientIsRegistered() {
         long seed = RandoresClientSideRegistry.getCurrentSeed();
         if (MaterialDefinitionRegistry.contains(seed, this.index)) {
@@ -218,6 +221,7 @@ public class FlexibleRecipe implements CraftiniumRecipe {
         return false;
     }
 
+    @SideOnly(Side.CLIENT)
     public ItemStack tryClientGetOutput() {
         long seed = RandoresClientSideRegistry.getCurrentSeed();
         if (MaterialDefinitionRegistry.contains(seed, this.index)) {

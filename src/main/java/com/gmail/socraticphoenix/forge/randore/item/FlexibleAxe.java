@@ -67,11 +67,6 @@ public class FlexibleAxe extends ItemAxe implements FlexibleItem {
     }
 
     @Override
-    public void addInformation(ItemStack stack, EntityPlayer playerIn, List<String> tooltip, boolean advanced) {
-        FlexibleItemHelper.addInformation(this, stack, playerIn, tooltip, advanced);
-    }
-
-    @Override
     public String getItemStackDisplayName(ItemStack stack) {
         String name = FlexibleItemHelper.getItemStackDisplayName(this, stack);
         return name == null ? super.getItemStackDisplayName(stack) : name;
@@ -128,6 +123,7 @@ public class FlexibleAxe extends ItemAxe implements FlexibleItem {
         if(this.hasBacker(attacker.world)) {
             return this.getBacker(attacker.world).hitEntity(stack, target, attacker);
         }
+        FlexibleItemHelper.doEmpowered(stack, target, attacker);
         return super.hitEntity(stack, target, attacker);
     }
 

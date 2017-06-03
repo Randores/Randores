@@ -33,6 +33,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
@@ -48,6 +49,26 @@ public class FlexibleBrick extends Block implements FlexibleItem {
         this.setHardness(1.5F).setResistance(10.0F).setHarvestLevel("pickaxe", 0);
         this.index = index;
         this.setSoundType(SoundType.STONE);
+    }
+
+    @Override
+    public boolean isFullyOpaque(IBlockState state) {
+        return true;
+    }
+
+    @Override
+    public boolean isFullBlock(IBlockState state) {
+        return true;
+    }
+
+    @Override
+    public boolean isFullCube(IBlockState state) {
+        return true;
+    }
+
+    @Override
+    public EnumBlockRenderType getRenderType(IBlockState state) {
+        return EnumBlockRenderType.MODEL;
     }
 
     @Override

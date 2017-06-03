@@ -23,12 +23,15 @@ package com.gmail.socraticphoenix.forge.randore.tome;
 
 import com.gmail.socraticphoenix.forge.randore.Randores;
 import com.gmail.socraticphoenix.forge.randore.RandoresGuiType;
+import com.gmail.socraticphoenix.forge.randore.RandoresTranslations;
+import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinitionRegistry;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 
 public class ItemTome extends Item {
@@ -37,6 +40,18 @@ public class ItemTome extends Item {
     public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn) {
         playerIn.openGui(Randores.getInstance(), RandoresGuiType.TOME.ordinal(), worldIn, (int) playerIn.posX, (int) playerIn.posY, (int) playerIn.posZ);
         return ActionResult.newResult(EnumActionResult.SUCCESS, playerIn.getHeldItem(handIn));
+    }
+
+    @Override
+    public String getItemStackDisplayName(ItemStack stack) {
+        if (Randores.hasRandoresSeed(stack) && Randores.hasRandoresIndex(stack)) {
+            long seed = Randores.getRandoresSeed(stack);
+            int index = Randores.getRandoresIndex(stack);
+            if (MaterialDefinitionRegistry.contains(seed, index)) {
+                return TextFormatting.GREEN + RandoresTranslations.get(RandoresTranslations.Keys.TOME).replace("${name}", MaterialDefinitionRegistry.get(seed).get(index).getName());
+            }
+        }
+        return super.getItemStackDisplayName(stack);
     }
 
 }

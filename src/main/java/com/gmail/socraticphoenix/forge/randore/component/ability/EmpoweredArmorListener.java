@@ -21,26 +21,33 @@
  */
 package com.gmail.socraticphoenix.forge.randore.component.ability;
 
+import com.gmail.socraticphoenix.forge.randore.Randores;
+import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinition;
+import com.gmail.socraticphoenix.forge.randore.item.FlexibleItemArmor;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.util.math.Vec3d;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.DamageSource;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-public interface Ability {
+public class EmpoweredArmorListener {
 
-    boolean applicableStage(AbilityStage stage);
-
-    boolean applicableContext(AbilityType context);
-
-    int delayAfter();
-
-    boolean apply(Vec3d location, EntityLivingBase activator, AbilityContext context);
-
-    int weight();
-
-    @SideOnly(Side.CLIENT)
-    String getLocalName();
-
-    String getName();
+    @SubscribeEvent
+    public void onHurt(LivingHurtEvent ev) {
+        DamageSource source = ev.getSource();
+        Entity root = source.getEntity();
+        if (root instanceof EntityLivingBase) {
+            EntityLivingBase cause = (EntityLivingBase) root;
+            EntityLivingBase hurt = ev.getEntityLiving();
+            if (EmpoweredEnchantment.appliedTo(hurt)) {
+                ItemStack armor = EmpoweredEnchantment.isolate(hurt);
+                if (!armor.isEmpty() && armor.getItem() instanceof FlexibleItemArmor) {
+                    MaterialDefinition definition = ((FlexibleItemArmor) armor.getItem()).getDefinition(Randores.getRandoresSeed(hurt.world));
+                    definition.getAbilitySeries().onArmorHit(hurt, cause);
+                }
+            }
+        }
+    }
 
 }

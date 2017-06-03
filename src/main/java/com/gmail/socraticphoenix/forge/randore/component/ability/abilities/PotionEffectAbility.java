@@ -21,35 +21,74 @@
  */
 package com.gmail.socraticphoenix.forge.randore.component.ability.abilities;
 
+import com.gmail.socraticphoenix.forge.randore.component.ability.Ability;
 import com.gmail.socraticphoenix.forge.randore.component.ability.AbilityContext;
 import com.gmail.socraticphoenix.forge.randore.component.ability.AbilityStage;
 import com.gmail.socraticphoenix.forge.randore.component.ability.AbilityType;
-import com.gmail.socraticphoenix.forge.randore.component.ability.AbstractAbility;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.math.Vec3d;
-import scala.actors.threadpool.Arrays;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class PotionEffectAbility extends AbstractAbility {
-    private PotionEffect effect;
-    private boolean passive;
+public class PotionEffectAbility implements Ability {
+    private Potion potion;
 
-    public PotionEffectAbility(Potion potion, boolean passive) {
-        super(Arrays.<AbilityStage>asList(new Object[]{AbilityStage.FIRST, AbilityStage.MIDDLE, AbilityStage.LAST}), Arrays.<AbilityType>asList(passive ? new Object[]{AbilityType.ARMOR_PASSIVE} : new Object[]{AbilityType.PROJECTILE, AbilityType.MELEE, AbilityType.ARMOR_ACTIVE}), 5);
-        this.effect = new PotionEffect(potion, 20 * 5, 1);
-        this.passive = passive;
+    public PotionEffectAbility(Potion potion) {
+        this.potion = potion;
+    }
+
+    @Override
+    public boolean applicableStage(AbilityStage stage) {
+        return stage == AbilityStage.MIDDLE;
+    }
+
+    @Override
+    public boolean applicableContext(AbilityType context) {
+        return (this.potion.isBadEffect() && context != AbilityType.ARMOR_PASSIVE) || (!this.potion.isBadEffect() && context == AbilityType.ARMOR_PASSIVE);
+    }
+
+    @Override
+    public int delayAfter() {
+        return 0;
     }
 
     @Override
     public boolean apply(Vec3d location, EntityLivingBase activator, AbilityContext context) {
-        if (this.passive && context.getType() == AbilityType.ARMOR_PASSIVE) {
-            activator.addPotionEffect(this.effect);
+        if (context.getType() == AbilityType.ARMOR_PASSIVE) {
+            this.addEffect(activator);
+        } else if (context.getType() == AbilityType.ARMOR_ACTIVE) {
+            EntityLivingBase entity = context.getAttacker();
+            entity.addPotionEffect(new PotionEffect(this.potion, 1, 1, true, false));
         } else if (context.hasTarget()) {
-            context.getTarget().addPotionEffect(this.effect);
+            this.addEffect(context.getTarget());
         }
 
         return true;
+    }
+
+    private void addEffect(EntityLivingBase entity) {
+        if (entity.getActivePotionEffect(this.potion) == null) {
+            entity.addPotionEffect(new PotionEffect(this.potion, 1, 1));
+        }
+    }
+
+    @Override
+    public int weight() {
+        return 1;
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public String getLocalName() {
+        return I18n.format(this.getName());
+    }
+
+    @Override
+    public String getName() {
+        return this.potion.getName();
     }
 
 }

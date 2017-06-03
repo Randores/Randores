@@ -40,6 +40,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
@@ -96,8 +97,6 @@ public class FlexibleOre extends Block implements FlexibleItem {
         return Item.getItemFromBlock(this);
     }
 
-
-
     public OreComponent getComponent(long seed) {
         return this.getDefinition(seed).getOre();
     }
@@ -133,6 +132,26 @@ public class FlexibleOre extends Block implements FlexibleItem {
             }
         }
         return drops;
+    }
+
+    @Override
+    public boolean isFullyOpaque(IBlockState state) {
+        return true;
+    }
+
+    @Override
+    public boolean isFullBlock(IBlockState state) {
+        return true;
+    }
+
+    @Override
+    public boolean isFullCube(IBlockState state) {
+        return true;
+    }
+
+    @Override
+    public EnumBlockRenderType getRenderType(IBlockState state) {
+        return EnumBlockRenderType.MODEL;
     }
 
     @Override

@@ -22,41 +22,22 @@
 package com.gmail.socraticphoenix.forge.randore.item;
 
 import com.gmail.socraticphoenix.forge.randore.Randores;
-import com.gmail.socraticphoenix.forge.randore.RandoresClientSideRegistry;
 import com.gmail.socraticphoenix.forge.randore.RandoresTranslations;
-import com.gmail.socraticphoenix.forge.randore.block.FlexibleOre;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinition;
+import com.gmail.socraticphoenix.forge.randore.component.ability.EmpoweredEnchantment;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.relauncher.Side;
-
-import java.util.List;
 
 public class FlexibleItemHelper {
-
-    public static void addInformation(FlexibleItem item, ItemStack stack, EntityPlayer playerIn, List<String> tooltip, boolean advanced) {
-        if (FMLCommonHandler.instance().getSide() == Side.CLIENT && item.hasDefinition(Randores.getRandoresSeed(playerIn.world)) && item.getDefinition(playerIn.world).hasComponent(item.getType())) {
-            MaterialDefinition definition = item.getDefinition(playerIn.world);
-            if (!stack.hasDisplayName()) {
-                tooltip.remove(0);
-                tooltip.add(0, definition.getName() + " " + definition.getComponent(item.getType()).getLocalName(RandoresClientSideRegistry.getCurrentLocale()));
-            }
-
-            if((item instanceof FlexibleItemBlock && ((FlexibleItemBlock) item).getBlock() instanceof FlexibleOre) || item instanceof FlexibleMaterial) {
-                tooltip.addAll(definition.generateLore(RandoresClientSideRegistry.getCurrentLocale()));
-            }
-        }
-    }
 
     public static String getItemStackDisplayName(FlexibleItem item, ItemStack stack) {
         if (Randores.hasRandoresSeed(stack) && item.hasDefinition(Randores.getRandoresSeed(stack)) && item.getDefinition(Randores.getRandoresSeed(stack)).hasComponent(item.getType())) {
             MaterialDefinition definition = item.getDefinition(Randores.getRandoresSeed(stack));
-            String format = RandoresTranslations.get(RandoresClientSideRegistry.getCurrentLocale(), RandoresTranslations.Keys.FORMAT);
+            String format = RandoresTranslations.get(Randores.PROXY.getCurrentLocale(), RandoresTranslations.Keys.FORMAT);
             String name = definition.getName();
-            String itemName = definition.getComponent(item.getType()).getLocalName(RandoresClientSideRegistry.getCurrentLocale());
+            String itemName = definition.getComponent(item.getType()).getLocalName(Randores.PROXY.getCurrentLocale());
             return format.replace("${name}", name).replace("${item}", itemName);
         }
         return null;
@@ -68,4 +49,10 @@ public class FlexibleItemHelper {
         }
     }
 
+    public static void doEmpowered(ItemStack stack, EntityLivingBase target, EntityLivingBase attacker) {
+        if(stack.getItem() instanceof FlexibleItem && EmpoweredEnchantment.appliedTo(stack)) {
+            MaterialDefinition definition = ((FlexibleItem) stack.getItem()).getDefinition(Randores.getRandoresSeed(target.world));
+            definition.getAbilitySeries().onMeleeHit(attacker, target);
+        }
+    }
 }

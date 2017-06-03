@@ -21,7 +21,7 @@
  */
 package com.gmail.socraticphoenix.forge.randore.crafting.forge;
 
-import com.gmail.socraticphoenix.forge.randore.RandoresClientSideRegistry;
+import com.gmail.socraticphoenix.forge.randore.Randores;
 import com.gmail.socraticphoenix.forge.randore.RandoresTranslations;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
@@ -40,7 +40,7 @@ public class CraftiniumForgeGui extends GuiContainer {
     }
 
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
-        String s = RandoresTranslations.get(RandoresClientSideRegistry.getCurrentLocale(), RandoresTranslations.Keys.CRAFTINIUM_FORGE);
+        String s = RandoresTranslations.get(Randores.PROXY.getCurrentLocale(), RandoresTranslations.Keys.CRAFTINIUM_FORGE);
         this.fontRendererObj.drawString(s, this.xSize / 2 - this.fontRendererObj.getStringWidth(s) / 2, 6, 4210752);
         this.fontRendererObj.drawString(this.playerInventory.getDisplayName().getUnformattedText(), 8, this.ySize - 96 + 2, 4210752);
     }
@@ -68,13 +68,13 @@ public class CraftiniumForgeGui extends GuiContainer {
     }
 
     private int getBurnLeftScaled(int pixels) {
-        int i = this.tileEntity.getField(1);
+        int i = this.tileEntity.getCurrentItemBurnTime();
 
         if (i == 0) {
             i = 200;
         }
 
-        return this.tileEntity.getField(0) * pixels / i;
+        return this.tileEntity.getFurnaceBurnTime() * pixels / i;
     }
 
 }

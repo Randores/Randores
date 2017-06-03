@@ -26,7 +26,7 @@ import com.gmail.socraticphoenix.forge.randore.component.Components;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinition;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinitionRegistry;
 import com.gmail.socraticphoenix.forge.randore.component.ability.AbilityType;
-import com.gmail.socraticphoenix.forge.randore.component.ability.EmpoweredEnchantment;
+import com.gmail.socraticphoenix.forge.randore.entity.RandoresArrow;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -40,7 +40,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemArrow;
 import net.minecraft.item.ItemBow;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.stats.StatList;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
@@ -50,13 +49,10 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 
 public class FlexibleBow extends ItemBow implements FlexibleItem {
-    private static List<EntityArrow> arrows = new ArrayList<EntityArrow>();
     private int index;
 
     public FlexibleBow(int index) {
@@ -75,28 +71,6 @@ public class FlexibleBow extends ItemBow implements FlexibleItem {
             }
         });
         this.index = index;
-    }
-
-    public static void onUpdate() {
-        Iterator<EntityArrow> iterator = arrows.iterator();
-        while (iterator.hasNext()) {
-            EntityArrow next = iterator.next();
-            if (inGround(next)) {
-                iterator.remove();
-                int index = Randores.getRandoresIndex(next.getEntityData());
-                long seed = Randores.getRandoresSeed(next.getEntityData());
-                if (MaterialDefinitionRegistry.contains(seed, index) && next.shootingEntity instanceof EntityLivingBase) {
-                    MaterialDefinition definition = MaterialDefinitionRegistry.get(seed).get(index);
-                    definition.getAbilitySeries().onProjectileHit((EntityLivingBase) next.shootingEntity, next.getPositionVector());
-                }
-            }
-        }
-    }
-
-    private static boolean inGround(EntityArrow arrow) {
-        NBTTagCompound dummy = new NBTTagCompound();
-        arrow.writeEntityToNBT(dummy);
-        return dummy.getByte("inGround") == 1;
     }
 
     @Override
@@ -143,15 +117,11 @@ public class FlexibleBow extends ItemBow implements FlexibleItem {
                     boolean flag1 = entityplayer.capabilities.isCreativeMode || (itemstack.getItem() instanceof ItemArrow && ((ItemArrow) itemstack.getItem()).isInfinite(itemstack, stack, entityplayer));
 
                     if (!worldIn.isRemote) {
-                        ItemArrow itemarrow = (ItemArrow) (itemstack.getItem() instanceof ItemArrow ? itemstack.getItem() : Items.ARROW);
-                        EntityArrow entityarrow = itemarrow.createArrow(worldIn, itemstack, entityplayer);
+                        RandoresArrow entityarrow = new RandoresArrow(worldIn, entityplayer);
+                        entityarrow.seed = Randores.getRandoresSeed(worldIn);
+                        entityarrow.index = this.index;
+                        entityarrow.setPotionEffect(itemstack);
                         entityarrow.setAim(entityplayer, entityplayer.rotationPitch, entityplayer.rotationYaw, 0.0F, f * 3.0F, 1.0F);
-
-                        if (EmpoweredEnchantment.appliedTo(stack)) {
-                            Randores.applyRandoresSeed(entityarrow.getEntityData(), this.index());
-                            Randores.applyRandoresSeed(entityarrow.getEntityData(), Randores.getRandoresSeed(worldIn));
-                            arrows.add(entityarrow);
-                        }
 
                         if (f == 1.0F) {
                             entityarrow.setIsCritical(true);
@@ -220,11 +190,6 @@ public class FlexibleBow extends ItemBow implements FlexibleItem {
         }
 
         return super.getIsRepairable(toRepair, repair);
-    }
-
-    @Override
-    public void addInformation(ItemStack stack, EntityPlayer playerIn, List<String> tooltip, boolean advanced) {
-        FlexibleItemHelper.addInformation(this, stack, playerIn, tooltip, advanced);
     }
 
     @Override

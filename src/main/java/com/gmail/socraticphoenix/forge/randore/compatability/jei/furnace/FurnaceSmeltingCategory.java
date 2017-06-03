@@ -1,6 +1,6 @@
 package com.gmail.socraticphoenix.forge.randore.compatability.jei.furnace;
 
-import com.gmail.socraticphoenix.forge.randore.RandoresClientSideRegistry;
+import com.gmail.socraticphoenix.forge.randore.Randores;
 import com.gmail.socraticphoenix.forge.randore.RandoresTranslations;
 import com.gmail.socraticphoenix.forge.randore.compatability.jei.JEIRandoresConfig;
 import mezz.jei.api.IGuiHelper;
@@ -29,7 +29,7 @@ public class FurnaceSmeltingCategory extends BlankRecipeCategory<FlexibleSmeltWr
 	public FurnaceSmeltingCategory(IGuiHelper guiHelper) {
 		ResourceLocation location = new ResourceLocation("minecraft", "textures/gui/container/furnace.png");
 		background = guiHelper.createDrawable(location, 55, 16, 82, 54);
-		localizedName = RandoresTranslations.get(RandoresClientSideRegistry.getCurrentLocale(), RandoresTranslations.Keys.CRAFTINIUM_FORGE);
+		localizedName = RandoresTranslations.get(Randores.PROXY.getCurrentLocale(), RandoresTranslations.Keys.CRAFTINIUM_FORGE);
         backgroundLocation = location;
         IDrawableStatic flameDrawable = guiHelper.createDrawable(backgroundLocation, 176, 0, 14, 14);
         flame = guiHelper.createAnimatedDrawable(flameDrawable, 300, IDrawableAnimated.StartDirection.TOP, true);

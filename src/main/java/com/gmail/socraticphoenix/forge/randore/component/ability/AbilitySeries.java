@@ -130,6 +130,21 @@ public class AbilitySeries {
         }
     }
 
+    public List<Ability> getSeries(AbilityType type) {
+        switch (type) {
+            case ARMOR_PASSIVE:
+                return this.armorPassive;
+            case ARMOR_ACTIVE:
+                return this.armorActive;
+            case PROJECTILE:
+                return this.projectile;
+            case MELEE:
+                return this.melee;
+            default:
+                throw new IllegalArgumentException("Unreachable code");
+        }
+    }
+
     static class RunNextAbility implements Runnable {
         private List<Ability> abilities;
         private int index;

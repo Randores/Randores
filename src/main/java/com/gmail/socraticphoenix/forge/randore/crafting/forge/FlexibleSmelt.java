@@ -31,6 +31,8 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class FlexibleSmelt implements CraftiniumSmelt {
     private int index;
@@ -47,6 +49,7 @@ public class FlexibleSmelt implements CraftiniumSmelt {
         return MaterialDefinitionRegistry.get(Randores.getRandoresSeed(world)).get(this.index);
     }
 
+    @SideOnly(Side.CLIENT)
     public boolean tryClientIsRegistered() {
         long seed = RandoresClientSideRegistry.getCurrentSeed();
         if (MaterialDefinitionRegistry.contains(seed, this.index)) {
@@ -61,7 +64,7 @@ public class FlexibleSmelt implements CraftiniumSmelt {
     @Override
     public boolean matches(ItemStack in, World worldIn, BlockPos forge) {
         MaterialDefinition definition = this.getDefinition(worldIn);
-        if(definition.getOre().makeItem().equals(in.getItem())) {
+        if (definition.getOre().makeItem().equals(in.getItem())) {
             return true;
         } else {
             return false;
@@ -78,10 +81,11 @@ public class FlexibleSmelt implements CraftiniumSmelt {
         return stack;
     }
 
+    @SideOnly(Side.CLIENT)
     public ItemStack tryClientGetInput() {
-        if(this.tryClientIsRegistered()) {
+        if (this.tryClientIsRegistered()) {
             long seed = RandoresClientSideRegistry.getCurrentSeed();
-            if(MaterialDefinitionRegistry.contains(seed, this.index)) {
+            if (MaterialDefinitionRegistry.contains(seed, this.index)) {
                 MaterialDefinition definition = MaterialDefinitionRegistry.get(seed).get(this.index);
                 ItemStack stack = new ItemStack(definition.getOre().makeItem());
                 Randores.applyData(stack, seed);
@@ -91,10 +95,11 @@ public class FlexibleSmelt implements CraftiniumSmelt {
         return ItemStack.EMPTY;
     }
 
+    @SideOnly(Side.CLIENT)
     public ItemStack tryClientGetOutput() {
-        if(this.tryClientIsRegistered()) {
+        if (this.tryClientIsRegistered()) {
             long seed = RandoresClientSideRegistry.getCurrentSeed();
-            if(MaterialDefinitionRegistry.contains(seed, this.index)) {
+            if (MaterialDefinitionRegistry.contains(seed, this.index)) {
                 MaterialDefinition definition = MaterialDefinitionRegistry.get(seed).get(this.index);
                 ItemStack stack = new ItemStack(definition.getMaterial().makeItem(), 1);
                 Randores.applyData(stack, seed);
@@ -116,10 +121,11 @@ public class FlexibleSmelt implements CraftiniumSmelt {
         return definition.getOre().getSmeltingXp();
     }
 
+    @SideOnly(Side.CLIENT)
     public float tryClientGetXp() {
-        if(this.tryClientIsRegistered()) {
+        if (this.tryClientIsRegistered()) {
             long seed = RandoresClientSideRegistry.getCurrentSeed();
-            if(MaterialDefinitionRegistry.contains(seed, this.index)) {
+            if (MaterialDefinitionRegistry.contains(seed, this.index)) {
                 MaterialDefinition definition = MaterialDefinitionRegistry.get(seed).get(this.index);
                 return definition.getOre().getSmeltingXp();
             }

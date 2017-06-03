@@ -22,14 +22,10 @@
 package com.gmail.socraticphoenix.forge.randore.compatability.waila;
 
 import com.gmail.socraticphoenix.forge.randore.Randores;
-import com.gmail.socraticphoenix.forge.randore.RandoresClientSideRegistry;
 import com.gmail.socraticphoenix.forge.randore.RandoresTranslations;
-import com.gmail.socraticphoenix.forge.randore.block.FlexibleOre;
-import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinition;
 import com.gmail.socraticphoenix.forge.randore.crafting.forge.CraftiniumForge;
 import com.gmail.socraticphoenix.forge.randore.crafting.forge.CraftiniumForgeTileEntity;
 import com.gmail.socraticphoenix.forge.randore.item.FlexibleItem;
-import com.gmail.socraticphoenix.forge.randore.item.FlexibleItemBlock;
 import mcp.mobius.waila.api.IWailaConfigHandler;
 import mcp.mobius.waila.api.IWailaDataAccessor;
 import mcp.mobius.waila.api.IWailaDataProvider;
@@ -42,7 +38,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.items.ItemStackHandler;
 
@@ -56,13 +51,20 @@ public class RandoresWailaHandler implements IWailaDataProvider {
     }
 
     public static void callbackRegister(IWailaRegistrar registrar) {
-        registrar.registerBodyProvider(new RandoresWailaHandler(false), Block.class);
+        registrar.registerStackProvider(new RandoresWailaHandler(false), Block.class);
         registrar.registerBodyProvider(new RandoresWailaHandler(true), CraftiniumForgeTileEntity.class);
         registrar.registerNBTProvider(new RandoresWailaHandler(true), CraftiniumForgeTileEntity.class);
     }
 
     @Override
     public ItemStack getWailaStack(IWailaDataAccessor iWailaDataAccessor, IWailaConfigHandler iWailaConfigHandler) {
+        if(!this.forgeMode && Item.getItemFromBlock(iWailaDataAccessor.getBlock()) instanceof FlexibleItem) {
+            World world = iWailaDataAccessor.getWorld();
+            ItemStack stack = new ItemStack(iWailaDataAccessor.getBlock());
+            Randores.applyRandoresSeed(stack, Randores.getRandoresSeed(world));
+            return stack;
+        }
+
         return null;
     }
 
@@ -74,21 +76,7 @@ public class RandoresWailaHandler implements IWailaDataProvider {
     @Override
     public List<String> getWailaBody(ItemStack itemStack, List<String> list, IWailaDataAccessor iWailaDataAccessor, IWailaConfigHandler iWailaConfigHandler) {
         Block block = iWailaDataAccessor.getBlock();
-        Item item = Item.getItemFromBlock(block);
-        String locale = RandoresClientSideRegistry.getCurrentLocale();
-        if (item instanceof FlexibleItem) {
-            MaterialDefinition definition = ((FlexibleItem) item).getDefinition(Randores.getRandoresSeed(iWailaDataAccessor.getWorld()));
-            if (item instanceof FlexibleItemBlock && ((FlexibleItemBlock) item).getBlock() instanceof FlexibleOre) {
-                list.addAll(definition.generateBlockLore(locale));
-                String canHarvest = TextFormatting.GREEN + "  " + t(RandoresTranslations.Keys.CAN_HARVEST, locale) + ": ";
-                if (block.canHarvestBlock(iWailaDataAccessor.getWorld(), iWailaDataAccessor.getPosition(), iWailaDataAccessor.getPlayer())) {
-                    canHarvest += TextFormatting.DARK_GREEN + "\u2714";
-                } else {
-                    canHarvest += TextFormatting.RED + "\u2718";
-                }
-                list.add(canHarvest);
-            }
-        } else if (this.forgeMode && block instanceof CraftiniumForge) {
+        if (this.forgeMode && block instanceof CraftiniumForge) {
             NBTTagCompound randores = iWailaDataAccessor.getNBTData().getCompoundTag("randores");
             int cookTime = randores.getInteger("cook_time");
             int totalCookTime = randores.getInteger("cook_time_total");

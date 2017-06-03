@@ -55,7 +55,7 @@ public class RandoresSeedPacketHandler implements IMessageHandler<RandoresSeedPa
                 final long seed = message.getSeed();
                 final int count = message.getOreCount();
                 RandoresClientSideRegistry.setCurrentSeed(seed);
-                RandoresClientSideRegistry.setOreCount(count);
+                Randores.PROXY.setOreCount(count);
                 Randores.getInstance().getConfiguration().load();
                 logger.info("Received seed information: " + seed);
                 logger.info("Recieved ore-count information: " + count);
@@ -79,7 +79,7 @@ public class RandoresSeedPacketHandler implements IMessageHandler<RandoresSeedPa
                     public void run() {
                         EntityPlayer player = RandoresClientSideRegistry.getClientPlayer();
                         if (!FlexibleTextureRegistry.isInitialized() || FlexibleTextureRegistry.getTextureSeed() != seed) {
-                            player.sendMessage(new TextComponentString("[Randores] " + RandoresTranslations.get(RandoresClientSideRegistry.getCurrentLocale(), RandoresTranslations.Keys.RESOURCES_RELOADING)));
+                            player.sendMessage(new TextComponentString("[Randores] " + RandoresTranslations.get(Randores.PROXY.getCurrentLocale(), RandoresTranslations.Keys.RESOURCES_RELOADING)));
                             new Thread(new Runnable() {
                                 @Override
                                 @SideOnly(Side.CLIENT)
@@ -101,7 +101,7 @@ public class RandoresSeedPacketHandler implements IMessageHandler<RandoresSeedPa
                                 }
                             }).start();
                         } else {
-                            player.sendMessage(new TextComponentString("[Randores] " + RandoresTranslations.get(RandoresClientSideRegistry.getCurrentLocale(), RandoresTranslations.Keys.RESOURCES_LOADED)));
+                            player.sendMessage(new TextComponentString("[Randores] " + RandoresTranslations.get(Randores.PROXY.getCurrentLocale(), RandoresTranslations.Keys.RESOURCES_LOADED)));
                         }
                         FlexibleTextureRegistry.setInitialized(true);
                         FlexibleTextureRegistry.setTextureSeed(seed);

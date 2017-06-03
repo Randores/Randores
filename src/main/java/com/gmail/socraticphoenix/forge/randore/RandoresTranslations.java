@@ -22,11 +22,6 @@
 package com.gmail.socraticphoenix.forge.randore;
 
 import com.gmail.socraticphoenix.forge.randore.resource.RandoresResourceManager;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.IResource;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -34,7 +29,6 @@ import java.util.List;
 import java.util.Map;
 
 public class RandoresTranslations {
-    public static final ResourceLocation LANG_DICT = new ResourceLocation("randores:resources/dictionary/lang_dict.txt");
     private static Map<String, Map<String, String>> translations = new HashMap<String, Map<String, String>>();
     private static Map<String, String> fallback = new HashMap<String, String>();
 
@@ -44,30 +38,16 @@ public class RandoresTranslations {
     }
 
     public static String get(String key) {
-        return RandoresTranslations.get(RandoresClientSideRegistry.getCurrentLocale(), key);
+        return RandoresTranslations.get(Randores.PROXY.getCurrentLocale(), key);
     }
 
     public static String get(String locale, String key) {
         if (RandoresTranslations.translations.containsKey(locale.toLowerCase()) && RandoresTranslations.translations.get(locale.toLowerCase()).containsKey(key)) {
             return RandoresTranslations.translations.get(locale.toLowerCase()).get(key);
-        } else {
+        } else if (RandoresTranslations.fallback.containsKey(key)) {
             return RandoresTranslations.fallback.get(key);
-        }
-    }
-
-    @SideOnly(Side.CLIENT)
-    public static void registerFromResources() throws IOException {
-        for(String langFile : RandoresResourceManager.getLines(Minecraft.getMinecraft().getResourceManager().getResource(LANG_DICT).getInputStream())) {
-            ResourceLocation location = new ResourceLocation("randores:resources/lang/" + langFile + ".lang");
-            IResource resource = RandoresClientSideRegistry.getResource(location);
-            List<String> lines = RandoresResourceManager.getLines(resource.getInputStream());
-            String lang = RandoresResourceManager.getFileName(resource.getResourceLocation()).replace(".lang", "");
-            for(String line : lines) {
-                if(line.contains("=")) {
-                    String[] pieces = line.split("=", 2);
-                    RandoresTranslations.register(lang, pieces[0], pieces[1]);
-                }
-            }
+        } else {
+            return "$" + key + "$";
         }
     }
 
@@ -91,7 +71,6 @@ public class RandoresTranslations {
     public interface Keys {
         String RESOURCES_RELOADING = "randores.texture.reloading";
         String RESOURCES_LOADED = "randores.texture.loaded";
-        String INFORMATION = "randores.material.information";
         String EFFICIENCY = "randores.material.efficiency";
         String FULL_ARMOR = "randores.materials.full_armor";
         String DAMAGE = "randores.materials.base_damage";
@@ -99,21 +78,12 @@ public class RandoresTranslations {
         String ENCHANTABILITY = "randores.materials.enchantability";
         String HARVEST_LEVEL = "randores.materials.harvest";
         String ORE_HARVEST_LEVEL = "randores.materials.ore_harvest";
-        String CAN_HARVEST = "randores.materials.can_harvest";
-        String RECIPES = "randores.materials.recipes";
-        String PROPERTIES = "randores.materials.properties";
-        String TOOLS_RECIPE = "randores.recipes.tools";
-        String ARMOR_RECIPE = "randores.recipes.armor";
-        String SWORD_RECIPE = "randores.recipes.sword";
-        String BRICKS_RECIPE = "randores.recipes.bricks";
-        String STICK_RECIPE = "randores.recipes.stick";
-        String TORCH_RECIPE = "randores.recipes.torch";
-        String BOW_RECIPE = "randores.recipes.bow";
         String FORGE_POWER = "randores.crafting.forge_power";
         String CRAFTINIUM_FORGE = "randores.blocks.forge";
         String CRAFTINIUM_TABLE = "randores.blocks.table";
+        String TOME = "randores.items.tome";
         String ORE = "randores.items.ore";
-        String STICK = "randores.recipes.stick";
+        String STICK = "randores.items.stick";
         String AXE = "randores.items.axe";
         String HOE = "randores.items.hoe";
         String SHOVEL = "randores.items.shovel";
@@ -134,11 +104,19 @@ public class RandoresTranslations {
         String TORCH = "randores.items.torch";
         String FORMAT = "randores.name.format";
         String BATTLEAXE = "randores.items.battleaxe";
-        String BATTLEAXE_RECIPE = "randores.recipes.battleaxe";
         String SLEDGEHAMMER = "randores.items.sledgehammer";
-        String SLEDGEHAMMER_RECIPE = "randores.recipes.sledgehammer";
-
-
+        String TYPE = "randores.materials.type";
+        String ABILITIES = "randores.materials.abilities";
+        String MELEE = "randores.materials.melee";
+        String PROJECTILE = "randores.materials.projectile";
+        String ARMOR_PASSIVE = "randores.materials.armor.passive";
+        String ARMOR_ACTIVE = "randores.materials.armor.active";
+        String ERROR = "randores.materials.error";
+        String CONTENTS = "randores.materials.contents";
+        String OBTAINING = "randores.materials.obtaining";
+        String RECIPES = "randores.materials.recipes";
+        String INFORMATION = "randores.materials.information";
+        String PROPERTIES = "randores.materials.properties";
     }
 
 }

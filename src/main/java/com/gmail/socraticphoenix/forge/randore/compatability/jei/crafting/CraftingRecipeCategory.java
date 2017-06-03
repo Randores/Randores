@@ -3,7 +3,7 @@
  */
 package com.gmail.socraticphoenix.forge.randore.compatability.jei.crafting;
 
-import com.gmail.socraticphoenix.forge.randore.RandoresClientSideRegistry;
+import com.gmail.socraticphoenix.forge.randore.Randores;
 import com.gmail.socraticphoenix.forge.randore.RandoresTranslations;
 import com.gmail.socraticphoenix.forge.randore.compatability.jei.JEIRandoresConfig;
 import mezz.jei.api.IGuiHelper;
@@ -33,7 +33,7 @@ public class CraftingRecipeCategory extends BlankRecipeCategory<IRecipeWrapper> 
     public CraftingRecipeCategory(IGuiHelper guiHelper) {
         ResourceLocation location = new ResourceLocation("randores:textures/gui/craftinium_table.png");
         background = guiHelper.createDrawable(location, 29, 16, width, height);
-        localizedName = RandoresTranslations.get(RandoresClientSideRegistry.getCurrentLocale(), RandoresTranslations.Keys.CRAFTINIUM_TABLE);
+        localizedName = RandoresTranslations.get(Randores.PROXY.getCurrentLocale(), RandoresTranslations.Keys.CRAFTINIUM_TABLE);
         craftingGridHelper = guiHelper.createCraftingGridHelper(craftInputSlot1, craftOutputSlot);
     }
 

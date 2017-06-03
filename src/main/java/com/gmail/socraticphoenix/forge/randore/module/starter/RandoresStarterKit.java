@@ -26,6 +26,7 @@ import com.gmail.socraticphoenix.forge.randore.component.Component;
 import com.gmail.socraticphoenix.forge.randore.component.Components;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinition;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinitionRegistry;
+import com.gmail.socraticphoenix.forge.randore.crafting.CraftingItems;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -86,6 +87,11 @@ public class RandoresStarterKit {
                         entity.setItemStackToSlot(component.getSlot(), new ItemStack(material.getComponent(component).makeItem()));
                     }
                 }
+
+                ItemStack stack = new ItemStack(CraftingItems.tome);
+                Randores.applyRandoresSeed(stack, Randores.getRandoresSeed(entity.world));
+                Randores.applyRandoresIndex(stack, material.getIndex());
+                entity.inventory.addItemStackToInventory(stack);
             }
         }
 

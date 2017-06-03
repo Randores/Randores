@@ -101,6 +101,8 @@ public class RandoresRegistryListener {
             material.setUnlocalizedName(Randores.itemName(i)).setRegistryName(Randores.itemName(i)).setCreativeTab(Randores.TAB_MATERIALS);
             FlexibleItemRegistry.addMaterial(material);
             ev.getRegistry().register(material);
+
+            OreDictionary.registerOre("randoresMaterial", material);
         }
 
         for (int i = 0; i < Randores.registeredAmount(); i++) {

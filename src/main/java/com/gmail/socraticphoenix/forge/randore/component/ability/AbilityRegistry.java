@@ -35,7 +35,9 @@ public class AbilityRegistry {
         for (AbilityType type : AbilityType.values()) {
             for (AbilityStage stage : AbilityStage.values()) {
                 if (ability.applicableStage(stage) && ability.applicableContext(type)) {
-                    AbilityRegistry.put(type, stage, ability);
+                    for (int i = 0; i < ability.weight(); i++) {
+                        AbilityRegistry.put(type, stage, ability);
+                    }
                 }
             }
         }
@@ -70,20 +72,28 @@ public class AbilityRegistry {
         List<Ability> melee = new ArrayList<Ability>();
         List<Ability> projectile = new ArrayList<Ability>();
 
-        if (random.nextBoolean()) armorPassive.add(randomSelect(AbilityType.ARMOR_PASSIVE, AbilityStage.FIRST, random));
-        if (random.nextBoolean()) armorUpdate.add(randomSelect(AbilityType.ARMOR_ACTIVE, AbilityStage.FIRST, random));
-        if (random.nextBoolean()) melee.add(randomSelect(AbilityType.MELEE, AbilityStage.FIRST, random));
-        if (random.nextBoolean()) projectile.add(randomSelect(AbilityType.PROJECTILE, AbilityStage.FIRST, random));
+        if (random.nextBoolean() && contains(AbilityType.ARMOR_PASSIVE, AbilityStage.FIRST))
+            armorPassive.add(randomSelect(AbilityType.ARMOR_PASSIVE, AbilityStage.FIRST, random));
+        if (random.nextBoolean() && contains(AbilityType.ARMOR_ACTIVE, AbilityStage.FIRST))
+            armorUpdate.add(randomSelect(AbilityType.ARMOR_ACTIVE, AbilityStage.FIRST, random));
+        if (random.nextBoolean() && contains(AbilityType.MELEE, AbilityStage.FIRST))
+            melee.add(randomSelect(AbilityType.MELEE, AbilityStage.FIRST, random));
+        if (random.nextBoolean() && contains(AbilityType.PROJECTILE, AbilityStage.FIRST))
+            projectile.add(randomSelect(AbilityType.PROJECTILE, AbilityStage.FIRST, random));
 
         armorPassive.addAll(randomSelect(AbilityType.ARMOR_PASSIVE, AbilityStage.MIDDLE, random, random.nextInt(3) + 1));
         armorUpdate.addAll(randomSelect(AbilityType.ARMOR_ACTIVE, AbilityStage.MIDDLE, random, random.nextInt(3) + 1));
         melee.addAll(randomSelect(AbilityType.MELEE, AbilityStage.MIDDLE, random, random.nextInt(3) + 1));
         projectile.addAll(randomSelect(AbilityType.PROJECTILE, AbilityStage.MIDDLE, random, random.nextInt(3) + 1));
 
-        if (random.nextBoolean()) armorPassive.add(randomSelect(AbilityType.ARMOR_PASSIVE, AbilityStage.LAST, random));
-        if (random.nextBoolean()) armorUpdate.add(randomSelect(AbilityType.ARMOR_ACTIVE, AbilityStage.LAST, random));
-        if (random.nextBoolean()) melee.add(randomSelect(AbilityType.MELEE, AbilityStage.LAST, random));
-        if (random.nextBoolean()) projectile.add(randomSelect(AbilityType.PROJECTILE, AbilityStage.LAST, random));
+        if (random.nextBoolean() && contains(AbilityType.ARMOR_PASSIVE, AbilityStage.LAST))
+            armorPassive.add(randomSelect(AbilityType.ARMOR_PASSIVE, AbilityStage.LAST, random));
+        if (random.nextBoolean() && contains(AbilityType.ARMOR_ACTIVE, AbilityStage.LAST))
+            armorUpdate.add(randomSelect(AbilityType.ARMOR_ACTIVE, AbilityStage.LAST, random));
+        if (random.nextBoolean() && contains(AbilityType.MELEE, AbilityStage.LAST))
+            melee.add(randomSelect(AbilityType.MELEE, AbilityStage.LAST, random));
+        if (random.nextBoolean() && contains(AbilityType.PROJECTILE, AbilityStage.LAST))
+            projectile.add(randomSelect(AbilityType.PROJECTILE, AbilityStage.LAST, random));
 
         return new AbilitySeries(armorPassive, armorUpdate, melee, projectile);
     }
@@ -97,14 +107,18 @@ public class AbilityRegistry {
     public static List<Ability> randomSelect(AbilityType type, AbilityStage stage, Random random, int size) {
         List<Ability> abilities = new ArrayList<Ability>();
         for (int i = 0; i < size; i++) {
-            abilities.add(randomSelect(type, stage, random));
+            int s = AbilityRegistry.size(type, stage);
+            if (s != 0) {
+                abilities.add(randomSelect(type, stage, random));
+            } else {
+                break;
+            }
         }
         return abilities;
     }
 
-    public static boolean contains(AbilityType type, AbilityStage stage, int index) {
-        int size = size(type, stage);
-        return size != 0 && index < size && index >= 0;
+    public static boolean contains(AbilityType type, AbilityStage stage) {
+        return size(type, stage) != 0;
     }
 
 }

@@ -74,12 +74,6 @@ public class FlexibleBattleaxe extends ItemAxe implements FlexibleItem {
         return (enchantment instanceof EmpoweredEnchantment || enchantment.type.canEnchantItem(Items.DIAMOND_SWORD) || enchantment.type.canEnchantItem(Items.DIAMOND_AXE)) && !(enchantment instanceof EnchantmentSweepingEdge);
     }
 
-
-    @Override
-    public void addInformation(ItemStack stack, EntityPlayer playerIn, List<String> tooltip, boolean advanced) {
-        FlexibleItemHelper.addInformation(this, stack, playerIn, tooltip, advanced);
-    }
-
     @Override
     public String getItemStackDisplayName(ItemStack stack) {
         String name = FlexibleItemHelper.getItemStackDisplayName(this, stack);
@@ -137,6 +131,7 @@ public class FlexibleBattleaxe extends ItemAxe implements FlexibleItem {
         if(this.hasBacker(attacker.world)) {
             return this.getBacker(attacker.world).hitEntity(stack, target, attacker);
         }
+        FlexibleItemHelper.doEmpowered(stack, target, attacker);
         return super.hitEntity(stack, target, attacker);
     }
 

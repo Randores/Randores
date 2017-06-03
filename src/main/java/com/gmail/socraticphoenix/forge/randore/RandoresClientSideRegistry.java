@@ -21,16 +21,20 @@
  */
 package com.gmail.socraticphoenix.forge.randore;
 
+import com.gmail.socraticphoenix.forge.randore.component.CraftableComponent;
+import com.gmail.socraticphoenix.forge.randore.component.CraftableType;
+import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinition;
 import com.gmail.socraticphoenix.forge.randore.resource.RandoresResourceManager;
+import com.gmail.socraticphoenix.forge.randore.texture.FlexibleTextureRegistry;
+import com.gmail.socraticphoenix.forge.randore.texture.RandoresArmorResourcePack;
+import com.gmail.socraticphoenix.forge.randore.texture.TextureData;
 import com.gmail.socraticphoenix.forge.randore.texture.TextureTemplate;
+import com.google.common.base.Function;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.IResource;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -40,20 +44,43 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.Random;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class RandoresClientSideRegistry {
     public static final ResourceLocation TEMPLATES_DICT = new ResourceLocation("randores:resources/dictionary/tex_dict.txt");
     public static final ResourceLocation PACK = new ResourceLocation("randores:resources/others/pack.png");
     private static AtomicLong currentSeed = new AtomicLong();
-    private static AtomicInteger oreNumber = new AtomicInteger();
     private static Map<String, TextureTemplate> templates = new HashMap<String, TextureTemplate>();
     private static BufferedImage pack;
 
     @SideOnly(Side.CLIENT)
-    public static void openTomeGui(World world) {
-        Minecraft.getMinecraft().player.openGui(Randores.getInstance(), RandoresGuiType.TOME.ordinal(), world, 0, 0, 0);
+    public static Map<String, TextureData> generateTextures(MaterialDefinition definition) {
+        Map<String, TextureData> textures = new HashMap<String, TextureData>();
+        textures.put(definition.getOre().template(), RandoresClientSideRegistry.getTemplate(definition.getOre().template()).applyWith(definition.getColor(), MaterialDefinition.DEFAULT_HUE_CHOICE));
+        textures.put(definition.getMaterial().template(), RandoresClientSideRegistry.getTemplate(definition.getMaterial().template()).applyWith(definition.getColor(), MaterialDefinition.DEFAULT_HUE_CHOICE));
+        for (CraftableComponent component : definition.getCraftables()) {
+            if (component.getType() == CraftableType.BOW) {
+                textures.put("bow_standby", RandoresClientSideRegistry.getTemplate("bow_standby_base").applyWith(definition.getColor(), MaterialDefinition.DEFAULT_HUE_CHOICE));
+                textures.put("bow_pulling_0", RandoresClientSideRegistry.getTemplate("bow_pulling_0_base").applyWith(definition.getColor(), MaterialDefinition.DEFAULT_HUE_CHOICE));
+                textures.put("bow_pulling_1", RandoresClientSideRegistry.getTemplate("bow_pulling_1_base").applyWith(definition.getColor(), MaterialDefinition.DEFAULT_HUE_CHOICE));
+                textures.put("bow_pulling_2", RandoresClientSideRegistry.getTemplate("bow_pulling_2_base").applyWith(definition.getColor(), MaterialDefinition.DEFAULT_HUE_CHOICE));
+            } else {
+                if (component.getType() == CraftableType.HELMET) {
+                    textures.put("armor_1", RandoresClientSideRegistry.getTemplate("armor_over_base").applyWith(definition.getColor(), MaterialDefinition.ARMOR_HUE_CHOICE));
+                    textures.put("armor_2", RandoresClientSideRegistry.getTemplate("armor_under_base").applyWith(definition.getColor(), MaterialDefinition.ARMOR_HUE_CHOICE));
+                }
+
+                Function<Random, Boolean> hueChoice;
+                if (component.getType() == CraftableType.BRICKS) {
+                    hueChoice = MaterialDefinition.BRICK_HUE_CHOICE;
+                } else {
+                    hueChoice = MaterialDefinition.DEFAULT_HUE_CHOICE;
+                }
+                textures.put(component.template(), RandoresClientSideRegistry.getTemplate(component.template()).applyWith(definition.getColor(), hueChoice));
+            }
+        }
+        return textures;
     }
 
     @SideOnly(Side.CLIENT)
@@ -71,10 +98,12 @@ public class RandoresClientSideRegistry {
         return resource;
     }
 
+    @SideOnly(Side.CLIENT)
     public static TextureTemplate getTemplate(String key) {
         return RandoresClientSideRegistry.templates.get(key);
     }
 
+    @SideOnly(Side.CLIENT)
     public static void registerTemplate(String key, TextureTemplate template) {
         RandoresClientSideRegistry.templates.put(key, template);
     }
@@ -95,18 +124,64 @@ public class RandoresClientSideRegistry {
         }
     }
 
-    public static int getOreCount() {
-        return RandoresClientSideRegistry.oreNumber.get();
+    @SideOnly(Side.CLIENT)
+    public static void generateAndSetupTextures(List<MaterialDefinition> definitions, long seed) {
+        RandoresArmorResourcePack.clear();
+        for (int i = 0; i < definitions.size(); i++) {
+            MaterialDefinition def = definitions.get(i);
+            Map<String, TextureData> textures = RandoresClientSideRegistry.generateTextures(def);
+            FlexibleTextureRegistry.getBlock(i).setTexture(textures.get(def.getOre().template()));
+            FlexibleTextureRegistry.getItem(i).setTexture(textures.get(def.getMaterial().template()));
+            for (CraftableComponent component : def.getCraftables()) {
+                if (component.getType() == CraftableType.BOW) {
+                    int k = i * 4;
+                    FlexibleTextureRegistry.getBow(k).setTexture(textures.get("bow_standby"));
+                    FlexibleTextureRegistry.getBow(k + 1).setTexture(textures.get("bow_pulling_0"));
+                    FlexibleTextureRegistry.getBow(k + 2).setTexture(textures.get("bow_pulling_1"));
+                    FlexibleTextureRegistry.getBow(k + 3).setTexture(textures.get("bow_pulling_2"));
+                } else {
+                    if (component.getType() == CraftableType.HELMET) {
+                        RandoresArmorResourcePack.setTexture("randores.armor." + i + "_1.png", textures.get("armor_1"));
+                        RandoresArmorResourcePack.setTexture("randores.armor." + i + "_2.png", textures.get("armor_2"));
+                    }
+
+                    if (component.getType().isBlock()) {
+                        FlexibleTextureRegistry.getBlock(component.getType().getIndex(i)).setTexture(textures.get(component.template()));
+                    } else {
+                        FlexibleTextureRegistry.getItem(component.getType().getIndex(i)).setTexture(textures.get(component.template()));
+                    }
+                }
+            }
+
+        }
     }
 
-    public static void setOreCount(int count) {
-        RandoresClientSideRegistry.oreNumber.set(count);
+    @SideOnly(Side.CLIENT)
+    public static void rebindArmorTextures() {
+        for (int i = 0; i < Randores.registeredAmount(); i++) {
+            Minecraft.getMinecraft().getTextureManager().deleteTexture(new ResourceLocation(RandoresArmorResourcePack.DOMAIN + ":randores.armor." + i + "_1.png"));
+            Minecraft.getMinecraft().getTextureManager().deleteTexture(new ResourceLocation(RandoresArmorResourcePack.DOMAIN + ":randores.armor." + i + "_2.png"));
+
+            Minecraft.getMinecraft().getTextureManager().bindTexture(new ResourceLocation(RandoresArmorResourcePack.DOMAIN + ":randores.armor." + i + "_1.png"));
+            Minecraft.getMinecraft().getTextureManager().bindTexture(new ResourceLocation(RandoresArmorResourcePack.DOMAIN + ":randores.armor." + i + "_2.png"));
+        }
+
     }
 
+    @SideOnly(Side.CLIENT)
+    public static void bindAllArmor() {
+        for (int i = 0; i < Randores.registeredAmount(); i++) {
+            Minecraft.getMinecraft().getTextureManager().bindTexture(new ResourceLocation(RandoresArmorResourcePack.DOMAIN + ":randores.armor." + i + "_1.png"));
+            Minecraft.getMinecraft().getTextureManager().bindTexture(new ResourceLocation(RandoresArmorResourcePack.DOMAIN + ":randores.armor." + i + "_2.png"));
+        }
+    }
+
+    @SideOnly(Side.CLIENT)
     public static long getCurrentSeed() {
         return RandoresClientSideRegistry.currentSeed.get();
     }
 
+    @SideOnly(Side.CLIENT)
     public static void setCurrentSeed(long currentSeed) {
         RandoresClientSideRegistry.currentSeed.set(currentSeed);
     }
@@ -116,22 +191,12 @@ public class RandoresClientSideRegistry {
         return Minecraft.getMinecraft().player;
     }
 
-    public static String getCurrentLocale() {
-        return FMLCommonHandler.instance().getSide() == Side.CLIENT ? RandoresClientSideRegistry.clientSideLocale() : RandoresClientSideRegistry.serverSideLocale();
-    }
-
-    private static String clientSideLocale() {
-        return Minecraft.getMinecraft().getLanguageManager().getCurrentLanguage().getLanguageCode();
-    }
-
-    private static String serverSideLocale() {
-        return "en_us";
-    }
-
+    @SideOnly(Side.CLIENT)
     public static void crash(String s, Throwable e) {
         Minecraft.getMinecraft().crashed(new CrashReport(s, e));
     }
 
+    @SideOnly(Side.CLIENT)
     public static boolean isInitialized() {
         return RandoresClientSideRegistry.getCurrentSeed() != 0;
     }

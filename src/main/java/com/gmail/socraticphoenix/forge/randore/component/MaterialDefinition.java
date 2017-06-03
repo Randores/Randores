@@ -21,22 +21,29 @@
  */
 package com.gmail.socraticphoenix.forge.randore.component;
 
-import com.gmail.socraticphoenix.forge.randore.RandoresClientSideRegistry;
+import com.gmail.socraticphoenix.forge.randore.Randores;
 import com.gmail.socraticphoenix.forge.randore.RandoresNameAlgorithm;
 import com.gmail.socraticphoenix.forge.randore.RandoresTranslations;
+import com.gmail.socraticphoenix.forge.randore.component.ability.Ability;
 import com.gmail.socraticphoenix.forge.randore.component.ability.AbilitySeries;
+import com.gmail.socraticphoenix.forge.randore.component.ability.AbilityType;
 import com.gmail.socraticphoenix.forge.randore.component.property.MaterialProperty;
+import com.gmail.socraticphoenix.forge.randore.component.property.Properties;
 import com.gmail.socraticphoenix.forge.randore.probability.RandoresProbability;
 import com.gmail.socraticphoenix.forge.randore.texture.RandoresArmorResourcePack;
-import com.gmail.socraticphoenix.forge.randore.texture.TextureData;
+import com.gmail.socraticphoenix.forge.randore.tome.TomeGui;
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.util.EnumHelper;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nullable;
 import java.awt.Color;
@@ -48,6 +55,7 @@ import java.util.Map;
 import java.util.Random;
 
 public class MaterialDefinition {
+    public static final Map<Character, Item> CRAFTING_MAPPINGS = new HashMap<Character, Item>();
     public static final Function<Random, Boolean> DEFAULT_HUE_CHOICE = new Function<Random, Boolean>() {
         @Nullable
         @Override
@@ -111,68 +119,152 @@ public class MaterialDefinition {
         this.components.add(this.material);
 
         this.properties = new HashMap<String, MaterialProperty>();
-        for(MaterialProperty property : properties) {
+        for (MaterialProperty property : properties) {
             this.properties.put(property.name(), property);
         }
     }
 
-    public List<String> buildPages() {
-        return new ArrayList<String>();
+    @SideOnly(Side.CLIENT)
+    public List<TomeGui.Element> buildPages() {
+        List<TomeGui.Element> pages = new ArrayList<TomeGui.Element>();
+        String title = TextFormatting.DARK_AQUA + RandoresTranslations.get(RandoresTranslations.Keys.TOME).replace("${name}", this.getName()) + TextFormatting.RESET;
+
+        List<String> s = new ArrayList<String>();
+        s.add(title);
+        s.add(TextFormatting.DARK_GREEN + RandoresTranslations.get(RandoresTranslations.Keys.ORE_HARVEST_LEVEL) + ": " + this.ore.getHarvestLevel());
+        s.add(TextFormatting.DARK_GREEN + RandoresTranslations.get(RandoresTranslations.Keys.TYPE) + ": " + this.material.getLocalName(Randores.PROXY.getCurrentLocale()));
+        if (this.hasTool()) {
+            s.add(TextFormatting.DARK_GREEN + RandoresTranslations.get(RandoresTranslations.Keys.HARVEST_LEVEL) + ": " + this.material.getHarvestLevel());
+            s.add(TextFormatting.DARK_GREEN + RandoresTranslations.get(RandoresTranslations.Keys.EFFICIENCY) + ": " + this.material.getEfficiency());
+        }
+
+        if (this.hasDurable()) {
+            s.add(TextFormatting.DARK_GREEN + RandoresTranslations.get(RandoresTranslations.Keys.DURABILITY) + ": " + this.material.getMaxUses());
+        }
+
+        if (this.hasEnchant()) {
+            s.add(TextFormatting.DARK_GREEN + RandoresTranslations.get(RandoresTranslations.Keys.ENCHANTABILITY) + ": " + this.material.getEnchantability());
+        }
+
+        if (this.hasDamage()) {
+            s.add(TextFormatting.DARK_GREEN + RandoresTranslations.get(RandoresTranslations.Keys.DAMAGE) + ": " + this.material.getDamage());
+        }
+
+        if (this.hasArmor()) {
+            s.add(TextFormatting.DARK_GREEN + RandoresTranslations.get(RandoresTranslations.Keys.FULL_ARMOR) + ": " + this.totalArmor);
+        }
+
+        StringBuilder b = new StringBuilder();
+        for (String k : s) {
+            b.append(k).append("\n");
+        }
+
+        pages.add(new TomeGui.StringElement(b.substring(0, b.length() - 1), RandoresTranslations.Keys.INFORMATION));
+
+        pages.add(new TomeGui.FurnaceElement(title + "\n" + TextFormatting.DARK_GREEN + name(this.material), new ItemStack(Items.STICK), new ItemStack(this.ore.makeItem()), new ItemStack(this.material.makeItem()), RandoresTranslations.Keys.OBTAINING));
+        for (CraftableComponent component : this.craftables) {
+            ItemStack[][] recipe = new ItemStack[3][3];
+            String[] template = component.getType().getRecipe();
+            for (int i = 0; i < template.length; i++) {
+                String row = template[i];
+                for (int j = 0; j < row.length(); j++) {
+                    char c = row.charAt(j);
+                    ItemStack stack = null;
+                    if (c == 'X') {
+                        stack = new ItemStack(this.material.makeItem());
+                    } else if (CRAFTING_MAPPINGS.containsKey(c)) {
+                        stack = new ItemStack(CRAFTING_MAPPINGS.get(c));
+                    }
+                    if (stack != null) {
+                        recipe[i][j] = stack;
+                    }
+                }
+            }
+
+            ItemStack result = new ItemStack(component.makeItem());
+            pages.add(new TomeGui.CraftingElement(title + "\n" + TextFormatting.DARK_GREEN + name(component), recipe, result, RandoresTranslations.Keys.RECIPES));
+        }
+
+        if (this.hasProperty(Properties.FLAMMABLE)) {
+            pages.add(new TomeGui.FurnaceElement(title + "\n" + TextFormatting.DARK_GREEN + name(this.material), new ItemStack(this.material.makeItem()), new ItemStack(Blocks.IRON_ORE), new ItemStack(Items.IRON_INGOT), RandoresTranslations.Keys.PROPERTIES));
+        }
+
+        for (AbilityType type : AbilityType.values()) {
+            List<String> a = new ArrayList<String>();
+            a.add(title);
+            a.add(TextFormatting.GOLD + RandoresTranslations.get(RandoresTranslations.Keys.ABILITIES) + ": " + type.getLocalName());
+            List<Ability> abilities = this.abilitySeries.getSeries(type);
+            int i = 0;
+            for (Ability ab : abilities) {
+                i++;
+                a.add(TextFormatting.DARK_GREEN + " " + i + ". " + ab.getLocalName());
+            }
+
+            StringBuilder bu = new StringBuilder();
+            for (String k : a) {
+                bu.append(k).append("\n");
+            }
+            pages.add(new TomeGui.StringElement(bu.substring(0, bu.length() - 1), RandoresTranslations.Keys.ABILITIES));
+        }
+
+        return pages;
     }
 
-    public MaterialDefinition setAbilitySeries(AbilitySeries abilitySeries) {
-        this.abilitySeries = abilitySeries;
-        return this;
+    public boolean hasTool() {
+        for (CraftableComponent component : this.getCraftables()) {
+            if (component.getType().isTool()) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
-    public MaterialDefinition setColor(Color color) {
-        this.color = color;
-        return this;
+    public boolean hasDurable() {
+        for (CraftableComponent component : this.getCraftables()) {
+            if (component.getType().isDurable()) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
-    public MaterialDefinition setName(String name) {
-        this.name = name;
-        return this;
+    public boolean hasEnchant() {
+        for (CraftableComponent component : this.getCraftables()) {
+            if (component.getType().isEnchant()) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
-    public MaterialDefinition setOre(OreComponent ore) {
-        this.ore = ore;
-        return this;
+    public boolean hasArmor() {
+        for (CraftableComponent component : this.getCraftables()) {
+            if (component.getType().isArmor()) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
-    public MaterialDefinition setMaterial(MaterialComponent material) {
-        this.material = material;
-        return this;
+    public boolean hasDamage() {
+        for (CraftableComponent component : this.getCraftables()) {
+            if (component.getType().isDamage()) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
-    public MaterialDefinition setCraftables(List<CraftableComponent> craftables) {
-        this.craftables = craftables;
-        return this;
-    }
-
-    public MaterialDefinition setComponents(List<Component> components) {
-        this.components = components;
-        return this;
-    }
-
-    public MaterialDefinition setProperties(Map<String, MaterialProperty> properties) {
-        this.properties = properties;
-        return this;
-    }
-
-    public MaterialDefinition setToolMaterial(Item.ToolMaterial toolMaterial) {
-        this.toolMaterial = toolMaterial;
-        return this;
-    }
-
-    public MaterialDefinition setArmorMaterial(ItemArmor.ArmorMaterial armorMaterial) {
-        this.armorMaterial = armorMaterial;
-        return this;
-    }
-
-    public MaterialDefinition setSeed(long seed) {
-        this.seed = seed;
-        return this;
+    private String name(Component component) {
+        String local = component.getLocalName(Randores.PROXY.getCurrentLocale());
+        String name = this.getName();
+        String format = RandoresTranslations.get(RandoresTranslations.Keys.FORMAT);
+        return format.replace("${name}", name).replace("${item}", local);
     }
 
     public MaterialDefinition setTotalArmor(int totalArmor) {
@@ -180,13 +272,13 @@ public class MaterialDefinition {
         return this;
     }
 
-    public MaterialDefinition setIndex(int index) {
-        this.index = index;
-        return this;
-    }
-
     public AbilitySeries getAbilitySeries() {
         return this.abilitySeries;
+    }
+
+    public MaterialDefinition setAbilitySeries(AbilitySeries abilitySeries) {
+        this.abilitySeries = abilitySeries;
+        return this;
     }
 
     public MaterialProperty getProperty(String name) {
@@ -197,6 +289,11 @@ public class MaterialDefinition {
         return this.properties.values();
     }
 
+    public MaterialDefinition setProperties(Map<String, MaterialProperty> properties) {
+        this.properties = properties;
+        return this;
+    }
+
     public boolean hasProperty(String name) {
         return this.properties.containsKey(name);
     }
@@ -205,115 +302,13 @@ public class MaterialDefinition {
         return this.index;
     }
 
+    public MaterialDefinition setIndex(int index) {
+        this.index = index;
+        return this;
+    }
+
     private String t(String s, String locale) {
         return RandoresTranslations.get(locale, s);
-    }
-
-    public List<String> generateBlockLore(String locale) {
-        List<String> list = new ArrayList<String>();
-        list.add(TextFormatting.GREEN + t(RandoresTranslations.Keys.INFORMATION, locale) + ":");
-        list.add(TextFormatting.GREEN + "  " + t(RandoresTranslations.Keys.ORE_HARVEST_LEVEL, locale) + ": " + this.ore.getHarvestLevel());
-        String recipes = TextFormatting.GREEN + "  " + t(RandoresTranslations.Keys.RECIPES, locale) + ": ";
-        if (this.hasComponent(Components.PICKAXE)) {
-            recipes += t(RandoresTranslations.Keys.TOOLS_RECIPE, locale) + ", ";
-        }
-        if (this.hasComponent(Components.HELMET)) {
-            recipes += t(RandoresTranslations.Keys.ARMOR_RECIPE, locale) + ", ";
-        }
-        if (this.hasComponent(Components.SWORD)) {
-            recipes += t(RandoresTranslations.Keys.SWORD_RECIPE, locale) + ", ";
-        }
-        if(this.hasComponent(Components.BATTLEAXE)) {
-            recipes += t(RandoresTranslations.Keys.BATTLEAXE_RECIPE, locale) + ", ";
-        }
-        if(this.hasComponent(Components.SLEDGEHAMMER)) {
-            recipes += t(RandoresTranslations.Keys.SLEDGEHAMMER_RECIPE, locale) + ", ";
-        }
-        if(this.hasComponent(Components.BOW)) {
-            recipes += t(RandoresTranslations.Keys.BOW_RECIPE, locale) + ", ";
-        }
-        if (this.hasComponent(Components.STICK)) {
-            recipes += t(RandoresTranslations.Keys.STICK_RECIPE, locale) + ", ";
-        }
-        if (this.hasComponent(Components.BRICKS)) {
-            recipes += t(RandoresTranslations.Keys.BRICKS_RECIPE, locale) + ", ";
-        }
-        if (this.hasComponent(Components.TORCH)) {
-            recipes += t(RandoresTranslations.Keys.TORCH_RECIPE, locale) + ", ";
-        }
-        recipes = recipes.substring(0, recipes.length() - 2);
-        list.add(recipes);
-
-        if(!this.properties.isEmpty()) {
-            String properties = TextFormatting.GREEN + "  " + t(RandoresTranslations.Keys.PROPERTIES, locale) + ": ";
-            for(MaterialProperty property : this.getProperties()) {
-                properties += property.getLocalName(locale) + ", ";
-            }
-            properties = properties.substring(0, properties.length() - 2);
-            list.add(properties);
-        }
-
-        return list;
-    }
-
-    public List<String> generateLore(String locale) {
-        List<String> list = new ArrayList<String>();
-        list.add(TextFormatting.GREEN + t(RandoresTranslations.Keys.INFORMATION, locale) + ":");
-        if (this.hasComponent(Components.PICKAXE) || this.hasComponent(Components.BATTLEAXE)) {
-            list.add(TextFormatting.GREEN + "  " + t(RandoresTranslations.Keys.EFFICIENCY, locale) + ": " + this.material.getEfficiency());
-            list.add(TextFormatting.GREEN + "  " + t(RandoresTranslations.Keys.HARVEST_LEVEL, locale) + ": " + this.material.getHarvestLevel());
-        }
-        if (this.hasComponent(Components.HELMET)) {
-            list.add(TextFormatting.GREEN + "  " + t(RandoresTranslations.Keys.FULL_ARMOR, locale) + ": " + this.totalArmor);
-        }
-        if (this.hasComponent(Components.PICKAXE) || this.hasComponent(Components.SWORD) || this.hasComponent(Components.HELMET) || this.hasComponent(Components.BATTLEAXE) || this.hasComponent(Components.SLEDGEHAMMER)) {
-            list.add(TextFormatting.GREEN + "  " + t(RandoresTranslations.Keys.DAMAGE, locale) + ": " + this.toolMaterial.getDamageVsEntity());
-        }
-        if (this.hasComponent(Components.PICKAXE) || this.hasComponent(Components.SWORD) || this.hasComponent(Components.HELMET) || this.hasComponent(Components.BOW) || this.hasComponent(Components.BATTLEAXE) || this.hasComponent(Components.SLEDGEHAMMER)) {
-            list.add(TextFormatting.GREEN + "  " + t(RandoresTranslations.Keys.DURABILITY, locale) + ": " + this.material.getMaxUses());
-            list.add(TextFormatting.GREEN + "  " + t(RandoresTranslations.Keys.ENCHANTABILITY, locale) + ": " + this.material.getEnchantability());
-        }
-        String recipes = TextFormatting.GREEN + "  " + t(RandoresTranslations.Keys.RECIPES, locale) + ": ";
-        if (this.hasComponent(Components.PICKAXE)) {
-            recipes += t(RandoresTranslations.Keys.TOOLS_RECIPE, locale) + ", ";
-        }
-        if (this.hasComponent(Components.HELMET)) {
-            recipes += t(RandoresTranslations.Keys.ARMOR_RECIPE, locale) + ", ";
-        }
-        if (this.hasComponent(Components.SWORD)) {
-            recipes += t(RandoresTranslations.Keys.SWORD_RECIPE, locale) + ", ";
-        }
-        if(this.hasComponent(Components.BATTLEAXE)) {
-            recipes += t(RandoresTranslations.Keys.BATTLEAXE_RECIPE, locale) + ", ";
-        }
-        if(this.hasComponent(Components.SLEDGEHAMMER)) {
-            recipes += t(RandoresTranslations.Keys.SLEDGEHAMMER_RECIPE, locale) + ", ";
-        }
-        if(this.hasComponent(Components.BOW)) {
-            recipes += t(RandoresTranslations.Keys.BOW_RECIPE, locale) + ", ";
-        }
-        if (this.hasComponent(Components.STICK)) {
-            recipes += t(RandoresTranslations.Keys.STICK_RECIPE, locale) + ", ";
-        }
-        if (this.hasComponent(Components.BRICKS)) {
-            recipes += t(RandoresTranslations.Keys.BRICKS_RECIPE, locale) + ", ";
-        }
-        if (this.hasComponent(Components.TORCH)) {
-            recipes += t(RandoresTranslations.Keys.TORCH_RECIPE, locale) + ", ";
-        }
-        recipes = recipes.substring(0, recipes.length() - 2);
-        list.add(recipes);
-
-        if(!this.properties.isEmpty()) {
-            String properties = TextFormatting.GREEN + "  " + t(RandoresTranslations.Keys.PROPERTIES, locale) + ": ";
-            for(MaterialProperty property : this.getProperties()) {
-                properties += property.getLocalName(locale) + ", ";
-            }
-            properties = properties.substring(0, properties.length() - 2);
-            list.add(properties);
-        }
-
-        return list;
     }
 
     private int sum(int[] arr) {
@@ -328,8 +323,18 @@ public class MaterialDefinition {
         return this.toolMaterial;
     }
 
+    public MaterialDefinition setToolMaterial(Item.ToolMaterial toolMaterial) {
+        this.toolMaterial = toolMaterial;
+        return this;
+    }
+
     public ItemArmor.ArmorMaterial getArmorMaterial() {
         return this.armorMaterial;
+    }
+
+    public MaterialDefinition setArmorMaterial(ItemArmor.ArmorMaterial armorMaterial) {
+        this.armorMaterial = armorMaterial;
+        return this;
     }
 
     public boolean hasComponent(Components component) {
@@ -355,52 +360,54 @@ public class MaterialDefinition {
         return this.seed;
     }
 
-    public Map<String, TextureData> generateTextures() {
-        Map<String, TextureData> textures = new HashMap<String, TextureData>();
-        textures.put(ore.template(), RandoresClientSideRegistry.getTemplate(ore.template()).applyWith(this.color, MaterialDefinition.DEFAULT_HUE_CHOICE));
-        textures.put(material.template(), RandoresClientSideRegistry.getTemplate(material.template()).applyWith(this.color, MaterialDefinition.DEFAULT_HUE_CHOICE));
-        for (CraftableComponent component : this.craftables) {
-            if (component.getType() == CraftableType.BOW) {
-                textures.put("bow_standby", RandoresClientSideRegistry.getTemplate("bow_standby_base").applyWith(this.color, MaterialDefinition.DEFAULT_HUE_CHOICE));
-                textures.put("bow_pulling_0", RandoresClientSideRegistry.getTemplate("bow_pulling_0_base").applyWith(this.color, MaterialDefinition.DEFAULT_HUE_CHOICE));
-                textures.put("bow_pulling_1", RandoresClientSideRegistry.getTemplate("bow_pulling_1_base").applyWith(this.color, MaterialDefinition.DEFAULT_HUE_CHOICE));
-                textures.put("bow_pulling_2", RandoresClientSideRegistry.getTemplate("bow_pulling_2_base").applyWith(this.color, MaterialDefinition.DEFAULT_HUE_CHOICE));
-            } else {
-                if (component.getType() == CraftableType.HELMET) {
-                    textures.put("armor_1", RandoresClientSideRegistry.getTemplate("armor_over_base").applyWith(this.color, MaterialDefinition.ARMOR_HUE_CHOICE));
-                    textures.put("armor_2", RandoresClientSideRegistry.getTemplate("armor_under_base").applyWith(this.color, MaterialDefinition.ARMOR_HUE_CHOICE));
-                }
-
-                Function<Random, Boolean> hueChoice;
-                if (component.getType() == CraftableType.BRICKS) {
-                    hueChoice = MaterialDefinition.BRICK_HUE_CHOICE;
-                } else {
-                    hueChoice = MaterialDefinition.DEFAULT_HUE_CHOICE;
-                }
-                textures.put(component.template(), RandoresClientSideRegistry.getTemplate(component.template()).applyWith(this.color, hueChoice));
-            }
-        }
-        return textures;
+    public MaterialDefinition setSeed(long seed) {
+        this.seed = seed;
+        return this;
     }
 
     public Color getColor() {
         return this.color;
     }
 
+    public MaterialDefinition setColor(Color color) {
+        this.color = color;
+        return this;
+    }
+
     public String getName() {
         return this.name;
+    }
+
+    public MaterialDefinition setName(String name) {
+        this.name = name;
+        return this;
     }
 
     public OreComponent getOre() {
         return this.ore;
     }
 
+    public MaterialDefinition setOre(OreComponent ore) {
+        this.ore = ore;
+        return this;
+    }
+
     public MaterialComponent getMaterial() {
         return this.material;
     }
 
+    public MaterialDefinition setMaterial(MaterialComponent material) {
+        this.material = material;
+        return this;
+    }
+
     public List<CraftableComponent> getCraftables() {
         return this.craftables;
+    }
+
+    public MaterialDefinition setCraftables(List<CraftableComponent> craftables) {
+        this.craftables = craftables;
+        return this;
     }
 
     public List<CraftableComponent> getCraftables(Predicate<CraftableType> filter) {
@@ -415,6 +422,11 @@ public class MaterialDefinition {
 
     public List<Component> getComponents() {
         return this.components;
+    }
+
+    public MaterialDefinition setComponents(List<Component> components) {
+        this.components = components;
+        return this;
     }
 
     public List<Component> getComponents(Predicate<Components> filter) {

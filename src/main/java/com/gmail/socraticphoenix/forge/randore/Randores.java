@@ -25,6 +25,7 @@ import com.gmail.socraticphoenix.forge.randore.component.CraftableType;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinition;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinitionRegistry;
 import com.gmail.socraticphoenix.forge.randore.component.ability.AbilityRegistry;
+import com.gmail.socraticphoenix.forge.randore.component.ability.EmpoweredArmorListener;
 import com.gmail.socraticphoenix.forge.randore.component.ability.ScheduleListener;
 import com.gmail.socraticphoenix.forge.randore.component.ability.abilities.PotionEffectAbility;
 import com.gmail.socraticphoenix.forge.randore.crafting.CraftingBlocks;
@@ -39,19 +40,22 @@ import com.gmail.socraticphoenix.forge.randore.crafting.table.CraftiniumDelegate
 import com.gmail.socraticphoenix.forge.randore.crafting.table.CraftiniumRecipeRegistry;
 import com.gmail.socraticphoenix.forge.randore.crafting.table.FlexibleCraftingRecipe;
 import com.gmail.socraticphoenix.forge.randore.crafting.table.FlexibleRecipe;
-import com.gmail.socraticphoenix.forge.randore.component.ability.EmpoweredHitListener;
+import com.gmail.socraticphoenix.forge.randore.entity.RandoresArrow;
 import com.gmail.socraticphoenix.forge.randore.item.FlexibleItem;
 import com.gmail.socraticphoenix.forge.randore.item.FlexibleItemRegistry;
-import com.gmail.socraticphoenix.forge.randore.item.SledgehammerHitListener;
 import com.gmail.socraticphoenix.forge.randore.module.altar.RandoresAltarGenerator;
 import com.gmail.socraticphoenix.forge.randore.module.equip.RandoresMobEquip;
 import com.gmail.socraticphoenix.forge.randore.module.loot.RandoresLoot;
 import com.gmail.socraticphoenix.forge.randore.module.starter.RandoresStarterKit;
 import com.gmail.socraticphoenix.forge.randore.packet.RandoresNetworking;
+import com.gmail.socraticphoenix.forge.randore.proxy.RandoresProxy;
 import com.gmail.socraticphoenix.forge.randore.resource.RandoresResourceManager;
 import com.gmail.socraticphoenix.forge.randore.texture.RandoresLazyResourcePack;
+import com.gmail.socraticphoenix.forge.randore.tome.TomeCraftingRecipe;
 import com.google.common.base.Supplier;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor;
@@ -62,6 +66,7 @@ import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.potion.Potion;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.ConfigCategory;
@@ -76,6 +81,7 @@ import net.minecraftforge.fml.common.event.FMLInterModComms;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
+import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.oredict.RecipeSorter;
@@ -180,12 +186,12 @@ public class Randores {
             return Item.getItemFromBlock(RandoresTabBlocks.tabTorch);
         }
     }, true);
-
+    public static final CreativeTabs TAB_TOMES = new RandoresTomeTab("randores_tomes");
+    @SidedProxy(modId = "randores", clientSide = "com.gmail.socraticphoenix.forge.randore.proxy.RandoresClientProxy", serverSide = "com.gmail.socraticphoenix.forge.randore.proxy.RandoresServerProxy")
+    public static RandoresProxy PROXY = null;
     private static Randores instance;
     private static Map<Long, Long> worldSeeds = new HashMap<Long, Long>();
     private static List<String> offensiveWords = new ArrayList<String>();
-    @SidedProxy(modId = "randores", clientSide = "com.gmail.socraticphoenix.forge.randore.RandoresClientProxy", serverSide = "com.gmail.socraticphoenix.forge.randore.RandoresProxy")
-    private static RandoresProxy proxy;
     private static int registeredamount;
     private Logger logger;
     private File confDir;
@@ -207,10 +213,10 @@ public class Randores {
         } else {
             registeredamount = config.get("registeredamount").getInt();
         }
-        if (FMLCommonHandler.instance().getSide() == Side.CLIENT) {
+
+        if(FMLCommonHandler.instance().getSide().isClient()) {
             MinecraftForge.EVENT_BUS.register(new RandoresClientSideListener());
         }
-
         MinecraftForge.EVENT_BUS.register(new RandoresInvulnerabilityListener());
 
         MinecraftForge.EVENT_BUS.register(new RandoresRegistryListener());
@@ -224,9 +230,8 @@ public class Randores {
         MinecraftForge.EVENT_BUS.register(new RandoresStarterKit());
 
         //Items
-        MinecraftForge.EVENT_BUS.register(new SledgehammerHitListener());
         MinecraftForge.EVENT_BUS.register(new ScheduleListener());
-        MinecraftForge.EVENT_BUS.register(new EmpoweredHitListener());
+        MinecraftForge.EVENT_BUS.register(new EmpoweredArmorListener());
     }
 
     private static long getRandoresSeedFromWorld(long worldSeed) {
@@ -252,7 +257,7 @@ public class Randores {
         } else if (!world.isRemote) {
             return Randores.getRandoresSeedFromWorld(world.getSeed());
         } else if (FMLCommonHandler.instance().getSide() == Side.CLIENT) {
-            return RandoresClientSideRegistry.getCurrentSeed();
+            return Randores.PROXY.seed();
         } else {
             throw new IllegalArgumentException("World is remote and we're not on the client!");
         }
@@ -260,10 +265,6 @@ public class Randores {
 
     public static Randores getInstance() {
         return instance;
-    }
-
-    public static RandoresProxy getProxy() {
-        return proxy;
     }
 
     public static String textureName(int num) {
@@ -327,7 +328,14 @@ public class Randores {
     }
 
     public static void applyRandoresSeed(NBTTagCompound baseData, long seed) {
+        if (!baseData.hasKey("randores")) {
+            baseData.setTag("randores", new NBTTagCompound());
+        }
         baseData.getCompoundTag("randores").setLong("seed", seed);
+    }
+
+    public static void applyRandoresSeed(ItemStack stack, long seed) {
+        stack.getOrCreateSubCompound("randores").setLong("seed", seed);
     }
 
     public static int getRandoresIndex(NBTTagCompound baseData) {
@@ -339,7 +347,14 @@ public class Randores {
     }
 
     public static void applyRandoresIndex(NBTTagCompound baseData, int index) {
+        if (!baseData.hasKey("randores")) {
+            baseData.setTag("randores", new NBTTagCompound());
+        }
         baseData.getCompoundTag("randores").setInteger("index", index);
+    }
+
+    public static void applyRandoresIndex(ItemStack stack, int index) {
+        stack.getOrCreateSubCompound("randores").setInteger("index", index);
     }
 
     public static MaterialDefinition getDefinition(int index, ItemStack stack) {
@@ -382,18 +397,12 @@ public class Randores {
             category.put("orecount", new Property("orecount", String.valueOf(Randores.registeredAmount()), Property.Type.INTEGER));
             config.save();
         }
-        if (FMLCommonHandler.instance().getSide() == Side.CLIENT) {
-            RandoresClientSideRegistry.setOreCount(res);
-        }
+        PROXY.setOreCount(res);
         return res;
     }
 
     public static int getOreCount() {
-        if (FMLCommonHandler.instance().getSide() == Side.CLIENT) {
-            return RandoresClientSideRegistry.getOreCount();
-        } else {
-            return Randores.getOreCountConfigProperty();
-        }
+        return PROXY.oreCount();
     }
 
     public static boolean containsOffensiveWord(String string) {
@@ -480,6 +489,9 @@ public class Randores {
 
         RecipeSorter.register("randores:forge_upgrade", CraftiniumForgeUpgradeRecipe.class, RecipeSorter.Category.SHAPED, "after:minecraft:shaped");
         RecipeSorter.register("randores:flexible_recipe", FlexibleCraftingRecipe.class, RecipeSorter.Category.SHAPED, "after:minecraft:shaped");
+        RecipeSorter.register("randores:tome_recipe", TomeCraftingRecipe.class, RecipeSorter.Category.SHAPELESS, "after:minecraft:shapeless");
+
+        CraftingManager.getInstance().addRecipe(new TomeCraftingRecipe());
 
         CraftiniumForgeUpgradeRecipe upgradeRecipe = new CraftiniumForgeUpgradeRecipe();
         upgradeRecipe.u(CraftingItems.craftiniumLump, 1 / 8f);
@@ -493,6 +505,10 @@ public class Randores {
             }
             CraftiniumSmeltRegistry.register(new FlexibleSmelt(i));
         }
+        MaterialDefinition.CRAFTING_MAPPINGS.put('S', Items.STICK);
+        MaterialDefinition.CRAFTING_MAPPINGS.put('T', Item.getItemFromBlock(Blocks.TORCH));
+        MaterialDefinition.CRAFTING_MAPPINGS.put('R', Items.STRING);
+
 
         this.logger.info("Testing the names algorithm...");
         Random random = new Random();
@@ -501,8 +517,11 @@ public class Randores {
         }
         this.logger.info("Finished testing names algorithm");
         RandoresNetworking.initNetwork();
+        this.logger.info("Registering entities...");
+        EntityRegistry.registerModEntity(new ResourceLocation("randores:randores_arrow"), RandoresArrow.class, "randores:randores_arrow", 0, this, 20, 20, true);
+        this.logger.info("Finished registering entities.");
         this.logger.info("Running proxy pre-initialization...");
-        Randores.proxy.preInitSided();
+        Randores.PROXY.preInit(ev);
         this.logger.info("Proxy pre-initialized.");
     }
 
@@ -513,7 +532,7 @@ public class Randores {
         GameRegistry.registerWorldGenerator(new RandoresWorldGenerator(), 10);
         GameRegistry.registerWorldGenerator(new RandoresAltarGenerator(), 0);
         this.logger.info("Running proxy initialization...");
-        Randores.proxy.initSided();
+        Randores.PROXY.init(ev);
         this.logger.info("Proxy initialized.");
     }
 
@@ -534,10 +553,12 @@ public class Randores {
         Iterator<Potion> iterator = Potion.REGISTRY.iterator();
         while (iterator.hasNext()) {
             Potion next = iterator.next();
-            AbilityRegistry.register(new PotionEffectAbility(next, false));
-            AbilityRegistry.register(new PotionEffectAbility(next, true));
+            AbilityRegistry.register(new PotionEffectAbility(next));
         }
         this.logger.info("Finished registering.");
+        this.logger.info("Running proxy post-initialization...");
+        Randores.PROXY.postInit(ev);
+        this.logger.info("Proxy post-initialized.");
     }
 
     public Logger getLogger() {

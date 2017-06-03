@@ -22,10 +22,9 @@
 package com.gmail.socraticphoenix.forge.randore.crafting.forge;
 
 import com.gmail.socraticphoenix.forge.randore.Randores;
-import com.gmail.socraticphoenix.forge.randore.RandoresClientSideRegistry;
+import com.gmail.socraticphoenix.forge.randore.RandoresGuiType;
 import com.gmail.socraticphoenix.forge.randore.RandoresTranslations;
 import com.gmail.socraticphoenix.forge.randore.crafting.CraftingBlocks;
-import com.gmail.socraticphoenix.forge.randore.RandoresGuiType;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.SoundType;
@@ -119,7 +118,7 @@ public class CraftiniumForge extends Block {
         super.addInformation(stack, player, tooltip, advanced);
         if (stack.getSubCompound("randores") != null && stack.getSubCompound("randores").hasKey("furnace_speed")) {
             int speed = stack.getSubCompound("randores").getInteger("furnace_speed");
-            tooltip.add(TextFormatting.GRAY + RandoresTranslations.get(RandoresClientSideRegistry.getCurrentLocale(), RandoresTranslations.Keys.FORGE_POWER) + ": " + speed);
+            tooltip.add(TextFormatting.GRAY + RandoresTranslations.get(Randores.PROXY.getCurrentLocale(), RandoresTranslations.Keys.FORGE_POWER) + ": " + speed);
         }
     }
 

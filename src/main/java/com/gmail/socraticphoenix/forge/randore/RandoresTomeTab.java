@@ -19,29 +19,36 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.gmail.socraticphoenix.forge.randore.item;
+package com.gmail.socraticphoenix.forge.randore;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
+import com.gmail.socraticphoenix.forge.randore.crafting.CraftingItems;
+import com.gmail.socraticphoenix.forge.randore.item.FlexibleItemRegistry;
+import com.gmail.socraticphoenix.forge.randore.item.FlexibleMaterial;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.Vec3d;
-import net.minecraftforge.event.entity.living.LivingHurtEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraft.util.NonNullList;
 
-public class SledgehammerHitListener {
+public class RandoresTomeTab extends CreativeTabs {
 
-    @SubscribeEvent
-    public void onDamage(LivingHurtEvent ev) {
-        Entity source = ev.getSource().getSourceOfDamage();
-        if (source instanceof EntityLivingBase && !source.world.isRemote) {
-            EntityLivingBase attacker = (EntityLivingBase) source;
-            EntityLivingBase target = ev.getEntityLiving();
-            ItemStack stack = attacker.getHeldItemMainhand();
-            if (!stack.isEmpty() && stack.getItem() instanceof FlexibleSledgehammer) {
-                Vec3d vector = target.getPositionVector().subtract(attacker.getPositionVector()).normalize().scale(2);
-                target.addVelocity(vector.xCoord, 0.5, vector.zCoord);
+    public RandoresTomeTab(String label) {
+        super(label);
+    }
+
+    @Override
+    public ItemStack getTabIconItem() {
+        return new ItemStack(CraftingItems.tome);
+    }
+
+    @Override
+    public void displayAllRelevantItems(NonNullList<ItemStack> items) {
+        if(RandoresClientSideRegistry.isInitialized()) {
+            long seed = RandoresClientSideRegistry.getCurrentSeed();
+            for(FlexibleMaterial material : FlexibleItemRegistry.getMaterials()) {
+                ItemStack stack = new ItemStack(CraftingItems.tome);
+                Randores.applyRandoresSeed(stack, seed);
+                Randores.applyRandoresIndex(stack, material.index());
+                items.add(stack);
             }
         }
     }
-
 }

@@ -31,7 +31,6 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -67,11 +66,6 @@ public class FlexibleSword extends ItemSword implements FlexibleItem {
     @Override
     public boolean isFull3D() {
         return true;
-    }
-
-    @Override
-    public void addInformation(ItemStack stack, EntityPlayer playerIn, List<String> tooltip, boolean advanced) {
-        FlexibleItemHelper.addInformation(this, stack, playerIn, tooltip, advanced);
     }
 
     @Override
@@ -163,6 +157,7 @@ public class FlexibleSword extends ItemSword implements FlexibleItem {
         if (this.hasBacker(attacker.world)) {
             return this.getBacker(attacker.world).hitEntity(stack, target, attacker);
         }
+        FlexibleItemHelper.doEmpowered(stack, target, attacker);
         return super.hitEntity(stack, target, attacker);
     }
 
