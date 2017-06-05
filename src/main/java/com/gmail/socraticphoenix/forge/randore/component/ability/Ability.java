@@ -36,6 +36,8 @@ public interface Ability {
 
     boolean apply(Vec3d location, EntityLivingBase activator, AbilityContext context);
 
+    void remove(Vec3d location, EntityLivingBase activator, AbilityContext context);
+
     int weight();
 
     @SideOnly(Side.CLIENT)

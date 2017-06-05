@@ -47,7 +47,7 @@ public class PotionEffectAbility implements Ability {
 
     @Override
     public boolean applicableContext(AbilityType context) {
-        return (this.potion.isBadEffect() && context != AbilityType.ARMOR_PASSIVE) || (!this.potion.isBadEffect() && context == AbilityType.ARMOR_PASSIVE);
+        return (this.potion.isBadEffect() && context != AbilityType.ARMOR_PASSIVE) || (!this.potion.isBadEffect() && !this.potion.isInstant() && context == AbilityType.ARMOR_PASSIVE);
     }
 
     @Override
@@ -58,10 +58,8 @@ public class PotionEffectAbility implements Ability {
     @Override
     public boolean apply(Vec3d location, EntityLivingBase activator, AbilityContext context) {
         if (context.getType() == AbilityType.ARMOR_PASSIVE) {
-            if (activator.getActivePotionEffect(this.potion) == null || activator.getActivePotionEffect(this.potion).getDuration() <= 11 * 20) {
-                activator.removePotionEffect(this.potion);
-                activator.addPotionEffect(new PotionEffect(this.potion, 20 * 15, 1, true, false));
-            }
+            activator.removePotionEffect(this.potion);
+            activator.addPotionEffect(new PotionEffect(this.potion, 20 * 15, 1, true, false));
         } else if (context.getType() == AbilityType.ARMOR_ACTIVE) {
             this.addEffect(context.getAttacker());
         } else if (context.hasTarget()) {
@@ -72,8 +70,20 @@ public class PotionEffectAbility implements Ability {
     }
 
     private void addEffect(EntityLivingBase entity) {
-        if (entity.getActivePotionEffect(this.potion) == null) {
+        if (entity.getActivePotionEffect(this.potion) == null || entity.getActivePotionEffect(this.potion).getDuration() <= 1) {
+            entity.removePotionEffect(this.potion);
             entity.addPotionEffect(new PotionEffect(this.potion, this.potion.isInstant() ? 1 : 20 * 5, 1));
+        }
+    }
+
+    @Override
+    public void remove(Vec3d location, EntityLivingBase activator, AbilityContext context) {
+        if (context.getType() == AbilityType.ARMOR_PASSIVE) {
+            activator.removePotionEffect(this.potion);
+        } else if (context.getType() == AbilityType.ARMOR_ACTIVE) {
+            context.getAttacker().removePotionEffect(this.potion);
+        } else if (context.hasTarget()) {
+            context.getTarget().removePotionEffect(this.potion);
         }
     }
 

@@ -189,25 +189,39 @@ public class MaterialDefinition {
             pages.add(new TomeGui.FurnaceElement(title + "\n" + TextFormatting.DARK_GREEN + name(this.material), new ItemStack(this.material.makeItem()), new ItemStack(Blocks.IRON_ORE), new ItemStack(Items.IRON_INGOT), RandoresTranslations.Keys.PROPERTIES));
         }
 
-        for (AbilityType type : AbilityType.values()) {
-            List<String> a = new ArrayList<String>();
-            a.add(title);
-            a.add(TextFormatting.GOLD + RandoresTranslations.get(RandoresTranslations.Keys.ABILITIES) + ": " + type.getLocalName());
-            List<Ability> abilities = this.abilitySeries.getSeries(type);
-            int i = 0;
-            for (Ability ab : abilities) {
-                i++;
-                a.add(TextFormatting.DARK_GREEN + " " + i + ". " + ab.getLocalName());
-            }
+        if(this.hasDamage()) {
+            this.applyAbilityToTome(title, AbilityType.MELEE, pages);
+        }
 
-            StringBuilder bu = new StringBuilder();
-            for (String k : a) {
-                bu.append(k).append("\n");
-            }
-            pages.add(new TomeGui.StringElement(bu.substring(0, bu.length() - 1), RandoresTranslations.Keys.ABILITIES));
+        if(this.hasComponent(Components.BOW)) {
+            this.applyAbilityToTome(title, AbilityType.PROJECTILE, pages);
+        }
+
+        if(this.hasArmor()) {
+            this.applyAbilityToTome(title, AbilityType.ARMOR_ACTIVE, pages);
+            this.applyAbilityToTome(title, AbilityType.ARMOR_PASSIVE, pages);
         }
 
         return pages;
+    }
+
+    @SideOnly(Side.CLIENT)
+    private void applyAbilityToTome(String title, AbilityType type, List<TomeGui.Element> pages) {
+        List<String> a = new ArrayList<String>();
+        a.add(title);
+        a.add(TextFormatting.GOLD + RandoresTranslations.get(RandoresTranslations.Keys.ABILITIES) + ": " + type.getLocalName());
+        List<Ability> abilities = this.abilitySeries.getSeries(type);
+        int i = 0;
+        for (Ability ab : abilities) {
+            i++;
+            a.add(TextFormatting.DARK_GREEN + " " + i + ". " + ab.getLocalName());
+        }
+
+        StringBuilder bu = new StringBuilder();
+        for (String k : a) {
+            bu.append(k).append("\n");
+        }
+        pages.add(new TomeGui.StringElement(bu.substring(0, bu.length() - 1), RandoresTranslations.Keys.ABILITIES));
     }
 
     public boolean hasTool() {

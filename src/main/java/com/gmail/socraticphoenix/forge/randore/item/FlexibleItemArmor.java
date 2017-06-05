@@ -26,7 +26,6 @@ import com.gmail.socraticphoenix.forge.randore.component.Components;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinition;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinitionRegistry;
 import com.gmail.socraticphoenix.forge.randore.component.ability.AbilityType;
-import com.gmail.socraticphoenix.forge.randore.component.ability.EmpoweredEnchantment;
 import com.gmail.socraticphoenix.forge.randore.texture.RandoresArmorResourcePack;
 import com.google.common.collect.Multimap;
 import net.minecraft.entity.Entity;
@@ -71,15 +70,6 @@ public class FlexibleItemArmor extends ItemArmor implements FlexibleItem, ISpeci
             return 2;
         } else {
             return 1;
-        }
-    }
-
-    @Override
-    public void onArmorTick(World world, EntityPlayer player, ItemStack itemStack) {
-        super.onArmorTick(world, player, itemStack);
-        if(EmpoweredEnchantment.appliedTo(itemStack) && Randores.hasRandoresSeed(itemStack) && MaterialDefinitionRegistry.contains(Randores.getRandoresSeed(itemStack), this.index)) {
-            MaterialDefinition definition = MaterialDefinitionRegistry.get(Randores.getRandoresSeed(itemStack)).get(this.index);
-            definition.getAbilitySeries().onArmorUpdate(player);
         }
     }
 

@@ -89,7 +89,7 @@ public class RandoresRegistryListener {
 
     @SubscribeEvent
     public void onEnchantRegister(RegistryEvent.Register<Enchantment> ev) {
-        ev.getRegistry().register(new EmpoweredEnchantment());
+        ev.getRegistry().register(EmpoweredEnchantment.INSTANCE);
     }
 
     @SubscribeEvent

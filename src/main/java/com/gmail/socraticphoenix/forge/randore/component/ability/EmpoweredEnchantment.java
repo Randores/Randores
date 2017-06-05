@@ -34,6 +34,7 @@ import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 
 public class EmpoweredEnchantment extends Enchantment {
+    public static final EmpoweredEnchantment INSTANCE = new EmpoweredEnchantment();
 
     private static EntityEquipmentSlot[] slots = {EntityEquipmentSlot.CHEST, EntityEquipmentSlot.LEGS, EntityEquipmentSlot.HEAD, EntityEquipmentSlot.FEET};
 
@@ -62,6 +63,35 @@ public class EmpoweredEnchantment extends Enchantment {
         return false;
     }
 
+    public static void doArmor(EntityLivingBase hurt, EntityLivingBase cause) {
+        for (EntityEquipmentSlot slot : slots) {
+            if (!hurt.getItemStackFromSlot(slot).isEmpty() && EmpoweredEnchantment.appliedTo(hurt.getItemStackFromSlot(slot))) {
+                ItemStack stack = hurt.getItemStackFromSlot(slot);
+                if (stack.getItem() instanceof FlexibleItemArmor) {
+                    MaterialDefinition definition = ((FlexibleItemArmor) stack.getItem()).getDefinition(Randores.getRandoresSeed(hurt.world));
+                    definition.getAbilitySeries().onArmorHit(hurt, cause);
+                }
+            }
+        }
+    }
+
+    public static void doPassiveArmor(EntityLivingBase entity) {
+        for (EntityEquipmentSlot slot : slots) {
+            if (!entity.getItemStackFromSlot(slot).isEmpty() && EmpoweredEnchantment.appliedTo(entity.getItemStackFromSlot(slot))) {
+                ItemStack stack = entity.getItemStackFromSlot(slot);
+                if (stack.getItem() instanceof FlexibleItemArmor) {
+                    MaterialDefinition definition = ((FlexibleItemArmor) stack.getItem()).getDefinition(Randores.getRandoresSeed(entity.world));
+                    definition.getAbilitySeries().onArmorUpdate(entity);
+                }
+            }
+        }
+    }
+
+    @Override
+    public boolean isTreasureEnchantment() {
+        return true;
+    }
+
     @Override
     public boolean canApply(ItemStack stack) {
         if (stack.getItem() instanceof FlexibleItem) {
@@ -77,18 +107,6 @@ public class EmpoweredEnchantment extends Enchantment {
     @Override
     public boolean canApplyAtEnchantingTable(ItemStack stack) {
         return this.canApply(stack);
-    }
-
-    public static void doArmor(EntityLivingBase hurt, EntityLivingBase cause) {
-        for (EntityEquipmentSlot slot : slots) {
-            if (!hurt.getItemStackFromSlot(slot).isEmpty() && EmpoweredEnchantment.appliedTo(hurt.getItemStackFromSlot(slot))) {
-                ItemStack stack = hurt.getItemStackFromSlot(slot);
-                if(stack.getItem() instanceof FlexibleItemArmor) {
-                    MaterialDefinition definition = ((FlexibleItemArmor) stack.getItem()).getDefinition(Randores.getRandoresSeed(hurt.world));
-                    definition.getAbilitySeries().onArmorHit(hurt, cause);
-                }
-            }
-        }
     }
 
 }

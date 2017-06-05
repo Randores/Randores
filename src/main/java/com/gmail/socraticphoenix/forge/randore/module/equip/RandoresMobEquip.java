@@ -26,6 +26,7 @@ import com.gmail.socraticphoenix.forge.randore.component.Component;
 import com.gmail.socraticphoenix.forge.randore.component.Components;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinition;
 import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinitionRegistry;
+import com.gmail.socraticphoenix.forge.randore.component.ability.EmpoweredEnchantment;
 import com.gmail.socraticphoenix.forge.randore.probability.RandoresProbability;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
@@ -73,12 +74,12 @@ public class RandoresMobEquip {
 
                             if(!applicable.isEmpty()) {
                                 entity.setDropChance(EntityEquipmentSlot.MAINHAND, 0.25f);
-                                entity.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, Randores.applyData(new ItemStack(applicable.get(random.nextInt(applicable.size())).makeItem()), world));
+                                entity.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, applyEnchant(Randores.applyData(new ItemStack(applicable.get(random.nextInt(applicable.size())).makeItem()), world), entity.getRNG()));
                             }
 
                             if (material.hasComponent(Components.HELMET)) {
                                 for (Components component : armor) {
-                                    entity.setItemStackToSlot(component.getSlot(), Randores.applyData(new ItemStack(material.getComponent(component).makeItem()), world));
+                                    entity.setItemStackToSlot(component.getSlot(), applyEnchant(Randores.applyData(new ItemStack(material.getComponent(component).makeItem()), world), entity.getRNG()));
                                     entity.setDropChance(component.getSlot(), 0.25f);
                                 }
                             }
@@ -95,13 +96,13 @@ public class RandoresMobEquip {
 
                             if(!applicable.isEmpty()) {
                                 entity.setDropChance(EntityEquipmentSlot.MAINHAND, 0.25f);
-                                entity.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, Randores.applyData(new ItemStack(applicable.get(random.nextInt(applicable.size())).makeItem()), world));
+                                entity.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, applyEnchant(Randores.applyData(new ItemStack(applicable.get(random.nextInt(applicable.size())).makeItem()), world), entity.getRNG()));
                             }
 
                             if (material.hasComponent(Components.HELMET)) {
                                 for (Components component : armor) {
                                     entity.setDropChance(component.getSlot(), 0.25f);
-                                    entity.setItemStackToSlot(component.getSlot(), Randores.applyData(new ItemStack(material.getComponent(component).makeItem()), world));
+                                    entity.setItemStackToSlot(component.getSlot(), applyEnchant(Randores.applyData(new ItemStack(material.getComponent(component).makeItem()), world), entity.getRNG()));
                                 }
                             }
                         } else if (entity instanceof EntityVindicator) {
@@ -115,13 +116,21 @@ public class RandoresMobEquip {
 
                             if(!applicable.isEmpty()) {
                                 entity.setDropChance(EntityEquipmentSlot.MAINHAND, 0.25f);
-                                entity.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, Randores.applyData(new ItemStack(applicable.get(random.nextInt(applicable.size())).makeItem()), world));
+                                entity.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, applyEnchant(Randores.applyData(new ItemStack(applicable.get(random.nextInt(applicable.size())).makeItem()), world), entity.getRNG()));
                             }
                         }
                     }
                 }
             }
         }
+    }
+    
+    private static ItemStack applyEnchant(ItemStack stack, Random random) {
+        if(RandoresProbability.percentChance(0.05, random)) {
+            stack.addEnchantment(EmpoweredEnchantment.INSTANCE, 1);
+        }
+        
+        return stack;
     }
 
 }

@@ -21,6 +21,9 @@
  */
 package com.gmail.socraticphoenix.forge.randore.component.ability;
 
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.util.math.Vec3d;
+
 import java.util.List;
 
 public abstract class AbstractAbility implements Ability {
@@ -47,6 +50,11 @@ public abstract class AbstractAbility implements Ability {
     @Override
     public int delayAfter() {
         return this.delay;
+    }
+
+    @Override
+    public void remove(Vec3d location, EntityLivingBase activator, AbilityContext context) {
+
     }
 
 }

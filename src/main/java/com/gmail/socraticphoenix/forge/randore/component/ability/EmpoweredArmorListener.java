@@ -21,13 +21,31 @@
  */
 package com.gmail.socraticphoenix.forge.randore.component.ability;
 
+import com.gmail.socraticphoenix.forge.randore.Randores;
+import com.gmail.socraticphoenix.forge.randore.component.MaterialDefinition;
+import com.gmail.socraticphoenix.forge.randore.item.FlexibleItemArmor;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
+import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
 public class EmpoweredArmorListener {
+    private static EntityEquipmentSlot[] armor = {EntityEquipmentSlot.HEAD, EntityEquipmentSlot.CHEST, EntityEquipmentSlot.LEGS, EntityEquipmentSlot.FEET};
+    private  Map<EntityEquipmentSlot, Map<UUID, AbilitySeries>> map = new HashMap<EntityEquipmentSlot, Map<UUID, AbilitySeries>>();
+
+    public EmpoweredArmorListener() {
+        for(EntityEquipmentSlot slot : armor) {
+            map.put(slot, new HashMap<UUID, AbilitySeries>());
+        }
+    }
 
     @SubscribeEvent
     public void onHurt(LivingHurtEvent ev) {
@@ -38,6 +56,22 @@ public class EmpoweredArmorListener {
             EntityLivingBase hurt = ev.getEntityLiving();
             if (EmpoweredEnchantment.appliedTo(hurt)) {
                 EmpoweredEnchantment.doArmor(hurt, cause);
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public void onUpdate(LivingEvent.LivingUpdateEvent ev) {
+        EntityLivingBase entity = ev.getEntityLiving();
+        for (EntityEquipmentSlot slot : armor) {
+            Map<UUID, AbilitySeries> associated = map.get(slot);
+            ItemStack stack = entity.getItemStackFromSlot(slot);
+            if (!stack.isEmpty() && stack.getItem() instanceof FlexibleItemArmor && EmpoweredEnchantment.appliedTo(stack)) {
+                MaterialDefinition definition = ((FlexibleItemArmor) stack.getItem()).getDefinition(Randores.getRandoresSeed(entity.world));
+                associated.put(entity.getPersistentID(), definition.getAbilitySeries());
+                definition.getAbilitySeries().onArmorUpdate(entity);
+            } else if (associated.containsKey(entity.getPersistentID())) {
+                associated.remove(entity.getPersistentID()).onArmorCancel(entity);
             }
         }
     }

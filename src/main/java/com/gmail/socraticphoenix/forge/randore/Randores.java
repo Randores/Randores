@@ -30,6 +30,7 @@ import com.gmail.socraticphoenix.forge.randore.component.ability.ScheduleListene
 import com.gmail.socraticphoenix.forge.randore.component.ability.abilities.PotionEffectAbility;
 import com.gmail.socraticphoenix.forge.randore.crafting.CraftingBlocks;
 import com.gmail.socraticphoenix.forge.randore.crafting.CraftingItems;
+import com.gmail.socraticphoenix.forge.randore.crafting.CraftiniumForgeCombinedRecipe;
 import com.gmail.socraticphoenix.forge.randore.crafting.CraftiniumForgeUpgradeRecipe;
 import com.gmail.socraticphoenix.forge.randore.crafting.forge.CraftiniumDelegateSmelt;
 import com.gmail.socraticphoenix.forge.randore.crafting.forge.CraftiniumForge;
@@ -488,10 +489,12 @@ public class Randores {
         CraftingManager.getInstance().addRecipe(forge, "XXX", "X X", "XXX", 'X', CraftingItems.craftiniumLump);
 
         RecipeSorter.register("randores:forge_upgrade", CraftiniumForgeUpgradeRecipe.class, RecipeSorter.Category.SHAPED, "after:minecraft:shaped");
+        RecipeSorter.register("randores:forge_upgrade", CraftiniumForgeCombinedRecipe.class, RecipeSorter.Category.SHAPED, "after:minecraft:shaped");
         RecipeSorter.register("randores:flexible_recipe", FlexibleCraftingRecipe.class, RecipeSorter.Category.SHAPED, "after:minecraft:shaped");
         RecipeSorter.register("randores:tome_recipe", TomeCraftingRecipe.class, RecipeSorter.Category.SHAPELESS, "after:minecraft:shapeless");
 
         CraftingManager.getInstance().addRecipe(new TomeCraftingRecipe());
+        CraftingManager.getInstance().addRecipe(new CraftiniumForgeCombinedRecipe());
 
         CraftiniumForgeUpgradeRecipe upgradeRecipe = new CraftiniumForgeUpgradeRecipe();
         upgradeRecipe.u(CraftingItems.craftiniumLump, 1 / 8f);

@@ -145,6 +145,12 @@ public class AbilitySeries {
         }
     }
 
+    public void onArmorCancel(EntityLivingBase entity) {
+        for (Ability ability : this.armorPassive) {
+            ability.remove(entity.getPositionVector(), entity, new AbilityContext(AbilityType.ARMOR_PASSIVE));
+        }
+    }
+
     static class RunNextAbility implements Runnable {
         private List<Ability> abilities;
         private int index;
