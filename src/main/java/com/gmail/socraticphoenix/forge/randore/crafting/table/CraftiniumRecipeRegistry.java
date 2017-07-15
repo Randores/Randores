@@ -21,7 +21,6 @@
  */
 package com.gmail.socraticphoenix.forge.randore.crafting.table;
 
-import com.gmail.socraticphoenix.forge.randore.compatability.jei.crafting.FlexibleRecipeWrapper;
 import mezz.jei.api.IJeiHelpers;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.InventoryCrafting;
@@ -48,16 +47,6 @@ public class CraftiniumRecipeRegistry {
         }
 
         return recipes;
-    }
-
-    public static List<FlexibleRecipeWrapper> getWrapped(IJeiHelpers helpers) {
-        List<FlexibleRecipeWrapper> wrappers = new ArrayList<FlexibleRecipeWrapper>();
-        for(CraftiniumRecipe recipe : recipes) {
-            if(recipe instanceof FlexibleRecipe) {
-                wrappers.add(new FlexibleRecipeWrapper((FlexibleRecipe) recipe, helpers));
-            }
-        }
-        return wrappers;
     }
 
     public static void register(CraftiniumRecipe recipe) {
